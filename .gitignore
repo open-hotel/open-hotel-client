@@ -1,0 +1,4 @@
+node_modules/
+dist/
+resources/habbo.swf
+*.log
