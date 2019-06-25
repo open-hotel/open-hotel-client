@@ -17,6 +17,7 @@
   "dependencies": {
     "@randallmorey/isometryjs": "^1.1.0",
     "@tweenjs/tween.js": "^17.4.0",
+    "pixi-viewport": "^4.0.0-beta.2",
     "pixi.js": "^5.0.4"
   }
 }

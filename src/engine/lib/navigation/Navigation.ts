@@ -65,17 +65,24 @@ export class Navigation {
     private mount (scene: Scene, key?:string, destroyPrevious:boolean = true, cb?:Function) {        
         this.$logger.debug('Renderizando cena...', scene)
         
-        scene.x = scene.y = 0 
-        
+        scene.x = scene.y = 0
         
         if (this.currentRoute) {
-            scene.alpha = 0
+            const colorMatrixTo = new PIXI.filters.ColorMatrixFilter();
+            const colorMatrixFrom = new PIXI.filters.ColorMatrixFilter();
+
+            colorMatrixTo.alpha = 0;
+            colorMatrixFrom.alpha = 1;
+
+            scene.filters = [colorMatrixTo]
+            this.currentRoute.scene.filters = [colorMatrixFrom]
+
             new TWEEN.Tween({ from: 1, to: 0 })
             .to({ from: 0, to: 1 }, 1000)
             .start()
             .onUpdate((alpha) => {
-                scene.alpha = alpha.to
-                this.currentRoute.scene.alpha = alpha.from
+                colorMatrixTo.alpha = alpha.to
+                colorMatrixFrom.alpha = alpha.from
             })
             .onComplete(() => {
                 this.target.removeChild(this.currentRoute.scene)
