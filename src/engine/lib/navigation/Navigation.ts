@@ -68,21 +68,21 @@ export class Navigation {
         scene.x = scene.y = 0
         
         if (this.currentRoute) {
-            const colorMatrixTo = new PIXI.filters.ColorMatrixFilter();
-            const colorMatrixFrom = new PIXI.filters.ColorMatrixFilter();
+            const alphaTo = new PIXI.filters.AlphaFilter();
+            const alphaFrom = new PIXI.filters.AlphaFilter();
 
-            colorMatrixTo.alpha = 0;
-            colorMatrixFrom.alpha = 1;
+            alphaTo.alpha = 0;
+            alphaFrom.alpha = 1;
 
-            scene.filters = [colorMatrixTo]
-            this.currentRoute.scene.filters = [colorMatrixFrom]
+            scene.filters = [alphaTo]
+            this.currentRoute.scene.filters = [alphaFrom]
 
             new TWEEN.Tween({ from: 1, to: 0 })
             .to({ from: 0, to: 1 }, 1000)
             .start()
             .onUpdate((alpha) => {
-                colorMatrixTo.alpha = alpha.to
-                colorMatrixFrom.alpha = alpha.from
+                alphaTo.alpha = alpha.to
+                alphaFrom.alpha = alpha.from
             })
             .onComplete(() => {
                 this.target.removeChild(this.currentRoute.scene)

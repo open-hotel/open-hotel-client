@@ -47,6 +47,8 @@ export class Application extends PIXI.Application {
         window.addEventListener("resize", this.onResize.bind(this));
         
         this.onResize();
+
+        this.renderer.autoDensity = true
     }
 
     static get (options?: ApplicationOptions) {
@@ -57,11 +59,8 @@ export class Application extends PIXI.Application {
     onResize() {
         // resize renderer
         this.renderer.resize(window.innerWidth, window.innerHeight);
-        
-        // resize canvas
-        this.view.width = window.innerWidth;
-        this.view.height = window.innerHeight;
-
+        this.view.width = window.innerWidth
+        this.view.height = window.innerHeight
         this.$logger.info(`As dimensões da tela mudaram para ${this.view.width}x${this.view.height}`)
     }
 }

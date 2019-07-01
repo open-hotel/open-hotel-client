@@ -17,18 +17,13 @@ export abstract class Scene extends PIXI.Container {
     async $initScene(app:Application, data: any) {
         this.$app = app
 
-        this.$logger = this.$app.$logger.create('scene')
+        this.$logger = this.$app.$logger.create(`scene:${this.constructor.name}`)
         this.$logger.debug('Instanciando cena...')
 
         this.$logger.debug('Configurando cena...')
 
         // Setup Scene
         this.setup(data)
-
-        this.$logger.debug('Carregando recursos...')
-
-        // Load Assets of Scene
-        await LoaderUtils.loadPromise(this.$app.loader)
 
         this.$logger.debug(`Renderizando ${this.constructor.name}...`)
         // Draw Scene

@@ -1,23 +1,21 @@
 import { Application } from "../../engine/Application";
-import { Polygon, SCALE_MODES } from "pixi.js";
+import { Polygon, SCALE_MODES, Graphics } from "pixi.js";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
+import { Cube } from "../../engine/lib/geometry/Cube";
 
 export class FloorBlock extends PIXI.Sprite {
     private $app: Application;
-    
-    public isoZ = 0
-
     private $textures:{ [key:string]: PIXI.Texture } = {
         default: null,
         hover  : null
     }
 
-    constructor () {
+    constructor (public $position: IsoPoint = new IsoPoint()) {
         super()
 
         this.$app = Application.get()
 
-        this.$textures.default = this.$app.loader.resources.floor.texture
+        this.$textures.default = this.generateTexture()
         this.$textures.hover = this.$app.loader.resources.floor_selected.texture
 
         this.texture = this.$textures.default
@@ -36,5 +34,28 @@ export class FloorBlock extends PIXI.Sprite {
         }).addListener('pointerout', () => {
             this.texture = this.$textures.default
         })
+
+        this.$position.toPoint().copyTo(this.position)
+    }
+
+    private generateTexture () {
+        const floor = new Cube({
+            depth: 32,
+            height: 8,
+            width: 32
+        })
+        
+        const borderStroke = new PIXI.Polygon([
+            new IsoPoint(1, 31, 0).toPoint(),
+            new IsoPoint(1, 1, 0).toPoint(),
+            new IsoPoint(31, 1, 0).toPoint(),
+        ])
+
+        borderStroke.closeStroke = false
+
+        floor.lineStyle(2, 0x000000, .0809)
+        floor.drawShape(borderStroke)
+
+        return this.$app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, 1)
     }
 }

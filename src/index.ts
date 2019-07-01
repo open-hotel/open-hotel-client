@@ -2,15 +2,29 @@ import { Application } from "./engine/Application";
 import { SplashScreen } from './stages/SplashScreen';
 import { Log } from "./engine/lib/Logger";
 import { HomeScreen } from "./stages/HomeScreen";
+import * as WebFont from "webfontloader";
 
 const app = Application.get({
-    logLevel: Log.ALL,
-    logContext: ['navigation', 'scene'],
-    antialias: true,    
+    logLevel: Log.INFO,
+    antialias: true,
+    autoDensity: true,
+    resolution: devicePixelRatio
 })
 
 app.$router.setRoutes({
     splash: SplashScreen,
     home  : HomeScreen
-}, 'splash')
+})
 
+WebFont.load({
+    google: {
+        families: ['Ubuntu'],
+    },
+    custom: {
+        families: ['Volter'],
+        urls: ['resources/fonts/Volter/Volter.css']
+    },
+    active() {
+        app.$router.replace('splash')
+    }
+});

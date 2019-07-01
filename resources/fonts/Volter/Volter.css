@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "Volter";
+    src:url("./Volter.ttf") format("truetype");
+}
+@font-face {
+    font-family: "Volter";
+    font-weight: bold;
+    src:url("./Volter\ Bold.ttf") format("truetype");
+}
