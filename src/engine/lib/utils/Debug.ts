@@ -11,15 +11,9 @@ type DebugSpriteOptions = {
     dimensions?: DebugAreaOptions,
 }
 
-type DebugRectLike = {
-    x: number,
-    y: number,
-    width: number,
-    height: number
-}
-
 export class Debug {
     static hitArea (sprite: PIXI.Sprite, options:DebugAreaOptions = {}) {
+        if (!sprite.hitArea) return this
         options = Object.assign({
             borderColor: 0x00FFFF,
             borderWidth: 2,
@@ -37,11 +31,14 @@ export class Debug {
 
         sprite.addChild(area)
 
+        // @ts-ignore
+        sprite.$__DEBUG_HIT_AREA_ = area
+
         return this
     }
 
     static rect (
-        sprite: DebugRectLike & { addChild:Function },
+        sprite: PIXI.Container,
         options?: DebugAreaOptions
     ) {
         options = Object.assign({
@@ -52,16 +49,26 @@ export class Debug {
             backgroundOpacity: 0
         }, options)
 
+        const rect = sprite.getBounds()
+
         const area = new PIXI.Graphics()
 
         area.lineStyle(options.borderWidth, options.borderColor, options.borderOpacity)
         area.beginFill(options.background, options.backgroundOpacity)
-        area.drawRect(sprite.x, sprite.y, sprite.width, sprite.height)
+        area.drawRect(rect.x, rect.y, rect.width, rect.height)
         area.endFill()
 
         sprite.addChild(area)
 
+        // @ts-ignore
+        sprite.$__DEBUG_RECT__ = area
+
         return this
+    }
+
+    static clear (sprite: PIXI.Container) {
+        // @ts-ignore
+        sprite.removeChild(sprite.$__DEBUG_RECT__,sprite.$__DEBUG_HIT_AREA_)
     }
 
     static sprite(sprite: PIXI.Sprite, options: DebugSpriteOptions = {}) {

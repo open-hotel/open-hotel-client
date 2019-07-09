@@ -1,12 +1,30 @@
 import { Application } from "../../engine/Application";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
 import { Cube } from "../../engine/lib/geometry/Cube";
-import { SCALE_MODES } from "pixi.js";
+import { SCALE_MODES, Rectangle, Polygon } from "pixi.js";
 import { Debug } from "../../engine/lib/utils/Debug";
+import { GameObject } from "../../engine/lib/GameObject";
 
-export class FloorLadder extends PIXI.Sprite {
+
+function createSteps(cb: Function) {
+  return new Array(4)
+  .fill(null)
+  .map((_, index) => {
+    const {
+      height = 8,
+      depth = 8,
+      width = 8,
+      position = new IsoPoint()
+    } = cb(index)
+    return new Cube({ depth, height, width, position })
+  })
+}
+
+export class FloorLadder extends GameObject {
   private $app: Application;
   public diagonal: boolean = false;
+
+  static textureCache:{[key:number]: {hitArea:Polygon,texture: PIXI.Texture}} = {}
 
   constructor(
     public $position: IsoPoint = new IsoPoint(),
@@ -15,242 +33,216 @@ export class FloorLadder extends PIXI.Sprite {
     super();
 
     this.$app = Application.get();
-    this.texture = this.generateTexture();
+    
+    const { texture, hitArea } = FloorLadder.generateTexture(this.$direction);
+    
+    this.texture = texture
+    this.hitArea = hitArea
 
+    this.interactive = true
     this.$position.toPoint().copyTo(this.position);
+    this.pivot.set(0, 32)
   }
 
-  generateTexture() {
+  static generateTexture(direction:number) {
+    if (direction in FloorLadder.textureCache) {
+      return FloorLadder.textureCache[direction]
+    }
+
     const g = new PIXI.Graphics();
-    const size = 8;
-    const isoPivot = new IsoPoint(0, 0, 0)
 
     let border = new PIXI.Graphics()
     let borderPolygon = new PIXI.Polygon()
+    let hitArea = new Polygon([
+      new IsoPoint(32, 0).toPoint(),
+      new IsoPoint(64, 0).toPoint(),
+      new IsoPoint(64, 32).toPoint(),
+      new IsoPoint(31, 32).toPoint(),
+    ])
 
-    if (this.$direction === 0) {
-      isoPivot.add(-4, -4, 16)
-
+    if (direction === 0) {
       g.addChild(
-        new Cube({
-          depth: 8,
-          height: size,
+        ...createSteps((i:number) => ({
           width: 32,
-          position: new IsoPoint(0, 0, 0)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, 8, 8)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, 16, 16)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, 24, 24)
-        })
-      );
-    }
-    else if (this.$direction === 1) {
-      isoPivot.add(0, 0, 16)
-      g.addChild(
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, -32, -32)
-        }),
-        new Cube({
-          depth: 24,
-          height: size,
-          width: 24,
-          position: new IsoPoint(0, -24, -24)
-        }),
-        new Cube({
-          depth: 16,
-          height: size,
-          width: 16,
-          position: new IsoPoint(0, -16, -16)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 8,
-          position: new IsoPoint(0, -8, -8)
-        }),
-      );
-    }
+          position: new IsoPoint(
+            0,
+            ((i/4) * 32),
+            (8 * i) - 32
+          )
+        }))
+      )
 
-    else if (this.$direction === 2) {
-      borderPolygon = new PIXI.Polygon([
-        new IsoPoint(-32, 22, 16).toPoint(),
-        new IsoPoint(-24, 22, 16).toPoint(),
-        new IsoPoint(-24, 22, 8).toPoint(),
-        new IsoPoint(-16, 22, 8).toPoint(),
-        new IsoPoint(-16, 22, 0).toPoint(),
-        new IsoPoint(-8, 22, 0).toPoint(),
-        new IsoPoint(-8, 22, -8).toPoint(),
-        new IsoPoint(0, 22, -8).toPoint(),
+      hitArea = new Polygon([
+        new IsoPoint(32, 16).toPoint(),
+        new IsoPoint(78, 16).toPoint(),
+        new IsoPoint(78, 32).toPoint(),
+        new IsoPoint(31, 32).toPoint(),
       ])
-
-      isoPivot.add(0, 0, 8)
+    }
+    else if (direction === 1) {
       g.addChild(
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(0, 0, 0)
-        }),
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(-8, 0, 8)
-        }),
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(-16, 0, 16)
-        }),
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(-24, 0, 24)
+        ...createSteps((i:number) => {
+          const size = 32 - ((i/4) * 32)
+          return {
+            width: size,
+            depth: size,
+            position: new IsoPoint(
+              0,
+              32 - size,
+              (8 * i) - 24
+            )
+          }
         })
-      );
+      )
+
+      hitArea = new Polygon([
+        new IsoPoint(16, 8, 0).toPoint(),
+        new IsoPoint(64, 0, -16).toPoint(),
+        new IsoPoint(64, 32, -16).toPoint(),
+        new IsoPoint(31, 32, 16).toPoint(),
+      ])
+    }
+
+    else if (direction === 2) {
+      g.addChild(
+        ...createSteps((i:number) => ({
+          depth: 32,
+          position: new IsoPoint(
+            ((i/-4) * 32),
+            0,
+            8 * i
+          )
+        }))
+      )
+
+      hitArea = new Polygon([
+        new IsoPoint(32, 0, 16).toPoint(),
+        new IsoPoint(64, 0, -16).toPoint(),
+        new IsoPoint(64, 32, -16).toPoint(),
+        new IsoPoint(31, 32, 16).toPoint(),
+      ])
     }
     
-    else if (this.$direction === 3) {
-      borderPolygon = new PIXI.Polygon([
-        new IsoPoint(0, 0, -8).toPoint(),
-        new IsoPoint(0, 8, -8).toPoint(),
-        new IsoPoint(0, 8, -16).toPoint(),
-        new IsoPoint(0, 16, -16).toPoint(),
-        new IsoPoint(0, 16, -24).toPoint(),
-        new IsoPoint(0, 24, -24).toPoint(),
-        new IsoPoint(0, 24, -32).toPoint(),
-        new IsoPoint(0, 32, -32).toPoint(),
-      ])
+    else if (direction === 3) {
       g.addChild(
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, 0, -32)
-        }),
-        new Cube({
-          depth: 24,
-          height: size,
-          width: 24,
-          position: new IsoPoint(0, 0, -24)
-        }),
-        new Cube({
-          depth: 16,
-          height: size,
-          width: 16,
-          position: new IsoPoint(0, 0, -16)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 8,
-          position: new IsoPoint(0, 0, -8)
-        }),
-      );
+        ...createSteps((i:number) => {
+          const size = 32 - ((i/4) * 32)
+          return {
+            width: size,
+            depth: size,
+            position: new IsoPoint(
+              0,
+              0,
+              8 * i
+            )
+          }
+        })
+      )
+
+      hitArea = new Polygon([
+        new IsoPoint(32, 0, 16).toPoint(),
+        new IsoPoint(64, 0, -16).toPoint(),
+        new IsoPoint(64, 32, -16).toPoint(),
+        new IsoPoint(31, 32, -16).toPoint(),
+      ])
     }
     
-    else if (this.$direction === 4) {
-      borderPolygon = new PIXI.Polygon([
-        new IsoPoint(-8, 0, -8).toPoint(),
-        new IsoPoint(8, 8, 8).toPoint(),
-        new IsoPoint(8, 8, 16).toPoint(),
-        new IsoPoint(8, 0, 16).toPoint(),
-        new IsoPoint(8, 0, 24).toPoint(),
-        new IsoPoint(8, -8, 24).toPoint(),
-        new IsoPoint(8, -8, 32).toPoint(),
-        new IsoPoint(8, -15, 32).toPoint(),
-      ])
-
-      isoPivot.add(0, 0, 8)
-
+    else if (direction === 4) {
       g.addChild(
-        new Cube({
-          depth: 8,
-          height: size,
+        ...createSteps((i:number) => ({
           width: 32,
-          position: new IsoPoint(0, 0, 0)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, -8, 8)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, -16, 16)
-        }),
-        new Cube({
-          depth: 8,
-          height: size,
-          width: 32,
-          position: new IsoPoint(0, -24, 24)
-        })
-      );
+          position: new IsoPoint(
+            0,
+            ((i/-4) * 32),
+            8 * i
+          )
+        }))
+      )
+      hitArea = new Polygon([
+        new IsoPoint(32, 0, 16).toPoint(),
+        new IsoPoint(64, 0, 16).toPoint(),
+        new IsoPoint(64, 32, -16).toPoint(),
+        new IsoPoint(32, 32, -16).toPoint(),
+      ])
     }
 
-    else if (this.$direction === 5) {
-      isoPivot.add(0, 0, 16)
-      
+    else if (direction === 5) {
       g.addChild(
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(-24, 0, 0)
-        }),
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(-16, 0, 8)
-        }),
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(-8, 0, 16)
-        }),
-        new Cube({
-          depth: 32,
-          height: size,
-          width: 8,
-          position: new IsoPoint(0, 0, 24)
+        ...createSteps((i:number) => {
+          const size = 32 - ((i/4) * 32)
+          return {
+            width: size,
+            depth: size,
+            position: new IsoPoint(
+              32 - size,
+              0,
+              (8 * i) - 24
+            )
+          }
         })
-      );
+      )
+
+      hitArea = new Polygon([
+        new IsoPoint(54, 0, 16).toPoint(),
+        new IsoPoint(64, 0, 16).toPoint(),
+        new IsoPoint(64, 32, -16).toPoint(),
+        new IsoPoint(32, 32, -16).toPoint(),
+      ])
+    }
+
+    else if (direction === 6) {      
+      g.addChild(
+        ...createSteps((i:number) => ({
+          depth: 32,
+          position: new IsoPoint(
+            ((i/4) * 32),
+            16,
+            (8 * i) - 16
+          )
+        }))
+      )
+
+      hitArea = new Polygon([
+        new IsoPoint(40, -16).toPoint(),
+        new IsoPoint(56, -16).toPoint(),
+        new IsoPoint(56, 48).toPoint(),
+        new IsoPoint(40, 48).toPoint(),
+      ])
+    }
+
+    else if (direction === 7) {
+      g.addChild(
+        ...createSteps((i:number) => {
+          const size = 32 - ((i/4) * 32)
+          return {
+            width: size,
+            depth: size,
+            position: new IsoPoint(
+              (64 - size),
+              (64 - size),
+              8 * i
+            )
+          }
+        })
+      )
+
+      hitArea = new Polygon([])
     }
 
     borderPolygon.closeStroke = false
 
-    border.lineStyle(2, 0x000000, .0809)
+    border.lineStyle(2, 0x000000, .05)
     // border.lineStyle(2, 0xFF0000, 1, 0)
     border.drawPolygon(borderPolygon)
 
     g.addChild(border)
 
-    isoPivot.toPoint().copyTo(this.pivot);
-
-    return this.$app.renderer.generateTexture(g, SCALE_MODES.NEAREST, 1);
+    const texture = Application.get().renderer.generateTexture(
+      g, SCALE_MODES.NEAREST, 1,
+    );
+    return FloorLadder.textureCache[direction] = {
+      texture,
+      hitArea
+    }
   }
 }

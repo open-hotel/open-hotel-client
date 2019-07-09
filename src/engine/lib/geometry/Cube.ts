@@ -7,7 +7,8 @@ export interface CubeOptions {
     height  ?: number,
     depth   ?: number,
     position?: IsoPoint,
-    faces   ?: CubeFaceName[]
+    faces   ?: CubeFaceName[],
+    colors  ?: { [key in CubeFaceName]: number }
 }
 
 export type CubeFaces = {
@@ -44,10 +45,20 @@ export class Cube extends PIXI.Graphics {
             depth: 50,
             position: new IsoPoint(),
             faces: ['top', 'left', 'front'],
+            colors: {
+                top: 0x989865,
+                bottom: 0x989865,
+                left: 0x838357,
+                right: 0x838357,
+                front: 0x6f6f49,
+                back: 0x6f6f49,
+            },
             ...(options || {})
         }
 
-        const { position, width, height, depth } = this.$options
+        const { position, width, height, depth, colors } = this.$options
+
+        this.$colors = colors
 
         this.$faces = {
             top: [

@@ -2,8 +2,10 @@ import { Application } from "../../engine/Application";
 import { Polygon, SCALE_MODES, Graphics } from "pixi.js";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
 import { Cube } from "../../engine/lib/geometry/Cube";
+import { GameObject } from "../../engine/lib/GameObject";
 
-export class FloorBlock extends PIXI.Sprite {
+export class FloorBlock extends GameObject {
+    public static $textureCache: PIXI.Texture;
     private $app: Application;
     private $textures:{ [key:string]: PIXI.Texture } = {
         default: null,
@@ -39,6 +41,8 @@ export class FloorBlock extends PIXI.Sprite {
     }
 
     private generateTexture () {
+        if (FloorBlock.$textureCache) return FloorBlock.$textureCache
+
         const floor = new Cube({
             depth: 32,
             height: 8,
@@ -53,9 +57,9 @@ export class FloorBlock extends PIXI.Sprite {
 
         borderStroke.closeStroke = false
 
-        floor.lineStyle(2, 0x000000, .0809)
+        floor.lineStyle(2, 0x000000, .05)
         floor.drawShape(borderStroke)
 
-        return this.$app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, 1)
+        return FloorBlock.$textureCache = this.$app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, 1)
     }
 }

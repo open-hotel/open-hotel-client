@@ -6,7 +6,7 @@ export interface ProgressOptions {
     height  ?: number,
     value   ?: number
 }
-export class Progress extends PIXI.Sprite {
+export class Progress extends PIXI.Container {
     private $options: ProgressOptions
     private $bar: PIXI.Graphics
     private $text: PIXI.Text
@@ -50,8 +50,6 @@ export class Progress extends PIXI.Sprite {
         bg.lineStyle(OUTLINE, 0xFFFFFF, .82)
         bg.drawRoundedRect(0, 0, this.$options.width - 2, this.$options.height - 2, 3)
 
-        this.texture = Application.get().renderer.generateTexture(bg, SCALE_MODES.LINEAR, 1)
-        
         // FILL BAR
         const margin = 3
         const COLOR_TOP = 0xBACAD3
@@ -88,7 +86,7 @@ export class Progress extends PIXI.Sprite {
         text.y = bg.height + 8
         text.pivot.set(text.width / 1, 0)
 
-        this.addChild(bar, text)
+        this.addChild(bg, bar, text)
     }
 
     update () {

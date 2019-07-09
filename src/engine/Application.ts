@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js'
 import { Navigation } from './lib/navigation/Navigation';
 import { Logger, Log } from './lib/Logger';
 import { NavigationView } from './lib/navigation/NavigationView';
+import * as Tween from '@tweenjs/tween.js'
 
 interface ApplicationOptions {
     autoStart?: boolean;
@@ -22,7 +23,7 @@ interface ApplicationOptions {
     sharedLoader?: boolean;
     resizeTo?: Window | HTMLElement;
     logLevel?: Log|number,
-    logContext?: string[]
+    logContext?: string[],
 }
 
 export class Application extends PIXI.Application {
@@ -35,7 +36,7 @@ export class Application extends PIXI.Application {
 
         options = Object.assign({
             logLevel: Log.ERROR,
-            logContext: null
+            logContext: null,
         }, options)
 
         this.$logger.context = options.logContext
@@ -49,6 +50,8 @@ export class Application extends PIXI.Application {
         this.onResize();
 
         this.renderer.autoDensity = true
+
+        this.ticker.add(() => Tween.update(this.ticker.lastTime))
     }
 
     static get (options?: ApplicationOptions) {

@@ -1,114 +1,133 @@
 import { FloorBlock } from "./FloorBlock";
-import { Isometric } from "../../engine/lib/Isometric";
 import { FloorLadder } from "./FloorLadder";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
+import ladders from "./ladders.json";
+import { Matrix } from "../../engine/lib/utils/Matrix";
+import { GameObject } from "../../engine/lib/GameObject";
+import { Debug } from "../../engine/lib/utils/Debug";
 
-type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-type FloorMapRow<T> = T[]
-type FloorMap<T> = FloorMapRow<T>[]
-
-interface FloorOptions {
-    map: FloorMap<FloorMapElevation> | string
+export type Block = {
+  x: number;
+  y: number;
+  z: number;
+  ladder: number
 }
 
-const WIDTH = 32
-const HEIGHT = 32
-const DEPTH = 0
-const STEP_HEIGHT = 32
+type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
-export class Floor extends PIXI.Sprite {
-    public $map: FloorMap<FloorMapElevation>;
-    public $mapBlocks: FloorMap<FloorBlock>
+interface FloorOptions {
+  map: Matrix<FloorMapElevation> | string;
+}
 
-    static parseMap (str:string) {
-        return str.split(/\n/, 1024).reduce((rows, row) => {
-            if(row.length > 0) return rows.concat(row.split('').map(value => parseInt(value)))
-            return rows
-        }, [])
-    }
+const WIDTH = 32;
+const HEIGHT = 32;
+const STEP_HEIGHT = 32;
 
-    constructor (options:FloorOptions) {
-        super()
+const createHasLadder = (map: Matrix<number>) => (test: Matrix<string>) => {
+  const current = map.get(1, 1);
+  return map.every((mapCol, rowIndex, colIndex) => {
+    let blockTest:string|string[] = test.get(rowIndex, colIndex)
 
-        options = Object.assign({
-            map: []
-        }, options)
+    if (blockTest === "*") return true
+    if (blockTest === "?") return !mapCol
+    
+    blockTest = blockTest.split('|')
+    
+    return blockTest.some(t => {
+      if (t === '?') return !mapCol
+      const elevation = current + parseInt(t.replace(/[^\d\-]/g, ''))
+      return mapCol === elevation
+    })
+  })
+}
 
-        this.$map = typeof options.map === 'string' ? Floor.parseMap(options.map) : options.map
+const wallColors = {
+    top: 0x6f717a,
+    front: 0x9597a3,
+    left: 0xb6b8c7
+}
 
-        this.build()
-    }
-    public getMapBlocks () {
-        const blocks: { x: number, y:number, z: number, ladder: number }[] = []
+function getLadder (blocks:Matrix<number>):number {
+  const hasLadder = createHasLadder(blocks)
+  const l = ladders.find((l) => hasLadder(Matrix.from(l.test)))
 
-        function createLadderDetector (col: number, x:number, y: number) {
-            return (prevCol: number|null, ladderDirection: number|null) => {
-                if (typeof prevCol === 'number' && prevCol !== 0 && prevCol - 1 === col) {
-                    return blocks.push({
-                        x, y,
-                        z: col + 1,
-                        ladder: ladderDirection
-                    })
-                }
+  return l && l.value
+}
 
-                return false
-            }
-        }
+export class Floor extends GameObject {
+  public $map: Matrix<FloorMapElevation>;
+  public $mapBlocks: Matrix<FloorBlock|FloorLadder> = new Matrix();
+  public $currentPathFinderTask: number
 
-        this.$map.forEach ((row, rowIndex) => {
-            const prevRow = rowIndex > 0 ? this.$map[rowIndex - 1] : null
-            const nextRow = rowIndex < this.$map.length - 1 ? this.$map[rowIndex + 1] : null
+  static parseMap(str: string):Matrix<FloorMapElevation> {
+    const rows = str.split(/\n/, 1024)
+      .filter(f => f)
+      .map((row) => row.split('').filter(c => c).map(parseInt)) as FloorMapElevation[][]
+    return Matrix.from<FloorMapElevation>(rows)
+  }
 
-            row.forEach((col, colIndex) => {
-                const prevCol = rowIndex > 0 ? row[colIndex - 1] : null
-                const nextCol = rowIndex < row.length - 1 ? row[colIndex + 1] : null
-                const prevRowCol = prevRow ? prevRow[colIndex] : null
-                const nextRowCol = nextRow ? nextRow[colIndex] : null
-                
-                const prevRowNextCol = prevRow && colIndex < prevRow.length - 1 ? prevRow[colIndex+1] : null
-                const prevRowPrevCol = prevRow && colIndex > 0 ? prevRow[colIndex-1] : null
+  constructor(options: FloorOptions) {
+    super();
 
-                const nextRowNextCol = nextRow && colIndex < nextRow.length - 1 ? nextRow[colIndex+1] : null
-                const nextRowPrevCol = nextRow && colIndex > 0 ? nextRow[colIndex-1] : null
-                const ladderDetector = createLadderDetector(col, rowIndex, colIndex)
+    options = Object.assign(
+      {
+        map: new Matrix<FloorMapElevation>()
+      },
+      options
+    );
 
-                if (col === 0) {
-                    return blocks.push({
-                        x: rowIndex,
-                        y: colIndex,
-                        z: 0,
-                        ladder: null
-                    })
-                }
+    this.$map =
+      typeof options.map === "string"
+        ? Floor.parseMap(options.map)
+        : options.map;
 
-                if (ladderDetector(prevCol, 4)) return null
-                if (ladderDetector(prevRowCol, 2)) return null
-                if (ladderDetector(nextCol, 0)) return null
-                // if (ladderDetector(prevRowNextCol, 1)) return null
-                // if (ladderDetector(prevRowPrevCol, 3)) return null
-                if (ladderDetector(nextRowCol, 5)) return null
+    this.build();
 
-                blocks.push({
-                    x: rowIndex,
-                    y: colIndex,
-                    z: col,
-                    ladder: null
-                })
-            })
-        })
+    this.interactive = true
+    this.sortableChildren = true
+  }
 
-        return blocks
-    }
+  public static getPositionOf (floor: Floor, x:number, y:number): PIXI.IPoint {
+    return floor.$mapBlocks.get(x,y, { position: new PIXI.Point }).position.clone()
+  }
 
-    private build () {
-        this.getMapBlocks().forEach(b => {
-            if (b.z < 1 || b.z > 9) return;
-            const position = new IsoPoint(b.x * WIDTH, b.y * HEIGHT, STEP_HEIGHT * b.z)
-            const block = typeof b.ladder === 'number'
-                ? new FloorLadder(position, b.ladder)
-                : new FloorBlock(position)
+  public getPositionOf (x: number, y: number): PIXI.IPoint {
+    return Floor.getPositionOf(this, x, y)
+  }
 
-            this.addChild(block)
-        })
-    }
+  private build() {
+    this.$map.forEachRow((currRow, rowIndex) => {
+      const prevRow = this.$map.getRow(rowIndex - 1)
+      const nextRow = this.$map.getRow(rowIndex + 1)
+
+      currRow.forEach((col, colIndex) => {
+        if (col < 1 || col > 9) return null;
+
+        const blockArea = Matrix.from<FloorMapElevation>([
+          [prevRow.get(colIndex - 1, 0), prevRow.get(colIndex, 0), prevRow.get(colIndex + 1, 0)],
+          [currRow.get(colIndex - 1, 0), currRow.get(colIndex, 0), currRow.get(colIndex + 1, 0)],
+          [nextRow.get(colIndex - 1, 0), nextRow.get(colIndex, 0), nextRow.get(colIndex + 1, 0)],
+        ])
+
+        const ladder = getLadder(blockArea)
+        
+        const position = new IsoPoint(
+          rowIndex * WIDTH,
+          colIndex * HEIGHT,
+          col * STEP_HEIGHT
+        );
+        const block =
+          typeof ladder === "number"
+            ? new FloorLadder(position, ladder)
+            : new FloorBlock(position);
+        block.zIndex = colIndex + rowIndex + col
+
+        block.set('map_position', { x: colIndex, y: rowIndex })
+
+        this.addChild(block);
+        
+        this.$mapBlocks.set(colIndex, rowIndex, block)
+      })
+    })
+  }
 }

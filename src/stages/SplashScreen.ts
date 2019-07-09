@@ -31,19 +31,19 @@ export class SplashScreen extends Scene {
     this.removeChild(this.$loading);
     this.renderSplash();
     this.$app.loader
-      .add("door", "resources/images/room/door.png")
-      .add("door_floor", "resources/images/room/door_floor.png")
-      .add("floor", "resources/images/room/floor.png")
+      // .add("door", "resources/images/room/door.png")
+      // .add("door_floor", "resources/images/room/door_floor.png")
+      // .add("floor", "resources/images/room/floor.png")
       .add("floor_selected", "resources/images/room/floor_selected.png")
-      .add("wall_left", "resources/images/room/wall_left.png")
-      .add("wall_right", "resources/images/room/wall_right.png")
+      // .add("wall_left", "resources/images/room/wall_left.png")
+      // .add("wall_right", "resources/images/room/wall_right.png")
       .load(() => {
         setTimeout(() => this.$app.$router.replace("home"), 500);
       })
       .on("progress", (loader: PIXI.Loader) => {
         this.$progress.value = loader.progress;
       });
-    this.$logger.info("Downloading...");
+    this.$logger.debug("Downloading...");
   }
 
   renderSplash() {

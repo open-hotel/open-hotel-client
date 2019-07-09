@@ -6,7 +6,7 @@ import * as WebFont from "webfontloader";
 
 const app = Application.get({
     logLevel: Log.INFO,
-    antialias: true,
+    antialias: false,
     autoDensity: true,
     resolution: devicePixelRatio
 })

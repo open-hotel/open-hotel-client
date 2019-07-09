@@ -1,11 +1,13 @@
 import { Scene } from "../engine/lib/Scene";
 import { Floor } from "../gameobjects/room/Floor";
-import { FloorBlock } from "../gameobjects/room/FloorBlock";
-import { IsoPoint } from "../engine/lib/IsoPoint";
 import { Viewport } from "pixi-viewport";
+import { Human } from "../gameobjects/Human";
+import { Matrix } from "../engine/lib/utils/Matrix";
+import EasyStar from 'easystarjs'
+import { GameObject } from "../engine/lib/GameObject";
+import { Walkable } from "../engine/lib/utils/Walk";
 import { Debug } from "../engine/lib/utils/Debug";
-import { Cube } from "../engine/lib/geometry/Cube";
-import { FloorLadder } from "../gameobjects/room/FloorLadder";
+import { PathFinder } from "../Pathfinder";
 
 const MAX_ZOOM = 4;
 const MIN_ZOOM = 1 / 4;
@@ -46,61 +48,66 @@ export class HomeScreen extends Scene {
   }
 
   ready() {
-    // const floor = new Floor({
-    //     map: [
-    //         [1,1,1,1],
-    //         [1,0,1,1],
-    //         [1,1,2.5,1],
-    //         [1,1,2,1],
-    //     ]
-    // })
 
-    // floor.position.set(this.width / 2, this.height / 2)
-    // floor.pivot.set(floor.width / 2, floor.height / 2)
+    const floor = new Floor({
+      map: Matrix.from(
+        [
+          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,5,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,7,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,8,1,1,1,1,1,1,1,1],
+          [1,2,3,4,5,6,7,8,9,8,7,6,5,4,3,2,1],
+          [1,1,1,1,1,1,1,1,8,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,7,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,5,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ]
+      )
+    })
 
-    // this.$camera.addChild(
-    //   new FloorBlock(new IsoPoint(-64, -64, 0)),
-    //   new FloorBlock(new IsoPoint(-64, -32, 0)),
-    //   new FloorBlock(new IsoPoint(-64, 0, 0)),
-    //   new FloorBlock(new IsoPoint(-64, 32, 0)),
-    //   new FloorBlock(new IsoPoint(-64, 64, 0)),
+    const human = new Human()
+    
+    this.$camera.addChild(floor);
 
-    //   new FloorBlock(new IsoPoint(-32, 64, 0)),
-    //   new FloorBlock(new IsoPoint(0, 64, 0)),
-    //   new FloorBlock(new IsoPoint(32, 64, 0)),
+    floor.addChild(human)
+    human.set('map_position', { x: 0, y: 0 })
 
-    //   new FloorBlock(new IsoPoint(-32, -64, 0)),
-    //   new FloorBlock(new IsoPoint(0, -64, 0)),
-    //   new FloorBlock(new IsoPoint(32, -64, 0)),
+    floor.getPositionOf(0, 0).copyTo(human.position)
 
-    //   new FloorBlock(new IsoPoint(64, -64, 0)),
-    //   new FloorBlock(new IsoPoint(64, -32, 0)),
-    //   new FloorBlock(new IsoPoint(64, 0, 0)),
-    //   new FloorBlock(new IsoPoint(64, 32, 0)),
-    //   new FloorBlock(new IsoPoint(64, 64, 0)),
+    const { x, y, width, height } = floor.getBounds()
+    
+    floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
+    floor.pivot.set((width / 2) + x, (height / 2) + y)
 
-    //   new FloorLadder(new IsoPoint(0, -32, 32), 0),
-    //   new FloorLadder(new IsoPoint(32, -32, 32), 1),
-    //   new FloorLadder(new IsoPoint(32, 0, 32), 2),
-    //   new FloorLadder(new IsoPoint(0, 32, 32), 4),
-    //   new FloorLadder(new IsoPoint(32, 32, 32), 3),
-    //   new FloorBlock(new IsoPoint(0, 0, 32))
-    // );
+    const floorPathFinder = new PathFinder(floor.$map.$matrix, (cell, curr) => {
+      const a = floor.$map.$matrix[cell.y][cell.x]
+      const b = floor.$map.$matrix[curr.y][curr.x]
 
-    this.$camera.addChild(new Floor({
-      map: [
-        [3,3,3,3,3,2,2,2,2,2,2],
-        [3,3,3,3,3,2,2,2,2,2,2],
-        [3,3,3,3,3,2,2,2,2,2,2],
-        [3,3,3,3,3,2,2,2,2,2,2],
-        [3,3,3,3,3,2,2,2,2,2,2],
-        [2,2,2,2,2,2,2,2,2,2,2],
-        [2,2,2,2,2,2,2,2,2,2,2],
-        [2,2,2,2,2,2,2,2,2,2,2],
-        [2,2,2,2,2,2,2,2,2,2,2],
-        [2,2,2,2,2,2,2,2,2,2,2],
-        [2,2,2,2,2,2,2,2,2,2,2],
-      ]
-    }))
+      return a === b || Math.abs(a - b) === 1
+    })
+    const walkableUser = new Walkable(human)
+
+    floor.addListener('pointertap', async (e) => {
+      if (e.target instanceof GameObject) {
+        const humanPosition = human.get('map_position')
+        const targetPosition = e.target.get('map_position')
+        const path = await floorPathFinder.find(humanPosition, targetPosition)
+        const coords = path.map((p) => floor.getPositionOf(p.x, p.y))
+        
+        walkableUser.followPath(coords, 400, (p, i) => {
+          human.zIndex = floor.$mapBlocks.get(path[i].x, path[i].y).zIndex + 1
+          floor.sortChildren()
+          human.set('map_position', path[i])
+        })
+      }
+    })
   }
 }
