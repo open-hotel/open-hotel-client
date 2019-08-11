@@ -36,6 +36,21 @@ export class Cube extends PIXI.Graphics {
         back: 1,
     }
 
+    get facesShape() {
+        const { faces = [] } = this.$options
+        const shapes: {
+            [key in CubeFaceName]: PIXI.Polygon
+        } = {}
+
+        for (let f of ['back', 'bottom', 'right', 'left', 'top', 'front'].filter(f => faces.includes(f))) {
+            if (f in this.$faces) {
+                shapes[f] = new PIXI.Polygon(this.$faces[f].map(p => p.toVector2()))
+            }
+        }
+
+        return shapes
+    }
+
     constructor(options?: CubeOptions) {
         super()
 
@@ -87,14 +102,12 @@ export class Cube extends PIXI.Graphics {
     }
 
     renderCube() {
-        const { faces = [] } = this.$options
+        const { facesShape } = this
 
-        for (let f of ['back', 'bottom', 'right', 'left', 'top', 'front'].filter(f => faces.includes(f))) {
-            if (f in this.$faces) {
-                this.beginFill(this.$colors[f], this.$opacity[f])
-                this.drawPolygon(this.$faces[f].map(p => p.toVector2()))
-                this.endFill()
-            }
+        for (let f in facesShape) {
+            this.beginFill(this.$colors[f], this.$opacity[f])
+            this.drawPolygon(facesShape[f])
+            this.endFill()
         }
     }
 }
