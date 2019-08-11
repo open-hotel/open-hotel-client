@@ -1,22 +1,22 @@
 import * as PIXI from 'pixi.js'
-import { Isometric } from './Isometric';
+import { Isometric } from './Isometric'
 
-export interface IsoPointObject { x:number, y:number, z:number }
+export interface IsoPointObject {
+    x: number
+    y: number
+    z: number
+}
 export type IsoPointLike = IsoPoint | IsoPointObject | [number, number, number]
 
 export class IsoPoint {
-    constructor (
-        public x:number = 0,
-        public y:number = 0,
-        public z:number = 0
-    ) {}
+    constructor(public x: number = 0, public y: number = 0, public z: number = 0) {}
 
-    static from(point:IsoPointLike|PIXI.Point, copy = true, isoZ = 0):IsoPoint {
+    static from(point: IsoPointLike | PIXI.Point, copy = true): IsoPoint {
         if (point instanceof IsoPoint) return copy ? point.copy() : point
         if (Array.isArray(point)) return new IsoPoint(point[0], point[1], point[2])
     }
 
-    add (x = 0, y = x, z = y) {
+    add(x = 0, y = x, z = y) {
         this.x += x
         this.y += y
         this.z += z
@@ -24,7 +24,7 @@ export class IsoPoint {
         return this
     }
 
-    scale (x = 1, y = x, z = y) {
+    scale(x = 1, y = x, z = y) {
         this.x *= x
         this.y *= y
         this.z *= z
@@ -32,7 +32,7 @@ export class IsoPoint {
         return this
     }
 
-    set (x = 1, y = x, z = y) {
+    set(x = 1, y = x, z = y) {
         this.x = x
         this.y = y
         this.z = z
@@ -40,17 +40,17 @@ export class IsoPoint {
         return this
     }
 
-    copy (): IsoPoint {
+    copy(): IsoPoint {
         return new IsoPoint(this.x, this.y, this.z)
     }
 
-    applyIn (obj:IsoPointObject) {
+    applyIn(obj: IsoPointObject) {
         obj.x = this.x
         obj.y = this.y
         obj.z = this.z
     }
 
-    toPoint (): PIXI.Point {
+    toPoint(): PIXI.Point {
         const p = Isometric.cartToIso(this.x, this.y, this.z)
         return new PIXI.Point(p.x, p.y)
     }
