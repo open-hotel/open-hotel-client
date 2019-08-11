@@ -1,25 +1,23 @@
-import { Application } from "../../engine/Application";
-import { Polygon, SCALE_MODES, Graphics, RenderTexture } from "pixi.js";
-import { Vector3 } from "../../engine/lib/isometric/Vector3";
-import { Cube } from "../../engine/lib/geometry/Cube";
-import { GameObject } from "../../engine/lib/GameObject";
-import { Debug } from "../../engine/lib/utils/Debug";
+import { Application } from '../../engine/Application'
+import { Polygon, SCALE_MODES } from 'pixi.js'
+import { Vector3 } from '../../engine/lib/isometric/Vector3'
+import { Cube } from '../../engine/lib/geometry/Cube'
+import { GameObject } from '../../engine/lib/GameObject'
 
 export class FloorBlock extends GameObject {
-    private $app: Application;
-    private static $cache:{
-        default?: PIXI.Texture,
-        hover?: PIXI.Texture,
-        shape?: PIXI.Graphics,
+    private $app: Application
+    private static $cache: {
+        default?: PIXI.Texture
+        hover?: PIXI.Texture
+        shape?: PIXI.Graphics
     } = {}
 
-    constructor (position: Vector3 = new Vector3()) {
+    constructor(position: Vector3 = new Vector3()) {
         super()
 
         position.copyTo(this.isoPosition)
 
         this.$app = Application.get()
-
 
         this.texture = this.generateTexture()
         this.interactive = true
@@ -27,9 +25,9 @@ export class FloorBlock extends GameObject {
 
         this.hitArea = new Polygon([
             new PIXI.Point(this.width / 2, 0),
-            new PIXI.Point(this.width, (this.height / 2) - 4),
-            new PIXI.Point(this.width / 2 , this.height - 8),
-            new PIXI.Point(0 , (this.height / 2) - 4),
+            new PIXI.Point(this.width, this.height / 2 - 4),
+            new PIXI.Point(this.width / 2, this.height - 8),
+            new PIXI.Point(0, this.height / 2 - 4),
         ])
 
         this.addListener('pointerover', () => {
@@ -39,13 +37,13 @@ export class FloorBlock extends GameObject {
         })
     }
 
-    private generateTexture (): PIXI.Texture {
+    private generateTexture(): PIXI.Texture {
         if (FloorBlock.$cache.default) return FloorBlock.$cache.default
 
         const floor = new Cube({
             depth: 32,
             height: 8,
-            width: 32
+            width: 32,
         })
 
         const borderStroke = new PIXI.Polygon([
@@ -56,19 +54,19 @@ export class FloorBlock extends GameObject {
 
         borderStroke.closeStroke = false
 
-        floor.lineStyle(2, 0x000000, .05)
+        floor.lineStyle(2, 0x000000, 0.05)
         floor.drawShape(borderStroke)
 
         FloorBlock.$cache.shape = floor
-        return FloorBlock.$cache.default = this.$app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, 1)
+        return (FloorBlock.$cache.default = this.$app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, 1))
     }
 
-    private generateHoverTexture () {
+    private generateHoverTexture() {
         if (FloorBlock.$cache.hover) return FloorBlock.$cache.hover
 
         const select = FloorBlock.$cache.shape.clone()
 
-        select.lineStyle(3, 0xFFFFFF, .75, 0)
+        select.lineStyle(3, 0xffffff, 0.75, 0)
         select.drawPolygon([
             new Vector3(2, 2, 0).toVector2(),
             new Vector3(32, 2, 0).toVector2(),
@@ -76,6 +74,6 @@ export class FloorBlock extends GameObject {
             new Vector3(2, 32, 0).toVector2(),
         ])
 
-        return FloorBlock.$cache.hover = this.$app.renderer.generateTexture(select, SCALE_MODES.NEAREST, 1)
+        return (FloorBlock.$cache.hover = this.$app.renderer.generateTexture(select, SCALE_MODES.NEAREST, 1))
     }
 }

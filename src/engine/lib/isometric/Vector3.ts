@@ -1,35 +1,27 @@
 import * as PIXI from 'pixi.js'
-import { IsometricUtils } from './IsometricUtils';
-import { IVector3 } from './IVector3';
+import { IsometricUtils } from './IsometricUtils'
+import { Vector3Interface } from './IVector3'
 
-export interface IsoPointObject { x:number, y:number, z:number }
+export interface IsoPointObject {
+    x: number
+    y: number
+    z: number
+}
 export type IsoPointLike = Vector3 | IsoPointObject | [number, number, number]
 
-export class Vector3 implements IVector3 {
-    constructor (
-        public x:number = 0,
-        public y:number = 0,
-        public z:number = 0
-    ) {}
+export class Vector3 implements Vector3Interface {
+    constructor(public x: number = 0, public y: number = 0, public z: number = 0) {}
 
-    static from(point:IsoPointLike|PIXI.Point, copy = true, isoZ = 0):Vector3 {
+    static from(point: IsoPointLike | PIXI.Point, copy = true): Vector3 {
         if (point instanceof Vector3) return copy ? point.clone() : point
         if (Array.isArray(point)) return new Vector3(point[0], point[1], point[2])
     }
 
-    add(point: IVector3): Vector3 {
-        return new Vector3(
-            this.x + point.x,
-            this.y + point.y,
-            this.z + point.z,
-        )
+    add(point: Vector3Interface): Vector3 {
+        return new Vector3(this.x + point.x, this.y + point.y, this.z + point.z)
     }
-    scale(point: IVector3): Vector3 {
-        return new Vector3(
-            this.x * point.x,
-            this.y * point.y,
-            this.z * point.z,
-        )
+    scale(point: Vector3Interface): Vector3 {
+        return new Vector3(this.x * point.x, this.y * point.y, this.z * point.z)
     }
 
     set(x: number, y: number, z: number): Vector3 {
@@ -39,12 +31,12 @@ export class Vector3 implements IVector3 {
 
         return this
     }
-    
+
     clone(): Vector3 {
         return new Vector3(this.x, this.y, this.z)
     }
 
-    copyTo(point: IVector3): Vector3 {
+    copyTo(point: Vector3Interface): Vector3 {
         return point.set(this.x, this.y, this.z)
     }
 
@@ -52,7 +44,7 @@ export class Vector3 implements IVector3 {
         return IsometricUtils.cartToIso(this.x, this.y, this.z)
     }
 
-    equal (point: IVector3): boolean {
+    equal(point: Vector3Interface): boolean {
         return this.x === point.x && this.y === point.y && this.z === point.z
     }
 }

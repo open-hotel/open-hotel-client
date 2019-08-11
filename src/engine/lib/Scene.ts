@@ -1,18 +1,20 @@
-import { Application } from "../Application";
-import { Logger } from "./Logger";
+import { Application } from '../Application'
+import { Logger } from './Logger'
 
-export interface SceneOptions {}
+export interface SceneOptions {
+    [key: string]: any
+}
 
 export abstract class Scene extends PIXI.Container {
-    protected $app:Application
+    protected $app: Application
     protected $options: SceneOptions
     protected $logger: Logger
 
-    constructor (options: SceneOptions = {}) {
+    constructor() {
         super()
     }
 
-    async $initScene(app:Application, data: any) {
+    async $initScene(app: Application, data: any) {
         this.$app = app
 
         this.$logger = this.$app.$logger.create(`scene:${this.constructor.name}`)
@@ -30,6 +32,9 @@ export abstract class Scene extends PIXI.Container {
         return this
     }
 
-    setup (data: any) {}
-    ready (data:any) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setup(data: any) {}
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ready(data: any) {}
 }

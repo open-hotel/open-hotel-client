@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { Isometric } from './Isometric'
+import { IsometricUtils } from './isometric/IsometricUtils'
 
 export interface IsoPointObject {
     x: number
@@ -51,7 +51,7 @@ export class IsoPoint {
     }
 
     toPoint(): PIXI.Point {
-        const p = Isometric.cartToIso(this.x, this.y, this.z)
+        const p = IsometricUtils.cartToIso(this.x, this.y, this.z)
         return new PIXI.Point(p.x, p.y)
     }
 }

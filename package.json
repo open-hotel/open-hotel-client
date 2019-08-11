@@ -27,8 +27,6 @@
   "dependencies": {
     "@randallmorey/isometryjs": "^1.1.0",
     "@tweenjs/tween.js": "^17.4.0",
-    "easystarjs": "^0.4.3",
-    "pathfinding": "^0.4.18",
     "pixi-viewport": "^4.0.0-beta.2",
     "pixi.js": "^5.0.4",
     "webfontloader": "^1.6.28"

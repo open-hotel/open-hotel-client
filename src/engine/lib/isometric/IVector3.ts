@@ -1,15 +1,15 @@
 import * as PIXI from 'pixi.js'
 
-export interface IVector3 {
-    x: number;
-    y: number;
-    z: number;
+export interface Vector3Interface {
+    x: number
+    y: number
+    z: number
 
-    add (point: IVector3): IVector3;
-    scale (point: IVector3): IVector3;
-    set (x: number, y: number, z: number): IVector3;
-    clone ():IVector3
-    copyTo(point: IVector3): IVector3
-    toVector2 (): PIXI.IPoint
-    equal (point: IVector3): boolean
+    add(point: Vector3Interface): Vector3Interface
+    scale(point: Vector3Interface): Vector3Interface
+    set(x: number, y: number, z: number): Vector3Interface
+    clone(): Vector3Interface
+    copyTo(point: Vector3Interface): Vector3Interface
+    toVector2(): PIXI.IPoint
+    equal(point: Vector3Interface): boolean
 }
