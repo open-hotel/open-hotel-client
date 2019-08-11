@@ -18,7 +18,7 @@ export class Navigation {
     protected stack: NavigationHistoryItem[] = [];
     protected routes: NavigationRoutes = {}
     protected $logger: Logger
-    
+
     constructor (
         protected $app: Application,
         protected target: PIXI.Container = $app.stage
@@ -43,7 +43,7 @@ export class Navigation {
         }
 
         if (initialRoute) this.push(initialRoute)
-        
+
         return this
     }
 
@@ -62,11 +62,11 @@ export class Navigation {
         return this
     }
 
-    private mount (scene: Scene, key?:string, destroyPrevious:boolean = true, cb?:Function) {        
+    private mount (scene: Scene, key?:string, destroyPrevious:boolean = true, cb?:Function) {
         this.$logger.debug('Renderizando cena...', scene)
-        
+
         scene.x = scene.y = 0
-        
+
         if (this.currentRoute) {
             const alphaTo = new PIXI.filters.AlphaFilter();
             const alphaFrom = new PIXI.filters.AlphaFilter();
@@ -95,17 +95,17 @@ export class Navigation {
         }
 
         this.target.addChild(scene)
-        
+
         return scene
     }
 
     private mountKey (key:string, data:any, destroyPrevious?:boolean, cb?:Function) {
         if (!(key in this.routes)) throw new Error(`Route "${key}" not defined!`)
-        
+
         const scene = new this.routes[key]
 
         this.$logger.debug('Configurando cena...')
-        
+
         scene.$initScene(this.$app, data)
 
         return this.mount(scene, key, destroyPrevious, cb)
@@ -137,7 +137,7 @@ export class Navigation {
 
     replace(key:string, data?:any) {
         this.$logger.debug('A cena atual foi substituída por', key)
-        
+
         const scene = this.stack.pop()
 
         return this.push(key, data, () => {
@@ -149,12 +149,12 @@ export class Navigation {
         this.$logger.debug('Voltando para a tela anterior...')
 
         const index = this.stack.lastIndexOf(this.currentRoute)
-        
+
         if (index <= 0) return this
 
         const route = this.stack[index - 1]
         this.mount(route.scene, route.key, false)
-        
+
         return this
     }
 
@@ -164,10 +164,10 @@ export class Navigation {
         index = this.stack.lastIndexOf(this.currentRoute) - index
 
         if (index <= 0) return this
-        
+
         const route = this.stack[index - 1]
         this.mount(route.scene, route.key, false)
-        
+
         return this
     }
 }

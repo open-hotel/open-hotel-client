@@ -94,7 +94,7 @@ export class Debug {
         this.clear(sprite)
         this.rect(sprite, options.dimensions)
         this.anchor(sprite)
-        
+
         if(sprite.hitArea) this.hitArea(sprite, options.hitArea)
     }
 }

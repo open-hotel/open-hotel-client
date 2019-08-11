@@ -98,7 +98,7 @@ export class Logger {
         const levelName = this._logLevelsNames[level]
         const tagStyle = getTagStyle(this._tagStyle, 'tag')
         const levelStyle = getTagStyle(this._tagStyle, level)
-        
+
         console.log(`%c${context}%c${levelName}`, tagStyle, levelStyle, ...messages)
     }
 

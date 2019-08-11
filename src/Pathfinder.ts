@@ -135,12 +135,12 @@ export class PathFinder {
 
 		let currentNode:PNode;
 		let opened:PNode[] = [startNode]
-		
+
 		const closed:PNode[] = []
 
 		while (currentNode = opened.shift()) {
 			const neighbors = processNeighbors(nodes, currentNode, goalNode, this.heuristic, canWalk).sort((a, b) => a.f - b.f)
-			
+
 			currentNode.closed = true
 			closed.push(currentNode)
 

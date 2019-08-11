@@ -72,9 +72,9 @@ export class Matrix<T = any> {
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         maped.$matrix[y][x] = cb(this.$matrix[y][x], +x, +y)
-      } 
+      }
     }
-    
+
     return maped
   }
 
@@ -90,7 +90,7 @@ export class Matrix<T = any> {
 
       for (let x = 0; x < colCount; x++) {
         if (!cb(this.$matrix[y][x], +x, +y)) return false
-      } 
+      }
     }
 
     return true
@@ -102,7 +102,7 @@ export class Matrix<T = any> {
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         cb(this.$matrix[y][x], +x, +y, this)
-      } 
+      }
     }
   }
 

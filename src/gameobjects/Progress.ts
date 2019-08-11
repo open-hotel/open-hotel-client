@@ -19,14 +19,14 @@ export class Progress extends PIXI.Container {
             height: 32,
             value: .25
         }, options)
-        
+
         this.createBg()
     }
 
     get value () {
         return Math.min(Math.max(this.$options.value, 0), 1)
     }
-    
+
     set value (v) {
         this.$options.value = Math.min(Math.max(v, 0), 1)
         this.update()
@@ -38,7 +38,7 @@ export class Progress extends PIXI.Container {
 
     private createBg (){
         const OUTLINE = 2
-        
+
         const text = this.$text = new PIXI.Text(this.progress, new PIXI.TextStyle({
             fontSize: 18,
             fill: '#FFFFFF',
@@ -46,7 +46,7 @@ export class Progress extends PIXI.Container {
         }))
 
         const bg = new PIXI.Graphics()
-        
+
         bg.lineStyle(OUTLINE, 0xFFFFFF, .82)
         bg.drawRoundedRect(0, 0, this.$options.width - 2, this.$options.height - 2, 3)
 

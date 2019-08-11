@@ -1,6 +1,4 @@
 import { Application } from "../Application";
-import { Navigation } from "./navigation/Navigation";
-import { LoaderUtils } from "./utils/Loader";
 import { Logger } from "./Logger";
 
 export interface SceneOptions {}

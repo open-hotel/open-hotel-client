@@ -47,7 +47,7 @@ export class FloorBlock extends GameObject {
             height: 8,
             width: 32
         })
-        
+
         const borderStroke = new PIXI.Polygon([
             new Vector3(1, 31, 0).toVector2(),
             new Vector3(1, 1, 0).toVector2(),
@@ -66,7 +66,7 @@ export class FloorBlock extends GameObject {
     private generateHoverTexture () {
         if (FloorBlock.$cache.hover) return FloorBlock.$cache.hover
 
-        const select = FloorBlock.$cache.shape.clone()        
+        const select = FloorBlock.$cache.shape.clone()
 
         select.lineStyle(3, 0xFFFFFF, .75, 0)
         select.drawPolygon([

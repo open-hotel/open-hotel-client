@@ -21,7 +21,7 @@ export class SplashScreen extends Scene {
   private $container: PIXI.Container
   private onResize: EventListener;
 
-  setup() {    
+  setup() {
     this.$app.loader
       .add("splash/stack", `resources/splash/splash_stack.png`)
       .add("splash/frame", `resources/splash/splash_frame.png`)
@@ -63,7 +63,7 @@ export class SplashScreen extends Scene {
     const { resources } = this.$app.loader
 
     this.$app.renderer.backgroundColor = 0x0e151c;
-    
+
     const progress = this.$progress = new Progress({
       width: 300,
       value: 0
@@ -89,7 +89,7 @@ export class SplashScreen extends Scene {
     container.addChild(stack, image, frame, message, progress);
 
     image.position.set(95, 51)
-    
+
     message.style.wordWrapWidth = container.width
     message.position.set(container.width / 2, container.height)
     message.pivot.set(message.width / 2, -40)

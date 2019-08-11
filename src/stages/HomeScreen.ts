@@ -64,7 +64,7 @@ export class HomeScreen extends Scene {
 
     const human = new Human()
     human.floor = floor
-    
+
     this.$camera.addChild(floor);
 
     floor.addChild(human)
@@ -72,7 +72,7 @@ export class HomeScreen extends Scene {
     human.attrs2.direction = 2
 
     floor.getPositionOf(0, 0).copyTo(human.position)
-    
+
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
     let lastPosition:any = null
@@ -81,7 +81,7 @@ export class HomeScreen extends Scene {
 
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
-          
+
           human.zIndex = target.zIndex + 1
           human.mapPosition.set(p.x, p.y, 0)
           human.walk()
@@ -92,9 +92,9 @@ export class HomeScreen extends Scene {
             else if (p.y < lastPosition.y) human.attrs2.direction = 6
             else if (p.y > lastPosition.y) human.attrs2.direction = 2
           }
-          
+
           await human.moveTo(target.isoPosition)
-          
+
           human.stop()
           lastPosition = p
         })

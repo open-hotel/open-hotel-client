@@ -45,10 +45,10 @@ export class Application extends PIXI.Application {
         this.$logger.level   = options.logLevel
 
         this.$router = new Navigation(this)
-        
+
         document.body.appendChild(this.view)
         window.addEventListener("resize", this.onResize.bind(this));
-        
+
         this.onResize();
 
         this.renderer.autoDensity = true

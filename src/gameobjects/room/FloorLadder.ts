@@ -35,9 +35,9 @@ export class FloorLadder extends GameObject {
     isoPosition.copyTo(this.isoPosition)
 
     this.$app = Application.get();
-    
+
     const { texture, hitArea } = FloorLadder.generateTexture(this.$direction);
-    
+
     this.texture = texture
     this.hitArea = hitArea
 
@@ -123,7 +123,7 @@ export class FloorLadder extends GameObject {
         new Vector3(31, 32, 16).toVector2(),
       ])
     }
-    
+
     else if (direction === 3) {
       g.addChild(
         ...createSteps((i:number) => {
@@ -147,7 +147,7 @@ export class FloorLadder extends GameObject {
         new Vector3(31, 32, -16).toVector2(),
       ])
     }
-    
+
     else if (direction === 4) {
       g.addChild(
         ...createSteps((i:number) => ({
@@ -191,7 +191,7 @@ export class FloorLadder extends GameObject {
       ])
     }
 
-    else if (direction === 6) {      
+    else if (direction === 6) {
       g.addChild(
         ...createSteps((i:number) => ({
           depth: 32,

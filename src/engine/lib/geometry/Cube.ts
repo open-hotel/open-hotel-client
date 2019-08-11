@@ -94,8 +94,8 @@ export class Cube extends PIXI.Graphics {
             this.$faces.top[1],
             this.$faces.bottom[1],
             this.$faces.bottom[0],
-        ]        
-        
+        ]
+
         this.$faces.front = [
             this.$faces.top[1],
             this.$faces.top[2],

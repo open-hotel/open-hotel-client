@@ -31,9 +31,9 @@ const createHasLadder = (map: Matrix<number>) => (test: Matrix<string>) => {
 
     if (blockTest === "*") return true
     if (blockTest === "?") return !mapCol
-    
+
     blockTest = blockTest.split('|')
-    
+
     return blockTest.some(t => {
       if (t === '?') return !mapCol
       const elevation = current + parseInt(t.replace(/[^\d\-]/g, ''))
@@ -124,7 +124,7 @@ export class Floor extends GameObject {
         ])
 
         const ladder = getLadder(blockArea)
-        
+
         const position = new Vector3(
           rowIndex * WIDTH,
           colIndex * HEIGHT,
@@ -140,7 +140,7 @@ export class Floor extends GameObject {
         block.mapPosition.set(colIndex, rowIndex, col)
 
         this.addChild(block);
-        
+
         this.$mapBlocks.set(colIndex, rowIndex, block)
       })
     })
