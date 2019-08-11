@@ -1,30 +1,30 @@
-type MatrixMapAxisFunction <T, R = any, M=T> = (value: T, i: number, matrix: Matrix<M>) => R
-type MatrixMapFunction<V,M=any,R = any> = (value: V, x: number, y: number, matrix: Matrix<M>) => R
-type MatrixReduceFunction<A,T=any> = (acc: A, el: T, x: number, y: number, matrix: Matrix<T>) => A
+type MatrixMapAxisFunction<T, R = any, M = T> = (value: T, i: number, matrix: Matrix<M>) => R
+type MatrixMapFunction<V, M = any, R = any> = (value: V, x: number, y: number, matrix: Matrix<M>) => R
+type MatrixReduceFunction<A, T = any> = (acc: A, el: T, x: number, y: number, matrix: Matrix<T>) => A
 
 export class Matrix<T = any> {
     public $matrix: T[][]
 
-    constructor (rowsCount?: number, colsCount?: number) {
+    constructor(rowsCount?: number, colsCount?: number) {
         this.$matrix = new Array(rowsCount).fill(null).map(() => new Array(colsCount).fill(null))
     }
 
-    get (x: number, y: number, defaultValue: any = null): T {
+    get(x: number, y: number, defaultValue: any = null): T {
         if (!Array.isArray(this.$matrix[y]) || this.$matrix[y][x] === undefined) return defaultValue
         return this.$matrix[y][x]
     }
 
-    set (x: number, y: number, value: T): Matrix<T> {
+    set(x: number, y: number, value: T): Matrix<T> {
         this.$matrix[y] = this.$matrix[y] || []
         this.$matrix[y][x] = value
         return this
     }
 
-    get rows () {
+    get rows() {
         return this.$matrix.length
     }
 
-    get cols () {
+    get cols() {
         return this.$matrix[0].length
     }
 
@@ -37,13 +37,13 @@ export class Matrix<T = any> {
         return Matrix.from([this.$matrix.map(row => row[x])])
     }
 
-    clear () {
+    clear() {
         for (let i in this.$matrix) {
             this.$matrix[i] = new Array(this.cols).fill(null)
         }
     }
 
-    mapRows<R>(cb: MatrixMapAxisFunction<Matrix<T>, R,T>): Matrix<R> {
+    mapRows<R>(cb: MatrixMapAxisFunction<Matrix<T>, R, T>): Matrix<R> {
         const maped = new Matrix<R>(this.$matrix.length, 1)
         const qtRows = this.$matrix.length
 
@@ -54,7 +54,7 @@ export class Matrix<T = any> {
         return maped
     }
 
-    mapCols<C>(cb: MatrixMapAxisFunction<Matrix<T>,C,T>): Matrix<C> {
+    mapCols<C>(cb: MatrixMapAxisFunction<Matrix<T>, C, T>): Matrix<C> {
         const qtCols = this.$matrix[0].length
         const maped = new Matrix<C>(1, qtCols)
 
@@ -72,17 +72,17 @@ export class Matrix<T = any> {
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 maped.$matrix[y][x] = cb(this.$matrix[y][x], +x, +y)
-            } 
+            }
         }
-    
+
         return maped
     }
 
-    clone () {
-        return this.map((col) => col)
+    clone() {
+        return this.map(col => col)
     }
 
-    every (cb: (value: T, x: number, y: number) => boolean): boolean {
+    every(cb: (value: T, x: number, y: number) => boolean): boolean {
         const rowCount = this.$matrix.length
 
         for (let y = 0; y < rowCount; y++) {
@@ -90,30 +90,30 @@ export class Matrix<T = any> {
 
             for (let x = 0; x < colCount; x++) {
                 if (!cb(this.$matrix[y][x], +x, +y)) return false
-            } 
+            }
         }
 
         return true
     }
 
-    forEach (cb: MatrixMapFunction<T,T,any>): void {
-        let { rows, cols } = this;
+    forEach(cb: MatrixMapFunction<T, T, any>): void {
+        let { rows, cols } = this
 
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 cb(this.$matrix[y][x], +x, +y, this)
-            } 
+            }
         }
     }
 
-    forEachRow (cb: MatrixMapAxisFunction<Matrix<T>,void,any>): void {
+    forEachRow(cb: MatrixMapAxisFunction<Matrix<T>, void, any>): void {
         const countRows = this.$matrix.length
         for (let y = 0; y < countRows; y++) {
             cb(this.getRow(+y), +y, this)
         }
     }
 
-    reduce<U>(cb: MatrixReduceFunction<U,T>, initialValue?: U) {
+    reduce<U>(cb: MatrixReduceFunction<U, T>, initialValue?: U) {
         const countRows = this.$matrix.length
 
         for (let y = 0; y < countRows; y++) {
@@ -127,7 +127,7 @@ export class Matrix<T = any> {
         return initialValue
     }
 
-    static from<T = any>(arr: Matrix<T>|T[][]): Matrix<T> {
+    static from<T = any>(arr: Matrix<T> | T[][]): Matrix<T> {
         if (arr instanceof Matrix) return arr.clone()
         const m = new Matrix()
         m.$matrix = Array.from(arr)

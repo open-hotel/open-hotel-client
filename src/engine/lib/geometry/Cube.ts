@@ -1,25 +1,25 @@
-import { IsoPoint } from "../IsoPoint";
+import { IsoPoint } from '../IsoPoint'
 
 export type CubeFaceName = 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back' | string
 
 export interface CubeOptions {
-    width?: number;
-    height?: number;
-    depth?: number;
-    position?: IsoPoint;
-    faces?: CubeFaceName[];
-    colors?: { [key in CubeFaceName]: number };
+    width?: number
+    height?: number
+    depth?: number
+    position?: IsoPoint
+    faces?: CubeFaceName[]
+    colors?: { [key in CubeFaceName]: number }
 }
 
 export type CubeFaces = {
-    [k in CubeFaceName]?: [IsoPoint, IsoPoint, IsoPoint, IsoPoint];
-};
+    [k in CubeFaceName]?: [IsoPoint, IsoPoint, IsoPoint, IsoPoint]
+}
 
 export class Cube extends PIXI.Graphics {
-    public $options: CubeOptions;
+    public $options: CubeOptions
     public $faces: CubeFaces
     public $textures: CubeFaces
-    public $colors: {[k in CubeFaceName]: number} = {
+    public $colors: { [k in CubeFaceName]: number } = {
         top: 0x989865,
         bottom: 0x989865,
         left: 0x838357,
@@ -27,7 +27,7 @@ export class Cube extends PIXI.Graphics {
         front: 0x6f6f49,
         back: 0x6f6f49,
     }
-    public $opacity: {[k in CubeFaceName]: number} = {
+    public $opacity: { [k in CubeFaceName]: number } = {
         top: 1,
         bottom: 1,
         left: 1,
@@ -36,7 +36,7 @@ export class Cube extends PIXI.Graphics {
         back: 1,
     }
 
-    constructor (options?: CubeOptions) {
+    constructor(options?: CubeOptions) {
         super()
 
         this.$options = {
@@ -53,7 +53,7 @@ export class Cube extends PIXI.Graphics {
                 front: 0x6f6f49,
                 back: 0x6f6f49,
             },
-            ...(options || {})
+            ...(options || {}),
         }
 
         const { position, width, height, depth, colors } = this.$options
@@ -75,38 +75,18 @@ export class Cube extends PIXI.Graphics {
             ],
         }
 
-        this.$faces.back = [
-            this.$faces.top[0],
-            this.$faces.top[3],
-            this.$faces.bottom[3],
-            this.$faces.bottom[0],
-        ]
+        this.$faces.back = [this.$faces.top[0], this.$faces.top[3], this.$faces.bottom[3], this.$faces.bottom[0]]
 
-        this.$faces.left = [
-            this.$faces.top[2],
-            this.$faces.top[3],
-            this.$faces.bottom[3],
-            this.$faces.bottom[2],
-        ]
+        this.$faces.left = [this.$faces.top[2], this.$faces.top[3], this.$faces.bottom[3], this.$faces.bottom[2]]
 
-        this.$faces.right = [
-            this.$faces.top[0],
-            this.$faces.top[1],
-            this.$faces.bottom[1],
-            this.$faces.bottom[0],
-        ]        
-        
-        this.$faces.front = [
-            this.$faces.top[1],
-            this.$faces.top[2],
-            this.$faces.bottom[2],
-            this.$faces.bottom[1],
-        ]
+        this.$faces.right = [this.$faces.top[0], this.$faces.top[1], this.$faces.bottom[1], this.$faces.bottom[0]]
+
+        this.$faces.front = [this.$faces.top[1], this.$faces.top[2], this.$faces.bottom[2], this.$faces.bottom[1]]
 
         this.renderCube()
     }
 
-    renderCube () {
+    renderCube() {
         const { faces = [] } = this.$options
 
         for (let f of ['back', 'bottom', 'right', 'left', 'top', 'front'].filter(f => faces.includes(f))) {

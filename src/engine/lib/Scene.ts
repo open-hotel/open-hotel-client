@@ -1,11 +1,11 @@
-import { Application } from "../Application";
-import { Logger } from "./Logger";
+import { Application } from '../Application'
+import { Logger } from './Logger'
 
 export abstract class Scene extends PIXI.Container {
     protected $app: Application
     protected $logger: Logger
 
-    constructor () {
+    constructor() {
         super()
     }
 

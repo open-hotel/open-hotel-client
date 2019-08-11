@@ -1,19 +1,19 @@
-import { Application } from "./engine/Application";
-import { SplashScreen } from './stages/SplashScreen';
-import { Log } from "./engine/lib/Logger";
-import { HomeScreen } from "./stages/HomeScreen";
-import * as WebFont from "webfontloader";
+import { Application } from './engine/Application'
+import { SplashScreen } from './stages/SplashScreen'
+import { Log } from './engine/lib/Logger'
+import { HomeScreen } from './stages/HomeScreen'
+import * as WebFont from 'webfontloader'
 
 const app = Application.get({
     logLevel: Log.INFO,
     antialias: false,
     autoDensity: true,
-    resolution: devicePixelRatio
+    resolution: devicePixelRatio,
 })
 
 app.$router.setRoutes({
     splash: SplashScreen,
-    home  : HomeScreen
+    home: HomeScreen,
 })
 
 WebFont.load({
@@ -22,9 +22,9 @@ WebFont.load({
     },
     custom: {
         families: ['Volter'],
-        urls: ['resources/fonts/Volter/Volter.css']
+        urls: ['resources/fonts/Volter/Volter.css'],
     },
     active() {
         app.$router.replace('splash')
-    }
-});
+    },
+})

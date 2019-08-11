@@ -1,3 +1,1 @@
-export class NavigationView extends PIXI.Container {
-
-}
+export class NavigationView extends PIXI.Container {}

@@ -1,17 +1,17 @@
 interface Vector2 {
-    x: number;
-    y: number;
+    x: number
+    y: number
 }
 
 type PathFinderHeuristic = (a: PNode, b: PNode) => number
 type CanWalkFunction = (cell: PNode, current: PNode) => boolean
 
-function processNeighbors (
+function processNeighbors(
     grid: PNode[][],
     current: PNode,
     goal: PNode,
     heuristic: PathFinderHeuristic,
-    canWalk: CanWalkFunction
+    canWalk: CanWalkFunction,
 ) {
     const neighbors = []
 
@@ -57,22 +57,21 @@ function processNeighbors (
         neighbors.push(bottom)
     }
 
-
     return neighbors
 }
 
 class PNode {
-    constructor (
+    constructor(
         public x: number = 0,
         public y: number = 0,
         public walkable = false,
         public g: number = 0,
         public h: number = 0,
         public parent: PNode = null,
-        public closed: boolean = false
+        public closed: boolean = false,
     ) {}
 
-    get f () {
+    get f() {
         return this.g + this.h
     }
 }
@@ -80,7 +79,7 @@ class PNode {
 class Grid {
     public readonly nodes: PNode[][] = []
 
-    constructor (public readonly grid: number[][] = []) {
+    constructor(public readonly grid: number[][] = []) {
         let rows = grid.length
         let cols = grid[0].length
 
@@ -92,12 +91,12 @@ class Grid {
         }
     }
 
-    clone () {
+    clone() {
         return new Grid(Array.from(this.grid))
     }
 }
 
-function getPath (node: PNode) {
+function getPath(node: PNode) {
     let path = []
 
     while (node.parent) {
@@ -111,19 +110,21 @@ function getPath (node: PNode) {
 const { abs } = Math
 
 export class PathFinder {
-    static Heuristic: { [key: string]: PathFinderHeuristic } = {
+    static Heuristic: {
+        [key: string]: PathFinderHeuristic
+    } = {
         Manhattan: (a: PNode, b: PNode) => abs(a.x - b.x) + abs(a.y - b.y),
     }
 
-    public heuristic: PathFinderHeuristic = PathFinder.Heuristic.Manhattan;
-    public grid: Grid;
+    public heuristic: PathFinderHeuristic = PathFinder.Heuristic.Manhattan
+    public grid: Grid
 
-    constructor (grid: Grid|number[][] = [], public canWalk: CanWalkFunction = () => true) {
+    constructor(grid: Grid | number[][] = [], public canWalk: CanWalkFunction = () => true) {
         if (grid instanceof Grid) this.grid = grid
         else if (Array.isArray(grid)) this.grid = new Grid(grid)
     }
 
-    find (start: Vector2, end: Vector2): any[] {
+    find(start: Vector2, end: Vector2): any[] {
         const { nodes } = this.grid.clone()
         const startNode = nodes[start.y] && nodes[start.y][start.x]
         const goalNode = nodes[end.y] && nodes[end.y][end.x]
@@ -132,14 +133,16 @@ export class PathFinder {
         if (!startNode || !goalNode) return null
         if (startNode === goalNode) return []
 
-        let currentNode: PNode;
+        let currentNode: PNode
         let opened: PNode[] = [startNode]
-		
+
         const closed: PNode[] = []
 
-        while (currentNode = opened.shift()) {
-            const neighbors = processNeighbors(nodes, currentNode, goalNode, this.heuristic, canWalk).sort((a, b) => a.f - b.f)
-			
+        while ((currentNode = opened.shift())) {
+            const neighbors = processNeighbors(nodes, currentNode, goalNode, this.heuristic, canWalk).sort(
+                (a, b) => a.f - b.f,
+            )
+
             currentNode.closed = true
             closed.push(currentNode)
 

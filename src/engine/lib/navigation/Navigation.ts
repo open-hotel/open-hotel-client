@@ -1,28 +1,25 @@
-import { Application } from '../../Application';
-import { Class } from "../../types";
-import { Scene } from '../Scene';
-import { Logger } from '../Logger';
+import { Application } from '../../Application'
+import { Class } from '../../types'
+import { Scene } from '../Scene'
+import { Logger } from '../Logger'
 import * as TWEEN from '@tweenjs/tween.js'
 
 interface NavigationRoutes {
-    [key: string]: Class<Scene>;
+    [key: string]: Class<Scene>
 }
 
 interface NavigationHistoryItem {
-    key: string;
-    scene: Scene;
+    key: string
+    scene: Scene
 }
 
 export class Navigation {
-    protected currentRoute: NavigationHistoryItem;
-    protected stack: NavigationHistoryItem[] = [];
+    protected currentRoute: NavigationHistoryItem
+    protected stack: NavigationHistoryItem[] = []
     protected routes: NavigationRoutes = {}
     protected $logger: Logger
-    
-    constructor (
-        protected $app: Application,
-        protected target: PIXI.Container = $app.stage
-    ) {
+
+    constructor(protected $app: Application, protected target: PIXI.Container = $app.stage) {
         this.$logger = $app.$logger.create('navigation')
         this.$app.ticker.add(() => {
             TWEEN.update(this.$app.ticker.lastTime)
@@ -33,7 +30,7 @@ export class Navigation {
      * Define all routes
      * @param routes Routes
      */
-    setRoutes (routes: NavigationRoutes, initialRoute?: string) {
+    setRoutes(routes: NavigationRoutes, initialRoute?: string) {
         this.$logger.debug(`Iniciando rotas...`)
 
         this.routes = {}
@@ -43,7 +40,7 @@ export class Navigation {
         }
 
         if (initialRoute) this.push(initialRoute)
-        
+
         return this
     }
 
@@ -52,7 +49,7 @@ export class Navigation {
      * @param key Scene unique name
      * @param SceneContructor Scene Container
      */
-    register (key: string, SceneContructorItem: Class<Scene>) {
+    register(key: string, SceneContructorItem: Class<Scene>) {
         this.$logger.debug(`definindo ${SceneContructorItem.name} em /${key}...`)
 
         if (key in this.routes) {
@@ -62,17 +59,17 @@ export class Navigation {
         return this
     }
 
-    private mount (scene: Scene, key?: string, destroyPrevious: boolean = true, cb?: Function) {        
+    private mount(scene: Scene, key?: string, destroyPrevious: boolean = true, cb?: Function) {
         this.$logger.debug('Renderizando cena...', scene)
-        
-        scene.x = scene.y = 0
-        
-        if (this.currentRoute) {
-            const alphaTo = new PIXI.filters.AlphaFilter();
-            const alphaFrom = new PIXI.filters.AlphaFilter();
 
-            alphaTo.alpha = 0;
-            alphaFrom.alpha = 1;
+        scene.x = scene.y = 0
+
+        if (this.currentRoute) {
+            const alphaTo = new PIXI.filters.AlphaFilter()
+            const alphaFrom = new PIXI.filters.AlphaFilter()
+
+            alphaTo.alpha = 0
+            alphaFrom.alpha = 1
 
             scene.filters = [alphaTo]
             this.currentRoute.scene.filters = [alphaFrom]
@@ -80,7 +77,7 @@ export class Navigation {
             new TWEEN.Tween({ from: 1, to: 0 })
                 .to({ from: 0, to: 1 }, 1000)
                 .start()
-                .onUpdate((alpha) => {
+                .onUpdate(alpha => {
                     alphaTo.alpha = alpha.to
                     alphaFrom.alpha = alpha.from
                 })
@@ -95,35 +92,32 @@ export class Navigation {
         }
 
         this.target.addChild(scene)
-        
+
         return scene
     }
 
-    private mountKey (key: string, data: any, destroyPrevious?: boolean, cb?: Function) {
+    private mountKey(key: string, data: any, destroyPrevious?: boolean, cb?: Function) {
         if (!(key in this.routes)) throw new Error(`Route "${key}" not defined!`)
-        
-        const scene = new this.routes[key]
+
+        const scene = new this.routes[key]()
 
         this.$logger.debug('Configurando cena...')
-        
+
         scene.$initScene(this.$app, data)
 
         return this.mount(scene, key, destroyPrevious, cb)
     }
 
-    push (key: string, data?: any, cb?: Function) {
+    push(key: string, data?: any, cb?: Function) {
         this.$logger.info('Navegando para', key)
         this.stack.push({ key, scene: this.mountKey(key, data, false, cb) })
         return this
     }
 
-    pop (test?: Function) {
+    pop(test?: Function) {
         this.$logger.debug('Pop!')
-        if (!test) test = (
-            item: NavigationHistoryItem,
-            index: number,
-            stack: NavigationRoutes[]
-        ) => index === stack.length - 1
+        if (!test)
+            test = (item: NavigationHistoryItem, index: number, stack: NavigationRoutes[]) => index === stack.length - 1
 
         let index = this.stack.length
 
@@ -137,7 +131,7 @@ export class Navigation {
 
     replace(key: string, data?: any) {
         this.$logger.debug('A cena atual foi substituída por', key)
-        
+
         const scene = this.stack.pop()
 
         return this.push(key, data, () => {
@@ -145,16 +139,16 @@ export class Navigation {
         })
     }
 
-    back () {
+    back() {
         this.$logger.debug('Voltando para a tela anterior...')
 
         const index = this.stack.lastIndexOf(this.currentRoute)
-        
+
         if (index <= 0) return this
 
         const route = this.stack[index - 1]
         this.mount(route.scene, route.key, false)
-        
+
         return this
     }
 
@@ -164,10 +158,10 @@ export class Navigation {
         index = this.stack.lastIndexOf(this.currentRoute) - index
 
         if (index <= 0) return this
-        
+
         const route = this.stack[index - 1]
         this.mount(route.scene, route.key, false)
-        
+
         return this
     }
 }
