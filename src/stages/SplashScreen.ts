@@ -1,5 +1,19 @@
 import { Scene } from "../engine/lib/Scene";
 import { Progress } from "../gameobjects/Progress";
+import resources from './preload.json'
+import { threadId } from "worker_threads";
+import { Log } from "../engine/lib/Logger";
+
+function mapObject (obj:any, fn: Function, path:string[] = []) {
+  for (let k in obj) {
+    const currentPath = path.concat(k)
+    if (obj[k].constructor === Object) {
+      mapObject(obj[k], fn, currentPath)
+    } else {
+      fn(obj[k], currentPath)
+    }
+  }
+}
 
 export class SplashScreen extends Scene {
   private $progress: Progress;
@@ -7,14 +21,11 @@ export class SplashScreen extends Scene {
   private $container: PIXI.Container
   private onResize: EventListener;
 
-  setup() {
+  setup() {    
     this.$app.loader
-      .add("splash_stack", "resources/splash/splash_stack.png")
-      .add("splash_frame", "resources/splash/splash_frame.png")
-      .add(
-        "splash_photo",
-        `resources/splash/splash_photo_${Math.floor(Math.random() * 20)}.png`
-      )
+      .add("splash/stack", `resources/splash/splash_stack.png`)
+      .add("splash/frame", `resources/splash/splash_frame.png`)
+      .add("splash/photo", `resources/splash/splash_photo_${Math.floor(Math.random() * 20)}.png`)
       .load(this.downloadAssets.bind(this));
 
     this.$loading = new PIXI.Text(
@@ -30,24 +41,26 @@ export class SplashScreen extends Scene {
   downloadAssets() {
     this.removeChild(this.$loading);
     this.renderSplash();
+    const { loader } = this.$app
+
+    mapObject(resources, (filename:string, path:string[]) => {
+      const id = path.join('/')
+      const url = ['resources', id, filename].join('/')
+      loader.add(id, url)
+    })
+
     this.$app.loader
-      // .add("door", "resources/images/room/door.png")
-      // .add("door_floor", "resources/images/room/door_floor.png")
-      // .add("floor", "resources/images/room/floor.png")
-      .add("floor_selected", "resources/images/room/floor_selected.png")
-      // .add("wall_left", "resources/images/room/wall_left.png")
-      // .add("wall_right", "resources/images/room/wall_right.png")
       .load(() => {
         setTimeout(() => this.$app.$router.replace("home"), 500);
       })
-      .on("progress", (loader: PIXI.Loader) => {
+      .on("progress", (loader: PIXI.Loader, resource) => {
+        this.$logger.log(Log.INFO, `[${loader.progress}%] Downloading ${resource.url}`)
         this.$progress.value = loader.progress;
       });
-    this.$logger.debug("Downloading...");
   }
 
   renderSplash() {
-    const { splash_stack, splash_photo, splash_frame } = this.$app.loader.resources
+    const { resources } = this.$app.loader
 
     this.$app.renderer.backgroundColor = 0x0e151c;
     
@@ -56,9 +69,9 @@ export class SplashScreen extends Scene {
       value: 0
     });
 
-    const stack = PIXI.Sprite.from(splash_stack.texture);
-    const image = PIXI.Sprite.from(splash_photo.texture);
-    const frame = PIXI.Sprite.from(splash_frame.texture);
+    const stack = PIXI.Sprite.from(resources['splash/stack'].texture);
+    const image = PIXI.Sprite.from(resources['splash/photo'].texture);
+    const frame = PIXI.Sprite.from(resources['splash/frame'].texture);
 
     const message = new PIXI.Text(
       "O tempo é apenas uma ilusão...",
@@ -97,7 +110,7 @@ export class SplashScreen extends Scene {
   }
 
   destroy () {
-      window.removeEventListener('resize', this.onResize)
-      super.destroy()
+    window.removeEventListener('resize', this.onResize)
+    super.destroy()
   }
 }

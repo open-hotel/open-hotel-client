@@ -12,7 +12,7 @@ type DebugSpriteOptions = {
 }
 
 export class Debug {
-    static hitArea (sprite: PIXI.Sprite, options:DebugAreaOptions = {}) {
+    static hitArea (sprite: PIXI.Sprite | PIXI.Container, options:DebugAreaOptions = {}) {
         if (!sprite.hitArea) return this
         options = Object.assign({
             borderColor: 0x00FFFF,
@@ -32,9 +32,21 @@ export class Debug {
         sprite.addChild(area)
 
         // @ts-ignore
-        sprite.$__DEBUG_HIT_AREA_ = area
+        sprite.$__DEBUG_HIT_AREA__ = area
 
         return this
+    }
+
+    static anchor (sprite: PIXI.Sprite) {
+        const point = new PIXI.Graphics()
+
+        point.beginFill(0x0000FF)
+        point.drawCircle(sprite.anchor.x - 2, sprite.anchor.y - 2, 2)
+        point.endFill()
+        sprite.addChild(point)
+
+        // @ts-ignore
+        sprite.$__DEBUG_ANCHOR__ = point
     }
 
     static rect (
@@ -42,20 +54,20 @@ export class Debug {
         options?: DebugAreaOptions
     ) {
         options = Object.assign({
-            borderColor: 0x00FF00,
-            borderWidth: 2,
+            borderColor: 0xFF0000,
+            borderWidth: 1,
             borderOpacity: .75,
             background: 0xFF0000,
             backgroundOpacity: 0
         }, options)
 
-        const rect = sprite.getBounds()
+        const { x, y, width, height } = sprite.getLocalBounds()
 
         const area = new PIXI.Graphics()
 
         area.lineStyle(options.borderWidth, options.borderColor, options.borderOpacity)
         area.beginFill(options.background, options.backgroundOpacity)
-        area.drawRect(rect.x, rect.y, rect.width, rect.height)
+        area.drawRect(x, y, width, height)
         area.endFill()
 
         sprite.addChild(area)
@@ -66,13 +78,22 @@ export class Debug {
         return this
     }
 
-    static clear (sprite: PIXI.Container) {
-        // @ts-ignore
-        sprite.removeChild(sprite.$__DEBUG_RECT__,sprite.$__DEBUG_HIT_AREA_)
+    static clear (sprite: PIXI.Container & {
+        $__DEBUG_RECT__?: any,
+        $__DEBUG_HIT_AREA__?: any,
+        $__DEBUG_ANCHOR__?: any,
+    }) {
+        sprite.removeChild(
+            sprite.$__DEBUG_RECT__,
+            sprite.$__DEBUG_HIT_AREA__,
+            sprite.$__DEBUG_ANCHOR__,
+        )
     }
 
     static sprite(sprite: PIXI.Sprite, options: DebugSpriteOptions = {}) {
+        this.clear(sprite)
         this.rect(sprite, options.dimensions)
+        this.anchor(sprite)
         
         if(sprite.hitArea) this.hitArea(sprite, options.hitArea)
     }

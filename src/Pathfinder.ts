@@ -65,6 +65,7 @@ class PNode {
 	constructor (
 		public x: number = 0,
 		public y: number = 0,
+		public z: number = 0,
 		public walkable = false,
 		public g: number = 0,
 		public h: number = 0,
@@ -87,7 +88,7 @@ class Grid {
 		for (let y = 0; y < rows; y++) {
 			this.nodes[y] = []
 			for (let x = 0; x < cols; x++) {
-				this.nodes[y][x] = new PNode(x, y, grid[y][x] !== 0)
+				this.nodes[y][x] = new PNode(x, y, grid[y][x], grid[y][x] !== 0)
 			}
 		}
 	}
@@ -112,7 +113,7 @@ const { abs } = Math
 
 export class PathFinder {
 	static Heuristic:{ [key:string]:PathFinderHeuristic } = {
-		Manhattan: (a:PNode, b:PNode) => abs(a.x - b.x) + abs(a.y - b.y),
+		Manhattan: (a:PNode, b:PNode) => abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z),
 	}
 
 	public heuristic: PathFinderHeuristic = PathFinder.Heuristic.Manhattan;

@@ -3,6 +3,7 @@ import { Navigation } from './lib/navigation/Navigation';
 import { Logger, Log } from './lib/Logger';
 import { NavigationView } from './lib/navigation/NavigationView';
 import * as Tween from '@tweenjs/tween.js'
+import { Viewport } from 'pixi-viewport';
 
 interface ApplicationOptions {
     autoStart?: boolean;
@@ -29,6 +30,7 @@ interface ApplicationOptions {
 export class Application extends PIXI.Application {
     public readonly $logger = new Logger('Application')
     public $router: Navigation;
+    public $camera: Viewport
     static $instance: Application;
 
     constructor (options:ApplicationOptions = {}) {
@@ -57,6 +59,20 @@ export class Application extends PIXI.Application {
     static get (options?: ApplicationOptions) {
         if (!this.$instance) this.$instance = new Application(options)
         return this.$instance;
+    }
+
+    getResource (id:any) {
+        return this.loader.resources[id]
+    }
+
+    getTexture (id:any) {
+        const resource = this.getResource(id)
+        return resource && resource.texture
+    }
+
+    getSpriteSheet (id:any) {
+        const resource = this.getResource(id)
+        return resource && resource.spritesheet
     }
 
     onResize() {

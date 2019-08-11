@@ -1,4 +1,4 @@
-import { IsoPoint } from "../IsoPoint";
+import { Vector3 } from "../isometric/Vector3";
 
 export type CubeFaceName = 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back' | string
 
@@ -6,13 +6,13 @@ export interface CubeOptions {
     width   ?: number,
     height  ?: number,
     depth   ?: number,
-    position?: IsoPoint,
+    position?: Vector3,
     faces   ?: CubeFaceName[],
     colors  ?: { [key in CubeFaceName]: number }
 }
 
 export type CubeFaces = {
-    [k in CubeFaceName]?: [IsoPoint, IsoPoint, IsoPoint, IsoPoint];
+    [k in CubeFaceName]?: [Vector3, Vector3, Vector3, Vector3];
 };
 
 export class Cube extends PIXI.Graphics {
@@ -43,7 +43,7 @@ export class Cube extends PIXI.Graphics {
             width: 50,
             height: 50,
             depth: 50,
-            position: new IsoPoint(),
+            position: new Vector3(),
             faces: ['top', 'left', 'front'],
             colors: {
                 top: 0x989865,
@@ -62,16 +62,16 @@ export class Cube extends PIXI.Graphics {
 
         this.$faces = {
             top: [
-                new IsoPoint(position.x, position.y, position.z),
-                new IsoPoint(position.x + width, position.y, position.z),
-                new IsoPoint(position.x + width, position.y + depth, position.z),
-                new IsoPoint(position.x, position.y + depth, position.z),
+                new Vector3(position.x, position.y, position.z),
+                new Vector3(position.x + width, position.y, position.z),
+                new Vector3(position.x + width, position.y + depth, position.z),
+                new Vector3(position.x, position.y + depth, position.z),
             ],
             bottom: [
-                new IsoPoint(position.x, position.y, position.z - height),
-                new IsoPoint(position.x + width, position.y, position.z - height),
-                new IsoPoint(position.x + width, position.y + depth, position.z - height),
-                new IsoPoint(position.x, position.y + depth, position.z - height),
+                new Vector3(position.x, position.y, position.z - height),
+                new Vector3(position.x + width, position.y, position.z - height),
+                new Vector3(position.x + width, position.y + depth, position.z - height),
+                new Vector3(position.x, position.y + depth, position.z - height),
             ],
         }
 
@@ -112,7 +112,7 @@ export class Cube extends PIXI.Graphics {
         for (let f of ['back', 'bottom', 'right', 'left', 'top', 'front'].filter(f => faces.includes(f))) {
             if (f in this.$faces) {
                 this.beginFill(this.$colors[f], this.$opacity[f])
-                this.drawPolygon(this.$faces[f].map(p => p.toPoint()))
+                this.drawPolygon(this.$faces[f].map(p => p.toVector2()))
                 this.endFill()
             }
         }

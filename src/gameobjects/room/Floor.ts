@@ -1,10 +1,11 @@
 import { FloorBlock } from "./FloorBlock";
 import { FloorLadder } from "./FloorLadder";
-import { IsoPoint } from "../../engine/lib/IsoPoint";
+import { Vector3 } from "../../engine/lib/isometric/Vector3";
 import ladders from "./ladders.json";
 import { Matrix } from "../../engine/lib/utils/Matrix";
 import { GameObject } from "../../engine/lib/GameObject";
 import { Debug } from "../../engine/lib/utils/Debug";
+import { PathFinder } from "../../Pathfinder";
 
 export type Block = {
   x: number;
@@ -57,7 +58,7 @@ function getLadder (blocks:Matrix<number>):number {
 export class Floor extends GameObject {
   public $map: Matrix<FloorMapElevation>;
   public $mapBlocks: Matrix<FloorBlock|FloorLadder> = new Matrix();
-  public $currentPathFinderTask: number
+  public pathFinder: PathFinder
 
   static parseMap(str: string):Matrix<FloorMapElevation> {
     const rows = str.split(/\n/, 1024)
@@ -81,10 +82,23 @@ export class Floor extends GameObject {
         ? Floor.parseMap(options.map)
         : options.map;
 
+    const grid = this.$map.$matrix
+
+    this.pathFinder = new PathFinder(grid, (cell, curr) => {
+      const a = grid[cell.y][cell.x]
+      const b = grid[curr.y][curr.x]
+
+      return a === b || Math.abs(a - b) === 1
+    })
+
     this.build();
 
     this.interactive = true
     this.sortableChildren = true
+
+    const { x, y, width, height } = this.getBounds()
+
+    this.pivot.set((width / 2) + x, (height / 2) + y)
   }
 
   public static getPositionOf (floor: Floor, x:number, y:number): PIXI.IPoint {
@@ -111,7 +125,7 @@ export class Floor extends GameObject {
 
         const ladder = getLadder(blockArea)
         
-        const position = new IsoPoint(
+        const position = new Vector3(
           rowIndex * WIDTH,
           colIndex * HEIGHT,
           col * STEP_HEIGHT
@@ -120,9 +134,10 @@ export class Floor extends GameObject {
           typeof ladder === "number"
             ? new FloorLadder(position, ladder)
             : new FloorBlock(position);
+
         block.zIndex = colIndex + rowIndex + col
 
-        block.set('map_position', { x: colIndex, y: rowIndex })
+        block.mapPosition.set(colIndex, rowIndex, col)
 
         this.addChild(block);
         

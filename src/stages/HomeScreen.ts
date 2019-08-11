@@ -1,13 +1,11 @@
 import { Scene } from "../engine/lib/Scene";
 import { Floor } from "../gameobjects/room/Floor";
 import { Viewport } from "pixi-viewport";
-import { Human } from "../gameobjects/Human";
+import { Human } from "../gameobjects/human/Human";
 import { Matrix } from "../engine/lib/utils/Matrix";
-import EasyStar from 'easystarjs'
 import { GameObject } from "../engine/lib/GameObject";
 import { Walkable } from "../engine/lib/utils/Walk";
-import { Debug } from "../engine/lib/utils/Debug";
-import { PathFinder } from "../Pathfinder";
+import { Observable } from "../engine/lib/Observable";
 
 const MAX_ZOOM = 4;
 const MIN_ZOOM = 1 / 4;
@@ -52,62 +50,80 @@ export class HomeScreen extends Scene {
     const floor = new Floor({
       map: Matrix.from(
         [
-          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,5,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,7,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,8,1,1,1,1,1,1,1,1],
-          [1,2,3,4,5,6,7,8,9,8,7,6,5,4,3,2,1],
-          [1,1,1,1,1,1,1,1,8,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,7,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,6,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,5,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1],
-          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
+          [1,1,1,1,1,1,1],
         ]
       )
     })
 
     const human = new Human()
+    human.floor = floor
     
     this.$camera.addChild(floor);
 
     floor.addChild(human)
     human.set('map_position', { x: 0, y: 0 })
+    human.attrs2.direction = 2
 
     floor.getPositionOf(0, 0).copyTo(human.position)
-
-    const { x, y, width, height } = floor.getBounds()
     
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
-    floor.pivot.set((width / 2) + x, (height / 2) + y)
 
-    const floorPathFinder = new PathFinder(floor.$map.$matrix, (cell, curr) => {
-      const a = floor.$map.$matrix[cell.y][cell.x]
-      const b = floor.$map.$matrix[curr.y][curr.x]
-
-      return a === b || Math.abs(a - b) === 1
-    })
-    const walkableUser = new Walkable(human)
-
-    floor.addListener('pointertap', async (e) => {
+    let lastPosition:any = null
+    floor.addListener('pointertap', async e => {
       if (e.target instanceof GameObject) {
-        const humanPosition = human.get('map_position')
-        const targetPosition = e.target.get('map_position')
-        const path = await floorPathFinder.find(humanPosition, targetPosition)
-        const coords = path.map((p) => floor.getPositionOf(p.x, p.y))
-        
-        walkableUser.followPath(coords, 400, (p, i) => {
-          human.zIndex = floor.$mapBlocks.get(path[i].x, path[i].y).zIndex + 1
-          floor.sortChildren()
-          human.set('map_position', path[i])
+
+        Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
+          const target = floor.$mapBlocks.get(p.x, p.y)
+          
+          human.zIndex = target.zIndex + 1
+          human.mapPosition.set(p.x, p.y, 0)
+          human.walk()
+
+          if (lastPosition) {
+            if (p.x < lastPosition.x) human.attrs2.direction = 0
+            else if (p.x > lastPosition.x) human.attrs2.direction = 4
+            else if (p.y < lastPosition.y) human.attrs2.direction = 6
+            else if (p.y > lastPosition.y) human.attrs2.direction = 2
+          }
+          
+          await human.moveTo(target.isoPosition)
+          
+          human.stop()
+          lastPosition = p
         })
       }
     })
   }
 }
+
+
+interface ObjProps {
+  x: number,
+  y: number,
+  pessoa: {
+    nome: string,
+    idade: number
+  }
+}
+const obj = Observable.create<ObjProps>({
+  x: 0,
+  y: 0,
+  pessoa: {
+    nome: null,
+    idade: null
+  }
+})
+
+
+obj.addListener((_: any, __: any, path: any) => console.log('ALTEROU %s', path))
+obj.watch('x', (n: any, old: any) => console.log('O X Mudou de %s para %s!', old, n))
+
+//@ts-ignore
+window.obj = obj
