@@ -1,17 +1,17 @@
 import * as PIXI from 'pixi.js'
 import { Isometric } from './Isometric';
 
-export interface IsoPointObject { x:number, y:number, z:number }
+export interface IsoPointObject { x: number; y: number; z: number }
 export type IsoPointLike = IsoPoint | IsoPointObject | [number, number, number]
 
 export class IsoPoint {
     constructor (
-        public x:number = 0,
-        public y:number = 0,
-        public z:number = 0
+        public x: number = 0,
+        public y: number = 0,
+        public z: number = 0
     ) {}
 
-    static from(point:IsoPointLike|PIXI.Point, copy = true, isoZ = 0):IsoPoint {
+    static from(point: IsoPointLike|PIXI.Point, copy = true): IsoPoint {
         if (point instanceof IsoPoint) return copy ? point.copy() : point
         if (Array.isArray(point)) return new IsoPoint(point[0], point[1], point[2])
     }
@@ -44,7 +44,7 @@ export class IsoPoint {
         return new IsoPoint(this.x, this.y, this.z)
     }
 
-    applyIn (obj:IsoPointObject) {
+    applyIn (obj: IsoPointObject) {
         obj.x = this.x
         obj.y = this.y
         obj.z = this.z

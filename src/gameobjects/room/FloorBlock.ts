@@ -1,5 +1,5 @@
 import { Application } from "../../engine/Application";
-import { Polygon, SCALE_MODES, Graphics } from "pixi.js";
+import { Polygon, SCALE_MODES } from "pixi.js";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
 import { Cube } from "../../engine/lib/geometry/Cube";
 import { GameObject } from "../../engine/lib/GameObject";
@@ -7,7 +7,7 @@ import { GameObject } from "../../engine/lib/GameObject";
 export class FloorBlock extends GameObject {
     public static $textureCache: PIXI.Texture;
     private $app: Application;
-    private $textures:{ [key:string]: PIXI.Texture } = {
+    private $textures: { [key: string]: PIXI.Texture } = {
         default: null,
         hover  : null
     }

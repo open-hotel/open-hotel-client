@@ -1,18 +1,18 @@
-type DebugAreaOptions = {
-    borderColor?: number,
-    borderWidth?: number,
-    borderOpacity?: number,
-    background?: number,
-    backgroundOpacity?: number
+interface DebugAreaOptions {
+    borderColor?: number;
+    borderWidth?: number;
+    borderOpacity?: number;
+    background?: number;
+    backgroundOpacity?: number;
 }
 
-type DebugSpriteOptions = {
-    hitArea?: DebugAreaOptions,
-    dimensions?: DebugAreaOptions,
+interface DebugSpriteOptions {
+    hitArea?: DebugAreaOptions;
+    dimensions?: DebugAreaOptions;
 }
 
 export class Debug {
-    static hitArea (sprite: PIXI.Sprite, options:DebugAreaOptions = {}) {
+    static hitArea (sprite: PIXI.Sprite, options: DebugAreaOptions = {}) {
         if (!sprite.hitArea) return this
         options = Object.assign({
             borderColor: 0x00FFFF,

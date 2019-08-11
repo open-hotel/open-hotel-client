@@ -50,8 +50,8 @@ export class Logger {
         }
     }
 
-    public _logLevelsNames:{
-        [k: number]: string
+    public _logLevelsNames: {
+        [k: number]: string;
     } = {
         [Log.DEBUG]: 'debug',
         [Log.ERROR]: 'error',
@@ -63,7 +63,7 @@ export class Logger {
     constructor(
         public tag?: string,
         public level: Log = Log.ALL,
-        public context:string[] = null
+        public context: string[] = null
     ) {}
 
     debug(...args: any[]) {
@@ -87,7 +87,7 @@ export class Logger {
         throw new Error(args[0])
     }
 
-    log (level:Log|any, ...args: any[]) {
+    log (level: Log|any, ...args: any[]) {
         return this.writeLog(level, this.tag, ...args)
     }
 
@@ -102,13 +102,13 @@ export class Logger {
         console.log(`%c${context}%c${levelName}`, tagStyle, levelStyle, ...messages)
     }
 
-    create(context:string) {
+    create(context: string) {
         const contextItems = this.level === Log.OFF ? [] : this.context
         return new Logger(context, this.level, contextItems)
     }
 }
 
-function getTagStyle(styles:any, level: Log|number|string) {
+function getTagStyle(styles: any, level: Log|number|string) {
     const style = Object.assign({}, styles.base, styles[level])
 
     let str = ''

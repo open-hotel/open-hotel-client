@@ -3,12 +3,12 @@ import { IsoPoint } from "../IsoPoint";
 export type CubeFaceName = 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back' | string
 
 export interface CubeOptions {
-    width   ?: number,
-    height  ?: number,
-    depth   ?: number,
-    position?: IsoPoint,
-    faces   ?: CubeFaceName[],
-    colors  ?: { [key in CubeFaceName]: number }
+    width?: number;
+    height?: number;
+    depth?: number;
+    position?: IsoPoint;
+    faces?: CubeFaceName[];
+    colors?: { [key in CubeFaceName]: number };
 }
 
 export type CubeFaces = {
@@ -107,7 +107,7 @@ export class Cube extends PIXI.Graphics {
     }
 
     renderCube () {
-        const { width, height, faces = [] } = this.$options
+        const { faces = [] } = this.$options
 
         for (let f of ['back', 'bottom', 'right', 'left', 'top', 'front'].filter(f => faces.includes(f))) {
             if (f in this.$faces) {

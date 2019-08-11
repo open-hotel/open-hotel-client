@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js'
 import { Navigation } from './lib/navigation/Navigation';
 import { Logger, Log } from './lib/Logger';
-import { NavigationView } from './lib/navigation/NavigationView';
 import * as Tween from '@tweenjs/tween.js'
 
 interface ApplicationOptions {
@@ -22,8 +21,8 @@ interface ApplicationOptions {
     sharedTicker?: boolean;
     sharedLoader?: boolean;
     resizeTo?: Window | HTMLElement;
-    logLevel?: Log|number,
-    logContext?: string[],
+    logLevel?: Log|number;
+    logContext?: string[];
 }
 
 export class Application extends PIXI.Application {
@@ -31,7 +30,7 @@ export class Application extends PIXI.Application {
     public $router: Navigation;
     static $instance: Application;
 
-    constructor (options:ApplicationOptions = {}) {
+    constructor (options: ApplicationOptions = {}) {
         super(options)
 
         options = Object.assign({

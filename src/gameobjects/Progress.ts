@@ -1,17 +1,17 @@
-import { Application } from "../engine/Application";
-import { SCALE_MODES } from "pixi.js";
+// import { Application } from "../engine/Application";
+// import { SCALE_MODES } from "pixi.js";
 
 export interface ProgressOptions {
-    width   ?: number,
-    height  ?: number,
-    value   ?: number
+    width?: number;
+    height?: number;
+    value?: number;
 }
 export class Progress extends PIXI.Container {
     private $options: ProgressOptions
     private $bar: PIXI.Graphics
     private $text: PIXI.Text
 
-    constructor (options:ProgressOptions) {
+    constructor (options: ProgressOptions) {
         super()
 
         this.$options = Object.assign({
