@@ -6,41 +6,24 @@ import { Matrix } from '../../engine/lib/utils/Matrix'
 import { GameObject } from '../../engine/lib/GameObject'
 import { PathFinder } from '../../engine/lib/utils/PathFinder'
 import { Wall } from './Wall'
+import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
 
 export interface Block {
-    x: number
-    y: number
-    z: number
-    ladder: number
+  x: number
+  y: number
+  z: number
+  ladder: number
 }
 
 export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 interface FloorOptions {
-    map: Matrix<FloorMapElevation> | string
+  map: Matrix<FloorMapElevation> | string
 }
 
 const WIDTH = 32
 const HEIGHT = 32
 const STEP_HEIGHT = 32
-
-const createHasLadder = (map: Matrix<number>) => (test: Matrix<string>) => {
-    const current = map.get(1, 1)
-    return map.every((mapCol, rowIndex, colIndex) => {
-        let blockTest: string | string[] = test.get(rowIndex, colIndex)
-
-        if (blockTest === '*') return true
-        if (blockTest === '?') return !mapCol
-
-        blockTest = blockTest.split('|')
-
-        return blockTest.some(t => {
-            if (t === '?') return !mapCol
-            const elevation = current + parseInt(t.replace(/[^\d\-]/g, ''))
-            return mapCol === elevation
-        })
-    })
-}
 
 // const wallColors = {
 //     top: 0x6f717a,
@@ -49,129 +32,129 @@ const createHasLadder = (map: Matrix<number>) => (test: Matrix<string>) => {
 // }
 
 function getLadder(blocks: Matrix<number>): number {
-    const hasLadder = createHasLadder(blocks)
-    const l = ladders.find(l => hasLadder(Matrix.from(l.test)))
+  const hasLadder = createFloorTestFunction(blocks)
+  const l = ladders.find(l => hasLadder(Matrix.from(l.test)))
 
-    return l && l.value
+  return l && l.value
 }
 
 export class Floor extends GameObject {
-    public $map: Matrix<FloorMapElevation>
-    public $mapBlocks: Matrix<FloorBlock | FloorLadder> = new Matrix()
-    public pathFinder: PathFinder
+  public $map: Matrix<FloorMapElevation>
+  public $mapBlocks: Matrix<FloorBlock | FloorLadder> = new Matrix()
+  public pathFinder: PathFinder
 
-    static parseMap(str: string): Matrix<FloorMapElevation> {
-        const rows = str
-            .split(/\n/, 1024)
-            .filter(f => f)
-            .map(row =>
-                row
-                    .split('')
-                    .filter(c => c)
-                    .map(parseInt),
-            ) as FloorMapElevation[][]
-        return Matrix.from<FloorMapElevation>(rows)
-    }
+  static parseMap(str: string): Matrix<FloorMapElevation> {
+    const rows = str
+      .split(/\n/, 1024)
+      .filter(f => f)
+      .map(row =>
+        row
+          .split('')
+          .filter(c => c)
+          .map(parseInt),
+      ) as FloorMapElevation[][]
+    return Matrix.from<FloorMapElevation>(rows)
+  }
 
-    constructor(options: FloorOptions) {
-        super()
+  constructor(options: FloorOptions) {
+    super()
 
-        options = Object.assign(
-            {
-                map: new Matrix<FloorMapElevation>(),
-            },
-            options,
-        )
+    options = Object.assign(
+      {
+        map: new Matrix<FloorMapElevation>(),
+      },
+      options,
+    )
 
-        this.$map = typeof options.map === 'string' ? Floor.parseMap(options.map) : options.map
+    this.$map = typeof options.map === 'string' ? Floor.parseMap(options.map) : options.map
 
-        const grid = this.$map.$matrix
+    const grid = this.$map.$matrix
 
-        this.pathFinder = new PathFinder(grid, (cell, curr) => {
-            const a = grid[cell.y][cell.x]
-            const b = grid[curr.y][curr.x]
+    this.pathFinder = new PathFinder(grid, (cell, curr) => {
+      const a = grid[cell.y][cell.x]
+      const b = grid[curr.y][curr.x]
 
-            return a === b || Math.abs(a - b) === 1
-        })
+      return a === b || Math.abs(a - b) === 1
+    })
 
-        this.build()
+    this.build()
 
-        this.interactive = true
-        this.sortableChildren = true
+    this.interactive = true
+    this.sortableChildren = true
 
-        const { x, y, width, height } = this.getBounds()
+    const { x, y, width, height } = this.getBounds()
 
-        this.pivot.set(width / 2 + x, height / 2 + y)
-    }
+    this.pivot.set(width / 2 + x, height / 2 + y)
+  }
 
-    public static getPositionOf(floor: Floor, x: number, y: number): PIXI.IPoint {
-        return floor.$mapBlocks.get(x, y, { position: new PIXI.Point() }).position.clone()
-    }
+  public static getPositionOf(floor: Floor, x: number, y: number): PIXI.IPoint {
+    return floor.$mapBlocks.get(x, y, { position: new PIXI.Point() }).position.clone()
+  }
 
-    public getPositionOf(x: number, y: number): PIXI.IPoint {
-        return Floor.getPositionOf(this, x, y)
-    }
+  public getPositionOf(x: number, y: number): PIXI.IPoint {
+    return Floor.getPositionOf(this, x, y)
+  }
 
-    public getFirstBlockIndexes(): number[] {
-        const matrix = this.$map.$matrix
-        for (let y = 0; y < matrix.length; y++) {
-            for (let x = 0; x <= matrix[y].length; x++) {
-                if (matrix[x][y]) {
-                    return [x, y]
-                }
-            }
+  public getFirstBlockIndexes(): number[] {
+    const matrix = this.$map.$matrix
+    for (let y = 0; y < matrix.length; y++) {
+      for (let x = 0; x <= matrix[y].length; x++) {
+        if (matrix[x][y]) {
+          return [x, y]
         }
-        return [0, 0]
+      }
     }
+    return [0, 0]
+  }
 
-    public getNeighborsOf(x: number, y: number) {
-        const prevRow = this.$map.getRow(y - 1)
-        const nextRow = this.$map.getRow(y + 1)
-        const currRow = this.$map.getRow(y)
+  public getNeighborsOf(x: number, y: number) {
+    const prevRow = this.$map.getRow(y - 1)
+    const nextRow = this.$map.getRow(y + 1)
+    const currRow = this.$map.getRow(y)
 
-        const nextCol = x + 1
-        const prevCol = x - 1
+    const nextCol = x + 1
+    const prevCol = x - 1
 
-        return Matrix.from<FloorMapElevation>([
-            [prevRow.get(prevCol, 0), prevRow.get(x, 0), prevRow.get(nextCol, 0)],
-            [currRow.get(prevCol, 0), currRow.get(x, 0), currRow.get(nextCol, 0)],
-            [nextRow.get(prevCol, 0), nextRow.get(x, 0), nextRow.get(nextCol, 0)],
+    return Matrix.from<FloorMapElevation>([
+      [prevRow.get(prevCol, 0), prevRow.get(x, 0), prevRow.get(nextCol, 0)],
+      [currRow.get(prevCol, 0), currRow.get(x, 0), currRow.get(nextCol, 0)],
+      [nextRow.get(prevCol, 0), nextRow.get(x, 0), nextRow.get(nextCol, 0)],
+    ])
+  }
+
+  private build() {
+    this.$map.forEachRow((currRow, rowIndex) => {
+      const prevRow = this.$map.getRow(rowIndex - 1)
+      const nextRow = this.$map.getRow(rowIndex + 1)
+
+      currRow.forEach((col, colIndex) => {
+        if (col < 1 || col > 9) {
+          this.$mapBlocks.set(colIndex, rowIndex, null)
+          return
+        }
+
+        const neighbors = Matrix.from<FloorMapElevation>([
+          [prevRow.get(colIndex - 1, 0), prevRow.get(colIndex, 0), prevRow.get(colIndex + 1, 0)],
+          [currRow.get(colIndex - 1, 0), currRow.get(colIndex, 0), currRow.get(colIndex + 1, 0)],
+          [nextRow.get(colIndex - 1, 0), nextRow.get(colIndex, 0), nextRow.get(colIndex + 1, 0)],
         ])
-    }
 
-    private build() {
-        this.$map.forEachRow((currRow, rowIndex) => {
-            const prevRow = this.$map.getRow(rowIndex - 1)
-            const nextRow = this.$map.getRow(rowIndex + 1)
+        const ladder = getLadder(neighbors)
 
-            currRow.forEach((col, colIndex) => {
-                if (col < 1 || col > 9) {
-                    this.$mapBlocks.set(colIndex, rowIndex, null)
-                    return
-                }
+        const position = new Vector3(rowIndex * WIDTH, colIndex * HEIGHT, col * STEP_HEIGHT)
+        const block = typeof ladder === 'number' ? new FloorLadder(position, ladder) : new FloorBlock(position)
 
-                const neighbors = Matrix.from<FloorMapElevation>([
-                    [prevRow.get(colIndex - 1, 0), prevRow.get(colIndex, 0), prevRow.get(colIndex + 1, 0)],
-                    [currRow.get(colIndex - 1, 0), currRow.get(colIndex, 0), currRow.get(colIndex + 1, 0)],
-                    [nextRow.get(colIndex - 1, 0), nextRow.get(colIndex, 0), nextRow.get(colIndex + 1, 0)],
-                ])
+        block.zIndex = colIndex + rowIndex + col
 
-                const ladder = getLadder(neighbors)
+        block.mapPosition.set(colIndex, rowIndex, col)
 
-                const position = new Vector3(rowIndex * WIDTH, colIndex * HEIGHT, col * STEP_HEIGHT)
-                const block = typeof ladder === 'number' ? new FloorLadder(position, ladder) : new FloorBlock(position)
+        this.$mapBlocks.set(colIndex, rowIndex, block)
 
-                block.zIndex = colIndex + rowIndex + col
+        this.addChild(block)
+      })
+    })
 
-                block.mapPosition.set(colIndex, rowIndex, col)
-
-                this.$mapBlocks.set(colIndex, rowIndex, block)
-
-                this.addChild(block)
-            })
-        })
-
-        const walls = Wall.fromFloor(this)
-        walls.forEach(wall => wall && this.addChild(wall))
-    }
+    const walls = Wall.fromFloor(this)
+    walls.forEach(wall => wall && this.addChild(wall))
+  }
 }
