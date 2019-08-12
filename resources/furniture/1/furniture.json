@@ -1,0 +1,18 @@
+{
+    "i18n": {
+        "pt-BR": {
+            "title": "TV Foda"
+        },
+        "en-US": {
+            "title": "Fucking TV"
+        }
+    },
+    "directions": [2,4],
+    "possibleStates": [0, 1],
+    "initialState": 0,
+    "events": {
+        "this": {
+            "click": "this.nextState"
+        }
+    }
+}

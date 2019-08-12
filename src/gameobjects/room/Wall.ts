@@ -73,7 +73,7 @@ export class Wall extends GameObject {
         top: 0x6f717a,
         front: 0x9597a3,
         left: 0xb6b8c7,
-      }
+      },
     }
 
     const wallA = new Cube({
@@ -86,13 +86,13 @@ export class Wall extends GameObject {
       ...cubeOptions,
       width: 8,
       depth: 32,
-      position: new Vector3(-16,0,-8)
+      position: new Vector3(-16, 0, -8),
     })
 
     if (direction === 1) wallA.alpha = 0
     if (direction === 3) wallB.alpha = 0
 
-    walls.push(wallB,wallA)
+    walls.push(wallB, wallA)
 
     g.addChild(...walls)
     return (Cache[direction] = this.$app.renderer.generateTexture(g, SCALE_MODES.NEAREST, 1))

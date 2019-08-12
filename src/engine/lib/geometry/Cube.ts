@@ -1,5 +1,5 @@
 import { Vector3 } from '../isometric/Vector3'
-import { Observable, IObservable } from '../Observable';
+import { Observable, IObservable } from '../Observable'
 
 export type CubeFaceName = 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back' | string
 
@@ -10,7 +10,7 @@ export interface CubeOptions {
   position?: Vector3
   faces?: CubeFaceName[]
   colors?: { [key in CubeFaceName]: number }
-  [key:string]: any
+  [key: string]: any
 }
 
 export type CubeFaces = {
@@ -18,7 +18,7 @@ export type CubeFaces = {
 }
 
 export class Cube extends PIXI.Graphics {
-  public $options:IObservable<CubeOptions> = Observable.create<CubeOptions>({
+  public $options: IObservable<CubeOptions> = Observable.create<CubeOptions>({
     width: 50,
     height: 50,
     depth: 50,
@@ -71,12 +71,12 @@ export class Cube extends PIXI.Graphics {
   constructor(options?: CubeOptions) {
     super()
 
-    if (options) for (let k in options) {
-      this.$options.$set(k, options[k])
-    }
+    if (options)
+      for (let k in options) {
+        this.$options.$set(k, options[k])
+      }
 
     this.$options.addListener(() => this.renderCube())
-
 
     const { position, width, height, depth, colors } = this.$options
 
