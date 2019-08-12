@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/pathfinding": "^0.0.2",
