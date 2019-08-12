@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "lint": "eslint src --ext ts",
-    "build": "tsc"
+    "build": "webpack -p"
   },
   "devDependencies": {
     "@types/pathfinding": "^0.0.2",
