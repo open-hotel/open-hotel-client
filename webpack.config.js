@@ -3,10 +3,9 @@ const webpack = require('webpack')
 
 module.exports = {
   mode: 'development',
-  entry: path.join(__dirname, 'src', 'index.ts'),
-  watch: false,
+  entry: path.join(__dirname, 'src/index.ts'),
   output: {
-    path: __dirname + 'dist',
+    path: `${__dirname}/dist`,
     publicPath: '/dist/',
     filename: 'app.js',
     chunkFilename: '[name].js',
@@ -37,8 +36,8 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  // devtool: 'source-map',
-  devtool: 'inline-source-map',
+  devtool: false,
+  // // devtool: 'inline-source-map',
   devServer: {
     contentBase: __dirname,
     inline: true,

@@ -1,7 +1,5 @@
 import { Application } from './engine/Application'
-import { SplashScreen } from './stages/SplashScreen'
 import { Log } from './engine/lib/Logger'
-import { HomeScreen } from './stages/HomeScreen'
 import * as WebFont from 'webfontloader'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
@@ -14,10 +12,14 @@ const app = Application.get({
   forceCanvas: true,
 })
 
-app.$router.setRoutes({
-  splash: SplashScreen,
-  home: HomeScreen,
-})
+const stagesLoaded = Promise.all([import('./stages/SplashScreen'), import('./stages/HomeScreen')]).then(
+  ([splash, home]) => {
+    app.$router.setRoutes({
+      splash: splash.SplashScreen,
+      home: home.HomeScreen,
+    })
+  },
+)
 
 WebFont.load({
   google: {
@@ -28,6 +30,6 @@ WebFont.load({
     urls: ['resources/fonts/Volter/Volter.css'],
   },
   active() {
-    app.$router.replace('splash')
+    stagesLoaded.then(() => app.$router.replace('splash'))
   },
 })
