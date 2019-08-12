@@ -50,7 +50,8 @@ export class SplashScreen extends Scene {
 
         this.$app.loader
             .load(() => {
-                setTimeout(() => this.$app.$router.replace('home'), 500)
+                this.$app.$router.replace('home')
+                // setTimeout(() => this.$app.$router.replace('home'), 500)
             })
             .on('progress', (loader: PIXI.Loader, resource) => {
                 this.$logger.log(Log.INFO, `[${loader.progress}%] Downloading ${resource.url}`)

@@ -96,6 +96,10 @@ export class Matrix<T = any> {
         return true
     }
 
+    some(cb: (value: T, x: number, y: number) => boolean): boolean {
+        return this.$matrix.some((row, y) => row.some((item, x) => cb(item, x, y)))
+    }
+
     forEach(cb: MatrixMapFunction<T, T, any>): void {
         let { rows, cols } = this
 
