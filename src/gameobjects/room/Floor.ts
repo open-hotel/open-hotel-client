@@ -5,6 +5,7 @@ import ladders from './ladders.json'
 import { Matrix } from '../../engine/lib/utils/Matrix'
 import { GameObject } from '../../engine/lib/GameObject'
 import { PathFinder } from '../../engine/lib/utils/PathFinder'
+import { Wall } from './Wall'
 
 export interface Block {
     x: number
@@ -13,7 +14,7 @@ export interface Block {
     ladder: number
 }
 
-type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 interface FloorOptions {
     map: Matrix<FloorMapElevation> | string
@@ -111,21 +112,51 @@ export class Floor extends GameObject {
         return Floor.getPositionOf(this, x, y)
     }
 
+    public getFirstBlockIndexes(): number[] {
+        const matrix = this.$map.$matrix
+        for (let y = 0; y < matrix.length; y++) {
+            for (let x = 0; x <= matrix[y].length; x++) {
+                if (matrix[x][y]) {
+                    return [x, y]
+                }
+            }
+        }
+        return [0, 0]
+    }
+
+    public getNeighborsOf(x: number, y: number) {
+        const prevRow = this.$map.getRow(y - 1)
+        const nextRow = this.$map.getRow(y + 1)
+        const currRow = this.$map.getRow(y)
+
+        const nextCol = x + 1
+        const prevCol = x - 1
+
+        return Matrix.from<FloorMapElevation>([
+            [prevRow.get(prevCol, 0), prevRow.get(x, 0), prevRow.get(nextCol, 0)],
+            [currRow.get(prevCol, 0), currRow.get(x, 0), currRow.get(nextCol, 0)],
+            [nextRow.get(prevCol, 0), nextRow.get(x, 0), nextRow.get(nextCol, 0)],
+        ])
+    }
+
     private build() {
         this.$map.forEachRow((currRow, rowIndex) => {
             const prevRow = this.$map.getRow(rowIndex - 1)
             const nextRow = this.$map.getRow(rowIndex + 1)
 
             currRow.forEach((col, colIndex) => {
-                if (col < 1 || col > 9) return null
+                if (col < 1 || col > 9) {
+                    this.$mapBlocks.set(colIndex, rowIndex, null)
+                    return
+                }
 
-                const blockArea = Matrix.from<FloorMapElevation>([
+                const neighbors = Matrix.from<FloorMapElevation>([
                     [prevRow.get(colIndex - 1, 0), prevRow.get(colIndex, 0), prevRow.get(colIndex + 1, 0)],
                     [currRow.get(colIndex - 1, 0), currRow.get(colIndex, 0), currRow.get(colIndex + 1, 0)],
                     [nextRow.get(colIndex - 1, 0), nextRow.get(colIndex, 0), nextRow.get(colIndex + 1, 0)],
                 ])
 
-                const ladder = getLadder(blockArea)
+                const ladder = getLadder(neighbors)
 
                 const position = new Vector3(rowIndex * WIDTH, colIndex * HEIGHT, col * STEP_HEIGHT)
                 const block = typeof ladder === 'number' ? new FloorLadder(position, ladder) : new FloorBlock(position)
@@ -134,10 +165,13 @@ export class Floor extends GameObject {
 
                 block.mapPosition.set(colIndex, rowIndex, col)
 
-                this.addChild(block)
-
                 this.$mapBlocks.set(colIndex, rowIndex, block)
+
+                this.addChild(block)
             })
         })
+
+        const walls = Wall.fromFloor(this)
+        walls.forEach(wall => wall && this.addChild(wall))
     }
 }
