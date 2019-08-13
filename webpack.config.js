@@ -1,12 +1,14 @@
 const path = require('path')
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   mode: 'development',
   entry: path.join(__dirname, 'src/index.ts'),
   output: {
     path: `${__dirname}/dist`,
-    publicPath: '/dist/',
+    publicPath: '/',
     filename: 'app.js',
     chunkFilename: '[name].js',
   },
@@ -26,6 +28,16 @@ module.exports = {
         BROWSER: JSON.stringify(true),
       },
     }),
+    new HtmlWebpackPlugin({
+      template: 'public/index.html',
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: 'public',
+        toType: 'dir',
+        ignore: ['.DS_Store'],
+      },
+    ]),
   ],
   externals: [
     // Don't bundle pixi.js, assume it'll be included in the HTML via a script
@@ -36,8 +48,8 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  devtool: false,
-  // // devtool: 'inline-source-map',
+  // devtool: false,
+  devtool: 'inline-source-map',
   devServer: {
     contentBase: __dirname,
     inline: true,
