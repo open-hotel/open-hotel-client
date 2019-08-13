@@ -37,6 +37,12 @@ module.exports = {
         toType: 'dir',
         ignore: ['.DS_Store'],
       },
+      {
+        from: 'resources',
+        toType: 'dir',
+        to: 'resources',
+        ignore: ['.DS_Store'],
+      },
     ]),
   ],
   externals: [
