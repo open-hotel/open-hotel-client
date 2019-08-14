@@ -1,5 +1,4 @@
 import { HumanLayer } from './HumanLayer'
-import { THumanDirection, HumanDirection } from './Human'
 
 interface HandRightProps {
   type: number
@@ -16,8 +15,6 @@ export class HumanRightHand extends HumanLayer {
     6: 0,
   }
 
-  private lastDirection: THumanDirection | -1 = -1
-
   constructor(attrs: HandRightProps) {
     super('rh', 'human/right_hand', attrs)
     this.sprite.anchor.set(0.75, 0.25)
@@ -32,26 +29,22 @@ export class HumanRightHand extends HumanLayer {
     //   // }
     // }
 
-    this.attrs2.watch('direction', direction => this.fixPosition(direction))
-  }
+    const anchor = (x: number, y: number) => this.sprite.anchor.set(x, y)
 
-  private fixPosition(direction: THumanDirection) {
-    if (this.lastDirection === direction) {
-      return
-    }
-    this.lastDirection = direction
+    this.humanAnimation
+      .onFrame(3, () => {
+        anchor(20, 20)
+      })
+      .ofDirection('front')
 
-    const switcher = {
-      [HumanDirection.BACK]: () => {
-        console.log('indo pra tras')
-        this.sprite.anchor.set(0.2, 0.2)
-      },
-      [HumanDirection.FRONT]: () => {
-        console.log('indo pra frente')
-        this.sprite.anchor.set(0.68, 0.2)
-      },
-    }
+    this.humanAnimation.onTurn('back', () => {
+      console.log('indo pra tras')
+      anchor(0.2, 0.2)
+    })
 
-    switcher[direction] && switcher[direction]()
+    this.humanAnimation.onTurn('front', () => {
+      console.log('indo pra frente')
+      anchor(0.68, 0.2)
+    })
   }
 }

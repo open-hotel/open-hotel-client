@@ -4,15 +4,7 @@ import { HumanBody } from './Body'
 import { random } from '../../engine/lib/utils/Util'
 import { HumanLeftHand } from './LeftHand'
 import { HumanRightHand } from './RightHand'
-
-export type THumanDirection = 0 | 2 | 4 | 6
-
-export const HumanDirection = {
-  FRONT: 2,
-  LEFT: 0,
-  RIGHT: 4,
-  BACK: 6,
-}
+import { THumanDirection } from './HumanAnimation'
 
 interface HumanProps {
   direction: THumanDirection

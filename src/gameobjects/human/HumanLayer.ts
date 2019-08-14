@@ -1,5 +1,6 @@
 import { GameObject } from '../../engine/lib/GameObject'
 import { Debug } from '../../engine/lib/utils/Debug'
+import { HumanAnimation } from './HumanAnimation'
 
 interface HumanLayerProps {
   type: number
@@ -18,6 +19,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
 
   public sprite: PIXI.AnimatedSprite
   protected sheet: PIXI.Spritesheet
+  protected humanAnimation: HumanAnimation
 
   constructor(
     private layerName: string,
@@ -47,6 +49,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.attrs2.watch('direction', () => this.updateTexture())
     this.updateFlip()
     this.addChild(this.sprite)
+    this.humanAnimation = new HumanAnimation(this)
   }
 
   private updateSheet() {
