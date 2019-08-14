@@ -9,9 +9,11 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 ## Roadmap
 
 - [x] Build floor structure
-- [x] Create a character that walks
+- [x] Create a walkable character
 - [x] Build stairs in the rooms
 - [x] Provide live demo
+- [ ] Provide a character instead of a cube
 - [ ] Build Walls
 - [ ] Create clothing system
-- [ ] Create mobis system
+- [ ] Create floor-mobis basic system
+- [ ] Create wall-mobis basic system
