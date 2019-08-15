@@ -1,8 +1,9 @@
 import { HumanLayer } from './HumanLayer'
+import { THumanDirection } from './HumanAnimation'
 
 interface HandLeftProps {
   type: number
-  direction: number
+  direction: THumanDirection
   action: string
 }
 
@@ -19,17 +20,30 @@ export class HumanLeftHand extends HumanLayer {
     super('lh', 'human/left_hand', attrs)
     this.sprite.anchor.set(0, 0)
 
-    this.sprite.tint = 0xff0000
+    const anchor = (x: number, y: number) => this.sprite.anchor.set(x, y)
+    const animate = this.humanAnimation
 
-    this.humanAnimation.onTurn('back', () => {
-      console.log('indo pra tras')
-      this.sprite.anchor.set(3, -0.14)
-      this.sprite.angle = 2
+    animate.onTurn('back', () => {
+      anchor(2.6, -0.14)
     })
 
-    this.humanAnimation.onTurn('front', () => {
-      console.log('indo pra frente')
-      this.sprite.anchor.set(-1.2, -0.2)
+    animate.onTurn('front', () => {
+      anchor(-1.2, -0.2)
     })
+
+    animate.onTurn('right', () => {
+      anchor(-1.2, -0.2)
+    })
+
+    animate.onTurn('left', () => anchor(2.9, -0.1))
+
+    animate
+      .onFrame(3)
+      .to(6)
+      .ofDirection('back')
+      .listen(() => anchor(2.4, -0.14))
+
+    animate.onFrame(3, () => anchor(2.5, -0.2)).ofDirection('left')
+    animate.onFrame(0, () => anchor(2.9, -0.1)).ofDirection('left')
   }
 }

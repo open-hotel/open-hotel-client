@@ -12,6 +12,18 @@ export const HumanDirection: Record<DirectionName, THumanDirection> = {
 
 type DirectionDictionary = Record<THumanDirection, (() => void)[]>
 
+interface FrameManager {
+  /**
+   * Calls listeners only when current direction is @param _direction
+   */
+  ofDirection(_direction: DirectionName): FrameManager
+  /**
+   * Calls listener each frame between frame and endframe (inclusive)
+   */
+  to(_endFrame: number): FrameManager
+  listen(_listener: (frame?: number) => void): FrameManager
+}
+
 export class HumanAnimation {
   private directionListeners: DirectionDictionary = Object.create(null)
   private frameListeners: ((frame: number) => void)[] = []
@@ -23,36 +35,49 @@ export class HumanAnimation {
     this.initState()
   }
 
-  public onFrame(frame: number, listener: () => any) {
+  public onFrame(frame: number, listener?: (frame?: number) => void): FrameManager {
+    // Closure state
     let direction: DirectionName
-    let lastFrame: number
+    let endFrame: number
 
     this.frameListeners.push(currentFrame => {
-      if (currentFrame !== frame || currentFrame === lastFrame) {
+      if (endFrame) {
+        const isBetween = currentFrame >= frame && currentFrame <= endFrame
+        if (!isBetween) {
+          return
+        }
+      } else if (currentFrame !== frame) {
         return
       }
-      lastFrame = currentFrame
       if (direction) {
-        HumanDirection[direction] === this.lastDirection && listener()
+        HumanDirection[direction] === this.lastDirection && listener(currentFrame)
         return
       }
-      listener()
+      listener(currentFrame)
     })
 
     return {
-      /**
-       * Calls listeners only when current direction is @param _direction
-       */
-      ofDirection(_direction: DirectionName) {
+      ofDirection(_direction) {
         direction = _direction
+        return this
+      },
+      to(_endFrame) {
+        endFrame = _endFrame
+        return this
+      },
+      listen(_listener) {
+        listener = _listener
+        return this
       },
     }
   }
 
+  /**
+   * Function called on frame 0 of the chosen direction animation
+   */
   public onTurn(direction: DirectionName, callback: () => void) {
     const directionId = HumanDirection[direction]
     this.directionListeners[directionId].push(callback)
-    this.onFrame(0, () => this.callListeners()).ofDirection(direction)
   }
 
   private callListeners(direction = this.lastDirection) {
@@ -63,19 +88,36 @@ export class HumanAnimation {
     this.directionListeners[direction].forEach(listener => listener())
   }
 
-  private initState() {
+  // Inits
+
+  private initFrameListeners() {
+    let lastFrame: number
+    this.layer.sprite.onFrameChange = frame => {
+      if (frame === lastFrame) {
+        lastFrame = frame
+        return
+      }
+      lastFrame = frame
+      this.frameListeners.forEach(listener => listener(frame))
+    }
+  }
+
+  private initDirectionListeners() {
     for (const direction of Object.values(HumanDirection)) {
       this.directionListeners[direction] = []
     }
-
-    this.layer.sprite.onFrameChange = frame => this.frameListeners.forEach(listener => listener(frame))
-
     this.layer.attrs2.watch('direction', (direction: THumanDirection) => {
-      // Preventing exagerated listener calls
+      // Preventing exaggerated listener calls
       if (direction === this.lastDirection || !this.directionListeners[direction]) {
         return
       }
       this.lastDirection = direction
+      this.callListeners()
     })
+  }
+
+  private initState() {
+    this.initFrameListeners()
+    this.initDirectionListeners()
   }
 }
