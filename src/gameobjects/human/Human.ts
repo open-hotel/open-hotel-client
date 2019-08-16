@@ -60,17 +60,17 @@ export class Human extends GameObject<HumanProps> {
       direction: this.attrs2.direction,
     })
 
-    this.hair = new HumanHair({
-      type: 1,
-      action: 'std',
-      direction: this.attrs2.direction,
-    })
+    // this.hair = new HumanHair({
+    //   type: 1,
+    //   action: 'std',
+    //   direction: this.attrs2.direction,
+    // })
 
     this.head.addChild(this.leftHand, this.rightHand)
 
     this.attrs2.addListener(() => this.updateLayers())
     this.body.addChild(this.head)
-    this.head.addChild(this.hair)
+    // this.head.addChild(this.hair)
 
     this.addChild(this.body)
 
