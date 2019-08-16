@@ -96,7 +96,7 @@ export class HomeScreen extends Scene {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
 
-          human.zIndex = target.zIndex + 1
+          human.zIndex = target.zIndex
           human.mapPosition.set(p.x, p.y, 0)
           human.walk()
 
