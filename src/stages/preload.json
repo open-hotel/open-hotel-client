@@ -11,6 +11,9 @@
     },
     "right_hand": {
       "1": "sheet.json"
+    },
+    "hair": {
+      "1": "sheet.json"
     }
   }
 }

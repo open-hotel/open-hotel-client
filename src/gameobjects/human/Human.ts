@@ -5,6 +5,7 @@ import { random } from '../../engine/lib/utils/Util'
 import { HumanLeftHand } from './LeftHand'
 import { HumanRightHand } from './RightHand'
 import { THumanDirection } from './HumanAnimation'
+import { HumanHair } from './Hair'
 
 interface HumanProps {
   direction: THumanDirection
@@ -19,6 +20,7 @@ export class Human extends GameObject<HumanProps> {
   public readonly body: HumanBody
   public readonly leftHand: HumanLeftHand
   public readonly rightHand: HumanRightHand
+  public readonly hair: HumanHair
 
   constructor() {
     super({
@@ -58,10 +60,17 @@ export class Human extends GameObject<HumanProps> {
       direction: this.attrs2.direction,
     })
 
+    this.hair = new HumanHair({
+      type: 1,
+      action: 'std',
+      direction: this.attrs2.direction,
+    })
+
     this.head.addChild(this.leftHand, this.rightHand)
 
     this.attrs2.addListener(() => this.updateLayers())
     this.body.addChild(this.head)
+    this.head.addChild(this.hair)
 
     this.addChild(this.body)
 

@@ -66,6 +66,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
 
     if (animationName in animations) return animations[animationName]
     else if (frameName in textures) return [textures[frameName]]
+    else if (action === 'std') return []
     return this.getAnimation('std', 0)
   }
 

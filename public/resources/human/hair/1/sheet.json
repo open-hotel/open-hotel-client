@@ -1,0 +1,30 @@
+{
+  "frames": {
+    "16_HabboAvatarRenderLib_h_std_hrb_33_2_0.png": {
+      "frame": { "x": 0, "y": 0, "w": 33, "h": 33 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 33, "h": 33 },
+      "sourceSize": { "w": 33, "h": 33 }
+    },
+    "37_HabboAvatarRenderLib_h_std_hr_33_2_0.png": {
+      "frame": { "x": 33, "y": 0, "w": 31, "h": 28 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 31, "h": 28 },
+      "sourceSize": { "w": 31, "h": 28 }
+    }
+  },
+  "animations": {
+    "hh_human_body_h_std_ha_1_2": ["16_HabboAvatarRenderLib_h_std_hrb_33_2_0.png"]
+  },
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "sheet.png",
+    "format": "RGBA8888",
+    "size": { "w": 64, "h": 33 },
+    "scale": "1",
+    "smartupdate": "$TexturePacker:SmartUpdate:96d287b831dcd4dabcc3e6bd45b1922d:99e1b316f5aa19612a32ce28b1aa051d:9c44ecd7e9a522007eaff2949095bc1d$"
+  }
+}
