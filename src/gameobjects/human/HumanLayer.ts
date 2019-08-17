@@ -72,7 +72,10 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
 
   updateTexture() {
     let { action, direction } = this.attrs2
-    this.sprite.textures = this.getAnimation(action, direction)
+    const animation = this.getAnimation(action, direction)
+    if (animation.length) {
+      this.sprite.textures = animation
+    }
     this.sprite.play()
 
     this.updateFlip()
