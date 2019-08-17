@@ -7,6 +7,7 @@ export const createFloorTestFunction = (map: Matrix<number>) => (test: Matrix<st
 
     if (blockTest === '*') return true
     if (blockTest === '?') return !mapCol
+    if (blockTest === '#') return mapCol > 0
 
     blockTest = blockTest.split('|')
 

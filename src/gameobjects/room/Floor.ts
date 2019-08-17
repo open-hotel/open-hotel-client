@@ -123,6 +123,8 @@ export class Floor extends GameObject {
   }
 
   private build() {
+    Wall.CURRENT_HEIGHT = Wall.WALL_HEIGHT + this.$map.reduce<number>((maxEl, el) => Math.max(maxEl, el), 1) * 32
+
     this.$map.forEachRow((currRow, rowIndex) => {
       const prevRow = this.$map.getRow(rowIndex - 1)
       const nextRow = this.$map.getRow(rowIndex + 1)
