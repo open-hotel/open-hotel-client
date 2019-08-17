@@ -71,12 +71,15 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   }
 
   /**
-   * shorthand for this.sprite.anchor.set(x, y)
+   * Shorthand for HumanLayer.prototype.sprite.anchor.set(x, y)
    */
   protected anchors(x: number, y: number) {
     this.sprite.anchor.set(x, y)
   }
 
+  /**
+   * Returns a callback that calls HumanLayer.prototype.anchors
+   */
   protected anchorsC(x: number, y: number) {
     return () => this.anchors(x, y)
   }

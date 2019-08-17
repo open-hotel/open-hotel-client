@@ -16,6 +16,5 @@ export class HumanHair extends HumanLayer {
       front: this.anchorsC(0.55, 0.9),
       right: this.anchorsC(0.66, 0.9),
     })
-    // this.anchors()
   }
 }
