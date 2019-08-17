@@ -70,6 +70,17 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     return this.getAnimation('std', 0)
   }
 
+  /**
+   * shorthand for this.sprite.anchor.set(x, y)
+   */
+  protected anchors(x: number, y: number) {
+    this.sprite.anchor.set(x, y)
+  }
+
+  protected anchorsC(x: number, y: number) {
+    return () => this.anchors(x, y)
+  }
+
   updateTexture() {
     let { action, direction } = this.attrs2
     const animation = this.getAnimation(action, direction)

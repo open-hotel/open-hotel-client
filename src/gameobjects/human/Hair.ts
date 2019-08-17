@@ -9,6 +9,13 @@ interface HairProps {
 export class HumanHair extends HumanLayer {
   constructor(attrs: HairProps) {
     super('hr', 'human/hair', attrs, 'hair_F_backbun_h')
-    this.sprite.anchor.set(0.5, 0.85)
+
+    const anim = this.humanAnimation
+
+    anim.turns({
+      front: this.anchorsC(0.55, 0.9),
+      right: this.anchorsC(0.66, 0.9),
+    })
+    // this.anchors()
   }
 }

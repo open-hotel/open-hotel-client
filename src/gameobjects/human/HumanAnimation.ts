@@ -3,6 +3,8 @@ import { HumanLayer } from './HumanLayer'
 export type THumanDirection = 0 | 2 | 4 | 6
 type DirectionName = 'front' | 'left' | 'right' | 'back'
 
+const directionNames: DirectionName[] = ['front', 'left', 'right', 'back']
+
 export const HumanDirection: Record<DirectionName, THumanDirection> = {
   front: 2,
   left: 0,
@@ -78,6 +80,15 @@ export class HumanAnimation {
   public onTurn(direction: DirectionName, callback: () => void) {
     const directionId = HumanDirection[direction]
     this.directionListeners[directionId].push(callback)
+  }
+
+  /**
+   * shorthand for onTurn calls
+   */
+  public turns(listeners: Partial<Record<DirectionName, () => void>>) {
+    for (const dir of directionNames) {
+      listeners[dir] && this.onTurn(dir, listeners[dir])
+    }
   }
 
   private callListeners(direction = this.lastDirection) {
