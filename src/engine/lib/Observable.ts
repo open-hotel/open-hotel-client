@@ -67,8 +67,8 @@ export class Observable<T = any> {
           this.notify(k, v, old)
         },
       })
-      this.notify(k, v, old)
     }
+    this.notify(k, v, old)
   }
 
   notify(key: any, value: any, oldValue: any) {
