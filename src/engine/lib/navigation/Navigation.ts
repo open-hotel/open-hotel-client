@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { Application } from '../../Application'
 import { Class } from '../../types'
 import { Scene } from '../Scene'

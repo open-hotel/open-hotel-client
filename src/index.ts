@@ -1,6 +1,7 @@
 import { Application } from './engine/Application'
 import { Log } from './engine/lib/Logger'
-import * as WebFont from 'webfontloader'
+import { load as loadWebFonts } from 'webfontloader'
+import * as PIXI from 'pixi.js'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 
@@ -21,7 +22,7 @@ const stagesLoaded = Promise.all([import('./stages/SplashScreen'), import('./sta
   },
 )
 
-WebFont.load({
+loadWebFonts({
   google: {
     families: ['Ubuntu'],
   },

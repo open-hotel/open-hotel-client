@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { Scene } from '../engine/lib/Scene'
 import { Progress } from '../gameobjects/Progress'
 import resources from './preload'

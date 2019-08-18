@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { Vector3 } from '../isometric/Vector3'
 import { Observable, IObservable } from '../Observable'
 

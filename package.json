@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "lint": "eslint src --ext ts",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "test": "jest",
+    "testW": "jest --watchAll"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.17",
     "@types/pathfinding": "^0.0.2",
     "@types/tween.js": "^17.2.0",
     "@types/webfontloader": "^1.6.29",
@@ -20,7 +23,10 @@
     "eslint-loader": "^2.2.1",
     "eslint-plugin-prettier": "^3.1.0",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.9.0",
+    "jest-canvas-mock": "^2.1.0",
     "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.2",
     "webpack": "^4.29.0",

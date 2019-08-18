@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { Scene } from '../engine/lib/Scene'
 import { Floor, FloorMapElevation } from '../gameobjects/room/Floor'
 import { Viewport } from 'pixi-viewport'

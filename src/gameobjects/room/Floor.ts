@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js'
+
 import { FloorBlock } from './FloorBlock'
 import { FloorLadder } from './FloorLadder'
 import { Vector3 } from '../../engine/lib/isometric/Vector3'

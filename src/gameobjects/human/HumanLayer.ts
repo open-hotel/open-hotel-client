@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { GameObject } from '../../engine/lib/GameObject'
 import { Debug } from '../../engine/lib/utils/Debug'
 import { HumanAnimation } from './HumanAnimation'

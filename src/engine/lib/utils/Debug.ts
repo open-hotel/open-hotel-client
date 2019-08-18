@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js'
+
 interface DebugAreaOptions {
   borderColor?: number
   borderWidth?: number

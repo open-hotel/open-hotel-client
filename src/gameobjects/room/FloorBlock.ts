@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { Application } from '../../engine/Application'
 import { Polygon, SCALE_MODES } from 'pixi.js'
 import { Vector3 } from '../../engine/lib/isometric/Vector3'
