@@ -1,7 +1,14 @@
 <template>
-  <main class="game"></main>
+  <main class="game">
+    <chat />
+  </main>
 </template>
 <script lang="ts">
 import '@/game'
-export default {}
+import Chat from '../chat/Chat.vue'
+export default {
+  components: {
+    Chat,
+  },
+}
 </script>

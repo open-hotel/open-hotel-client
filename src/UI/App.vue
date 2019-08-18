@@ -5,6 +5,7 @@
 </template>
 
 <style lang="scss">
+@import '@/scss/_global.scss';
 * {
   margin: 0;
   padding: 0;
@@ -13,9 +14,5 @@
 
 body {
   overflow: hidden;
-}
-
-canvas {
-  image-rendering: pixelated;
 }
 </style>
