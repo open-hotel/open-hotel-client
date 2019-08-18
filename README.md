@@ -1,29 +1,19 @@
-# open-hotel
+# Open Hotel
 
-## Project setup
-```
-yarn install
-```
+Check out the [Demo](https://open-hotel-demo.netlify.com/)
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+Open Hotel is an open-source project that aims to build a brand new canvas-drawn Habbo Remake.
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+![Open Hotel Client screenshot](./public/resources/images/hclient.gif)
 
-### Run your tests
-```
-yarn run test
-```
+## Roadmap
 
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- [x] Build floor structure
+- [x] Create a walkable character
+- [x] Build stairs in the rooms
+- [x] Provide live demo
+- [ ] Provide a character instead of a cube
+- [ ] Build Walls
+- [ ] Create clothing system
+- [ ] Create floor-mobis basic system
+- [ ] Create wall-mobis basic system
