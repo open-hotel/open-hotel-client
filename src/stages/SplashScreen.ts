@@ -107,6 +107,7 @@ export class SplashScreen extends Scene {
 
     window.addEventListener('resize', this.onResize)
 
+    // @ts-ignore
     this.onResize(null)
   }
 

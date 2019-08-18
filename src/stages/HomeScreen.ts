@@ -7,7 +7,7 @@ import { Matrix } from '../engine/lib/utils/Matrix'
 import { GameObject } from '../engine/lib/GameObject'
 import { Walkable } from '../engine/lib/utils/Walk'
 import { Observable } from '../engine/lib/Observable'
-import MAP from '../../public/resources/maps/airplane.json'
+import MAP from './maps/airplane'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4

@@ -1,39 +1,15 @@
-/**
- * Got config from https://dev.to/robertcoopercode/using-eslint-and-prettier-in-a-typescript-project-53jb
- */
-module.exports =  {
-    parser:  '@typescript-eslint/parser',  // Specifies the ESLint parser
-    extends:  [
-        'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-        'plugin:prettier/recommended',
-    ],
-    parserOptions:  {
-        ecmaVersion:  2018,  // Allows for the parsing of modern ECMAScript features
-        sourceType:  'module',  // Allows for the use of imports
-    },
-    rules:  {
-        // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
-        // e.g. "@typescript-eslint/explicit-function-return-type": "off",
-        '@typescript-eslint/explicit-member-accessibility': 'off',
-        '@typescript-eslint/camelcase': 'off',
-        '@typescript-eslint/no-parameter-properties': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'off',
-        '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/no-use-before-define': 'off',
-        '@typescript-eslint/member-delimiter-style': [
-            2,
-            {
-              multiline: {
-                delimiter: 'none',
-                requireLast: false,
-              },
-              singleline: {
-                delimiter: 'semi',
-                requireLast: true,
-              },
-            },
-        ],
-        "indent": "off",
-        "@typescript-eslint/indent": ["error", 2]
-    },
+module.exports = {
+  root: true,
+  env: {
+    node: true,
+  },
+  extends: ['plugin:vue/essential', '@vue/prettier', '@vue/typescript'],
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+  },
+  parserOptions: {
+    parser: '@typescript-eslint/parser',
+    ecmaVersion: 2018,
+  },
 }
