@@ -1,16 +1,24 @@
 <template>
   <div class="chat text-center full-width">
-    <div class="chat-history">
+    <div ref="history" class="chat-history">
       <div class="history-container">
-        <speech
-          v-for="(speech, idx) in lastTexts"
-          :key="idx"
-          :style="{ transform: `translateY(${speech.transformY}px)` }"
-          :text="speech.text"
-        />
+        <transition-group name="slide">
+          <speech
+            v-for="speech in lastTexts"
+            :key="speech.id"
+            :style="{ transform: `translateY(${speech.transformY}px)` }"
+            :text="speech.text"
+          />
+        </transition-group>
       </div>
     </div>
-    <input v-model="currentText" type="text" class="chat-box" placeholder="Say hello!" @keydown.enter="onEnter" />
+    <input
+      v-model="currentText"
+      type="text"
+      class="chat-box"
+      placeholder="Say hello!"
+      @keydown.enter="onEnter"
+    />
   </div>
 </template>
 
@@ -19,6 +27,8 @@ import Speech from './Speech.vue'
 
 const STEP = 30
 
+let id = 0
+
 export default {
   components: {
     Speech,
@@ -26,6 +36,7 @@ export default {
   data() {
     return {
       lastTexts: [],
+      dialogHistory: [],
       currentText: '',
     }
   },
@@ -34,7 +45,19 @@ export default {
   },
   methods: {
     goTop() {
-      this.lastTexts.forEach(text => (text.transformY -= STEP))
+      const { history } = this.$refs
+      if (!history) {
+        return
+      }
+      const chatRect: ClientRect = history.getBoundingClientRect()
+      const { bottom } = chatRect
+      this.lastTexts.forEach((text, idx) => {
+        text.transformY -= STEP
+        if (text.transformY < -bottom) {
+          const [removed] = this.lastTexts.splice(idx, 1)
+          this.dialogHistory.push(removed)
+        }
+      })
     },
     initAutoscroll() {
       const goTop = () => this.goTop()
@@ -53,6 +76,7 @@ export default {
       this.lastTexts.push({
         text: event.target.value,
         transformY: 0,
+        id: id++,
       })
       this.currentText = ''
     },
@@ -86,6 +110,7 @@ export default {
   border-radius: 5px;
   outline: none;
 }
+
 @media screen and (max-width: 768px) {
   .chat-box {
     width: 90%;

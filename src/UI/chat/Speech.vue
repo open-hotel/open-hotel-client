@@ -28,6 +28,7 @@ export default {
 .speech {
   padding: 5px;
   background-color: #fff;
+  border-radius: 5px;
   display: inline-block;
 }
 </style>
