@@ -1,6 +1,6 @@
 import { Scene } from '../engine/lib/Scene'
 import { Progress } from '../gameobjects/Progress'
-import resources from './preload.json'
+import resources from './preload'
 import { Log } from '../engine/lib/Logger'
 
 function mapObject(obj: any, fn: Function, path: string[] = []) {
