@@ -4,6 +4,7 @@ import { load as loadWebFonts } from 'webfontloader'
 import * as PIXI from 'pixi.js'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+PIXI.settings.FILTER_RESOLUTION = window.devicePixelRatio
 
 const app = Application.get({
   logLevel: Log.INFO,
