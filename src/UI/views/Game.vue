@@ -12,3 +12,8 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+.game {
+  z-index: 5;
+}
+</style>
