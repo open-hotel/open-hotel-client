@@ -31,4 +31,10 @@ export default {
   border-radius: 5px;
   display: inline-block;
 }
+
+@media screen and (max-width: 768px) {
+  .speech {
+    font-size: 45px;
+  }
+}
 </style>

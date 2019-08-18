@@ -16,7 +16,7 @@
       v-model="currentText"
       type="text"
       class="chat-box"
-      placeholder="Say hello!"
+      placeholder="Say something..."
       @keydown.enter="onEnter"
     />
   </div>
