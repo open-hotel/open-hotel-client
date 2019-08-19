@@ -12,7 +12,14 @@
         </transition-group>
       </div>
     </div>
-    <input v-model="currentText" type="text" class="chat-box" placeholder="Say something..." @keydown.enter="onEnter" />
+    <input
+      ref="chatBox"
+      v-model="currentText"
+      type="text"
+      class="chat-box"
+      placeholder="Say something..."
+      @keydown.enter="onEnter"
+    />
   </div>
 </template>
 
@@ -73,6 +80,7 @@ export default {
         id: id++,
       })
       this.currentText = ''
+      this.$refs.chatBox.value = ''
     },
   },
 }
@@ -107,8 +115,7 @@ export default {
 
 @media screen and (max-width: 768px) {
   .chat-box {
-    width: 90vh;
-    // font-size: 60px;
+    max-width: 90vw;
     border-radius: 10px;
     &::placeholder {
       text-align: center;

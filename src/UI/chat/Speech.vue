@@ -34,7 +34,7 @@ export default {
 
 @media screen and (max-width: 768px) {
   .speech {
-    font-size: 45px;
+    font-size: 15px;
   }
 }
 </style>
