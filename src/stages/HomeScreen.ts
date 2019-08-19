@@ -72,8 +72,7 @@ export class HomeScreen extends Scene {
       if (e.target instanceof GameObject) {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
-
-          human.zIndex = target.zIndex
+          human.zIndex = target.zIndex + 1
           human.mapPosition.set(p.x, p.y, 0)
           human.walk()
 
@@ -85,6 +84,10 @@ export class HomeScreen extends Scene {
           }
 
           await human.moveTo(target.isoPosition)
+          // TODO: find a better way to reset human z-index
+          setTimeout(() => {
+            human.zIndex -= 1
+          }, 500)
 
           human.stop()
           lastPosition = p

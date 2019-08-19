@@ -6,6 +6,7 @@ import { HumanLeftHand } from './LeftHand'
 import { HumanRightHand } from './RightHand'
 import { THumanDirection } from './HumanAnimation'
 import { HumanHair } from './Hair'
+import * as PIXI from 'pixi.js'
 
 interface HumanProps {
   direction: THumanDirection
@@ -76,13 +77,10 @@ export class Human extends GameObject<HumanProps> {
 
     setTimeout(moveHead, random(750, 2000))
 
-    // const { width, height } = this.getBounds()
+    const { width, height } = this.getBounds()
     // Posicionar aqui
-    // new Vector3(
-    //   width / 2,
-    //   width / 2,
-    //   height / -2
-    // ).toVector2().copyTo(this.pivot)
+    new PIXI.Point(-30, -25).copyTo(this.pivot)
+    this.zIndex = 3
 
     this.body.sprite.onFrameChange = () => this.positionateLayers()
     this.updateLayers()

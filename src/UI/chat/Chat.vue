@@ -12,13 +12,7 @@
         </transition-group>
       </div>
     </div>
-    <input
-      v-model="currentText"
-      type="text"
-      class="chat-box"
-      placeholder="Say something..."
-      @keydown.enter="onEnter"
-    />
+    <input v-model="currentText" type="text" class="chat-box" placeholder="Say something..." @keydown.enter="onEnter" />
   </div>
 </template>
 
