@@ -107,8 +107,8 @@ export default {
 
 @media screen and (max-width: 768px) {
   .chat-box {
-    width: 90%;
-    font-size: 60px;
+    width: 90vh;
+    // font-size: 60px;
     border-radius: 10px;
     &::placeholder {
       text-align: center;

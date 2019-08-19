@@ -77,7 +77,7 @@ export class Human extends GameObject<HumanProps> {
 
     setTimeout(moveHead, random(750, 2000))
 
-    const { width, height } = this.getBounds()
+    // const { width, height } = this.getBounds()
     // Posicionar aqui
     new PIXI.Point(-30, -25).copyTo(this.pivot)
     this.zIndex = 3

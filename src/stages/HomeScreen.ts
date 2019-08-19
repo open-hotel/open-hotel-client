@@ -16,24 +16,31 @@ export class HomeScreen extends Scene {
   protected $camera: Viewport
 
   setup() {
+    const width = window.innerWidth
+    const height = window.innerHeight
     this.$camera = new Viewport({
-      screenWidth: window.innerWidth,
-      screenHeight: window.innerHeight,
-      worldWidth: window.innerWidth * 2,
-      worldHeight: window.innerHeight * 2,
+      screenWidth: width,
+      screenHeight: height,
+      worldWidth: width * 2,
+      worldHeight: height * 2,
       interaction: this.$app.renderer.plugins.interaction,
     })
       .drag({
         reverse: false,
       })
-      .pinch()
+      .pinch({
+        percent: 20,
+      })
       .wheel()
       .clampZoom({
-        maxHeight: window.innerHeight * MAX_ZOOM,
-        maxWidth: window.innerWidth * MAX_ZOOM,
-        minHeight: window.innerHeight * MIN_ZOOM,
-        minWidth: window.innerWidth * MIN_ZOOM,
+        maxHeight: height * MAX_ZOOM,
+        maxWidth: width * MAX_ZOOM,
+        minHeight: height * MIN_ZOOM,
+        minWidth: width * MIN_ZOOM,
       })
+    if (screen.width < 768) {
+      this.$camera.fit()
+    }
 
     const bg = new PIXI.Graphics()
 
@@ -84,10 +91,6 @@ export class HomeScreen extends Scene {
           }
 
           await human.moveTo(target.isoPosition)
-          // TODO: find a better way to reset human z-index
-          setTimeout(() => {
-            human.zIndex -= 1
-          }, 500)
 
           human.stop()
           lastPosition = p
