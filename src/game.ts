@@ -14,6 +14,10 @@ const app = Application.get({
   forceCanvas: true,
 })
 
+if (module.hot) {
+  module.hot.dispose(() => location.reload())
+}
+
 const stagesLoaded = Promise.all([import('./stages/SplashScreen'), import('./stages/HomeScreen')]).then(
   ([splash, home]) => {
     app.$router.setRoutes({
