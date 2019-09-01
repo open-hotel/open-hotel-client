@@ -112,7 +112,7 @@ export default {
   padding: 10px;
   border-radius: 5px;
   outline: none;
-  box-shadow: 0 2px 4px rgba(#000, .25);
+  box-shadow: 0 2px 4px rgba(#000, 0.25);
   border: 2px solid transparent;
 
   &:focus {

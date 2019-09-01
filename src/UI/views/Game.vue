@@ -1,9 +1,7 @@
 <template>
-  <px-window-manager class="game" ref="gameWrapper">
+  <px-window-manager ref="gameWrapper" class="game">
     <canvas id="game" ref="game"></canvas>
-    <game-bottom-bar
-      @click-navigator="toggleWindow('navigator')"
-    />
+    <game-bottom-bar @click-navigator="toggleWindow('navigator')" />
 
     <px-window v-bind.sync="window.navigator">
       <GameNavigator />
@@ -23,7 +21,7 @@ export default {
     GameNavigator: () => import('../navigator/Navigator'),
   },
 
-  data () {
+  data() {
     return {
       window: {
         navigator: {
@@ -33,9 +31,9 @@ export default {
           y: 50,
           width: 320,
           height: 480,
-          resizable: true
-        }
-      }
+          resizable: true,
+        },
+      },
     }
   },
   mounted() {
@@ -84,8 +82,8 @@ export default {
       if (window) {
         window.visible = !window.visible
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

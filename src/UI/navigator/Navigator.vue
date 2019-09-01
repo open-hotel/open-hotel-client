@@ -33,10 +33,10 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      tab: 'home'
+      tab: 'home',
     }
-  }
+  },
 }
 </script>

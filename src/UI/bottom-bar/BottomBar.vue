@@ -2,7 +2,7 @@
   <div class="game-bottom-bar">
     <chat />
     <button class="icon-button" @click="$emit('click-navigator')">
-      <img src="./icons/navigator.png" alt="">
+      <img src="./icons/navigator.png" alt="" />
     </button>
   </div>
 </template>
@@ -12,12 +12,12 @@
   position: fixed;
   display: flex;
   flex-flow: row nowrap;
-  background: rgba(#1c1c1a, .92);
+  background: rgba(#1c1c1a, 0.92);
   padding: 4px 8px;
   bottom: 0;
   left: 0;
   width: 100%;
-  border-top: 2px solid rgba(#FFF, .25);
+  border-top: 2px solid rgba(#fff, 0.25);
   border-radius: 4px 4px 0 0;
   z-index: 99999999;
 }
@@ -38,13 +38,12 @@
 }
 </style>
 
-
 <script>
 import Chat from '../chat/Chat'
 
 export default {
   components: {
-    Chat
-  }
+    Chat,
+  },
 }
 </script>
