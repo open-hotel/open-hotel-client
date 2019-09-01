@@ -48,7 +48,6 @@ export class Application extends PIXI.Application {
 
     this.$router = new Navigation(this)
 
-    document.body.appendChild(this.view)
     window.addEventListener('resize', this.onResize.bind(this))
 
     this.onResize()
