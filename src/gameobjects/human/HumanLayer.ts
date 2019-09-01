@@ -9,6 +9,19 @@ interface HumanLayerProps {
   action: string
 }
 
+export interface HumanAsset {
+  type: number
+  direction?: number
+  action?: string
+  prefix: string
+}
+
+export const getDefaultAssetDefinition = (asset: HumanAsset) => ({
+  direction: asset.direction || 2,
+  action: asset.action || 'std',
+  type: asset.type,
+})
+
 export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   static flips: {
     [k: number]: number
@@ -23,14 +36,14 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   protected humanAnimation: HumanAnimation
 
   constructor(
-    private layerName: string,
-    private resourcePath: string,
+    protected layerName: string,
+    protected resourcePath: string,
     attrs: HumanLayerProps = {
       type: 1,
       action: 'std',
       direction: 0,
     },
-    private prefix: string = 'hh_human_body_h',
+    protected prefix: string = 'hh_human_body_h',
   ) {
     super({
       type: attrs.type,
@@ -64,6 +77,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     const flipedDirection = flip ? HumanLayer.flips[direction] : direction
     const animationName = `${this.prefix}_${action}_${this.layerName}_${type}_${flipedDirection}`
     const frameName = `${animationName}_0.png`
+    console.log(frameName)
 
     if (animationName in animations) return animations[animationName]
     else if (frameName in textures) return [textures[frameName]]
