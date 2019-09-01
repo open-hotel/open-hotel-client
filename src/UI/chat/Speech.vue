@@ -30,6 +30,7 @@ export default {
   background-color: #fff;
   border-radius: 5px;
   display: inline-block;
+  font: normal 12px Volter;
 }
 
 @media screen and (max-width: 768px) {

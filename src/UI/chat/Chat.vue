@@ -101,16 +101,23 @@ export default {
   overflow: hidden;
 }
 .chat {
-  position: fixed;
-  bottom: 20px;
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 16px;
 }
 .chat-box {
   width: 500px;
+  font: normal 16px Volter;
   font-size: 15px;
   padding: 10px;
-  border: none;
   border-radius: 5px;
   outline: none;
+  box-shadow: 0 2px 4px rgba(#000, .25);
+  border: 2px solid transparent;
+
+  &:focus {
+    border-color: #1c1c1c;
+  }
 }
 
 @media screen and (max-width: 768px) {

@@ -14,5 +14,6 @@
 
 body {
   overflow: hidden;
+  font: normal 14px solid Ubuntu, Arial, sans-serif;
 }
 </style>

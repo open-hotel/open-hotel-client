@@ -9,6 +9,7 @@
     "testW": "jest --watchAll"
   },
   "dependencies": {
+    "@open-hotel/pixel": "^0.2.3",
     "@tweenjs/tween.js": "^17.4.0",
     "core-js": "^2.6.5",
     "pixi-viewport": "^4.2.0",

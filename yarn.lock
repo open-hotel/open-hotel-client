@@ -880,6 +880,17 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@open-hotel/pixel@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@open-hotel/pixel/-/pixel-0.2.3.tgz#3f7a962607576776b3d7930320a9c3a9d0f4f6b4"
+  integrity sha512-uGDfnmbBm2vQef/Ws4aQ7c9SglpdUxpSQnVTQZfxvsQCwkTLnV3F7yBsm5pDHQ7I4nMKXY4GkkpsYsDQODW9BQ==
+  dependencies:
+    register-service-worker "^1.6.2"
+    vue-class-component "^7.0.2"
+    vue-property-decorator "^8.1.0"
+    vue-router "^3.0.3"
+    vuex "^3.0.1"
+
 "@pixi/accessibility@^5.1.2":
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/@pixi/accessibility/-/accessibility-5.1.2.tgz#be1ebbd46356b79922b079cf64abfd95d21d3a70"
@@ -10547,6 +10558,11 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.0.tgz#bd76d6a23323e2ca8ffa12028dc04559c75f9019"
   integrity sha512-iq+S7vZJE60yejDYM0ek6zg308+UZsdtPExWP9VZoCFCz1zkJoXFnAX7aZfd/ZwrkidzdUZL0C/ryW+JwAiIGw==
 
+vue-class-component@^7.0.1, vue-class-component@^7.0.2:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.1.0.tgz#b33efcb10e17236d684f70b1e96f1946ec793e87"
+  integrity sha512-G9152NzUkz0i0xTfhk0Afc8vzdXxDR1pfN4dTwE72cskkgJtdXfrKBkMfGvDuxUh35U500g5Ve4xL8PEGdWeHg==
+
 vue-eslint-parser@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-2.0.3.tgz#c268c96c6d94cfe3d938a5f7593959b0ca3360d1"
@@ -10586,6 +10602,13 @@ vue-loader@^15.7.0:
     loader-utils "^1.1.0"
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
+
+vue-property-decorator@^8.1.0:
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/vue-property-decorator/-/vue-property-decorator-8.2.2.tgz#ac895e9508ee1bf86e3a28568d94d842c2c8e42f"
+  integrity sha512-3gRrIeoUtjXvkoMX2stJsVs7805Pa9MXEndnk21ej+sWO7AIc5HF1TKqK0Pox5TEjpO02UbadIF0QWNrx6ZwXQ==
+  dependencies:
+    vue-class-component "^7.0.1"
 
 vue-router@^3.0.3:
   version "3.1.2"
