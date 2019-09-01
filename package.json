@@ -12,7 +12,7 @@
     "@tweenjs/tween.js": "^17.4.0",
     "core-js": "^2.6.5",
     "pixi-viewport": "^4.2.0",
-    "pixi.js": "^5.1.1",
+    "pixi.js": "^5.1.2",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
