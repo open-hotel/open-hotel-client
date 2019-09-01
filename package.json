@@ -6,7 +6,8 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "jest",
-    "testW": "jest --watchAll"
+    "testW": "jest --watchAll",
+    "renameAssets": "node ./commands/renameAssets"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^17.4.0",
