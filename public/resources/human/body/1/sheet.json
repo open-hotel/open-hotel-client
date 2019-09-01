@@ -97,7 +97,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":56},
 	"sourceSize": {"w":25,"h":56},
-	"anchor": {"x":0.24,"y":1}
+	"anchor": {"x":0.28,"y":1}
 },
 "hh_human_body_h_wlk_bd_1_0_3.png":
 {
@@ -106,7 +106,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":56},
 	"sourceSize": {"w":23,"h":56},
-	"anchor": {"x":0.347826,"y":1}
+	"anchor": {"x":0.304348,"y":1}
 },
 "hh_human_body_h_wlk_bd_1_1_0.png":
 {
@@ -266,6 +266,6 @@
 	"format": "RGBA8888",
 	"size": {"w":114,"h":406},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:d0fc9414b349c5c1f6e30b155a9fbf82:4640d196c5073f7a269e2356952f95e9:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:5cff0a336860e99f3ac3ea3c067ac1fb:4640d196c5073f7a269e2356952f95e9:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

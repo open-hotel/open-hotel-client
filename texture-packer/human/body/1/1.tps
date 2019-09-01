@@ -316,7 +316,7 @@
             <key type="filename">frames/hh_human_body_h_wlk_bd_1_0_2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.24,1</point_f>
+                <point_f>0.28,1</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -329,7 +329,7 @@
             <key type="filename">frames/hh_human_body_h_wlk_bd_1_0_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.347826,1</point_f>
+                <point_f>0.304348,1</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
