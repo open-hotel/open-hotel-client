@@ -583,7 +583,6 @@
             <key type="filename">hh_human_face_h_eyb_ey_7_3_0.png</key>
             <key type="filename">hh_human_face_h_sml_ey_6_3_0.png</key>
             <key type="filename">hh_human_face_h_sml_ey_7_3_0.png</key>
-            <key type="filename">hh_human_face_h_std_ey_1_3_0.png</key>
             <key type="filename">hh_human_face_h_std_ey_6_3_0.png</key>
             <key type="filename">hh_human_face_h_std_ey_7_3_0.png</key>
             <struct type="IndividualSpriteSettings">
@@ -895,6 +894,19 @@
                 <rect>3,2,5,5</rect>
                 <key>scale9Paddings</key>
                 <rect>3,2,5,5</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">hh_human_face_h_std_ey_1_3_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.142857,2.4</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>4,1,7,3</rect>
+                <key>scale9Paddings</key>
+                <rect>4,1,7,3</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
