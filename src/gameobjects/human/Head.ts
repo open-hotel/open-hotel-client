@@ -14,7 +14,7 @@ export class HumanHead extends HumanLayer {
 
   constructor(attrs: HeadProps) {
     super('hd', 'human/head', attrs)
-    this.sprite.anchor.set(0.5, 0.75)
+    // this.sprite.anchor.set(0.5, 0.75)
     this.zIndex = 1
 
     this.hair = new HumanHair(hairs[0])

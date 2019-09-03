@@ -133,7 +133,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":28},
 	"sourceSize": {"w":27,"h":28},
-	"anchor": {"x":0.37037,"y":0.892857}
+	"anchor": {"x":0.444444,"y":0.821429}
 },
 "hh_human_body_h_std_hd_1_2_0.png":
 {
@@ -142,7 +142,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":31},
 	"sourceSize": {"w":26,"h":31},
-	"anchor": {"x":0.269231,"y":0.83871}
+	"anchor": {"x":0.461538,"y":0.806452}
 },
 "hh_human_body_h_std_hd_1_3_0.png":
 {
@@ -177,6 +177,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":259},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:d34bbaf58434ba213dc4a91ea648591d:9839dfc1a0e2aa44c2d66e57173de85f:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:d33b0e74d15bfe5793c1023a33a81cb1:9839dfc1a0e2aa44c2d66e57173de85f:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

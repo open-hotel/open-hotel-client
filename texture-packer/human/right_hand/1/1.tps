@@ -548,7 +548,6 @@
                 <false/>
             </struct>
             <key type="filename">textures/hh_human_body_h_sit_rh_1_0_0.png</key>
-            <key type="filename">textures/hh_human_body_h_std_rh_1_0_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -562,7 +561,6 @@
                 <false/>
             </struct>
             <key type="filename">textures/hh_human_body_h_sit_rh_1_2_0.png</key>
-            <key type="filename">textures/hh_human_body_h_wlk_rh_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.6,0</point_f>
@@ -572,6 +570,19 @@
                 <rect>3,9,5,17</rect>
                 <key>scale9Paddings</key>
                 <rect>3,9,5,17</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">textures/hh_human_body_h_std_rh_1_0_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>-0.818182,0.212121</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,8,5,17</rect>
+                <key>scale9Paddings</key>
+                <rect>3,8,5,17</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -591,7 +602,7 @@
             <key type="filename">textures/hh_human_body_h_std_rh_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.555556,0</point_f>
+                <point_f>0.888889,0.151515</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -602,7 +613,6 @@
                 <false/>
             </struct>
             <key type="filename">textures/hh_human_body_h_std_rh_1_3_0.png</key>
-            <key type="filename">textures/hh_human_body_h_wlk_rh_1_3_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.75,0</point_f>
@@ -631,7 +641,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_0_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.166667,0</point_f>
+                <point_f>-0.75,0.133333</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -644,7 +654,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_0_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.166667,0</point_f>
+                <point_f>-0.75,0.137931</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -657,7 +667,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_0_2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>-0.75,0.125</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -670,7 +680,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_0_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.0666667,0</point_f>
+                <point_f>-0.6,0.148148</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -684,7 +694,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_1_2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.444444,0</point_f>
+                <point_f>0.444444,0.178571</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -697,7 +707,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_1_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.461538,0</point_f>
+                <point_f>0.461538,0.185185</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -710,7 +720,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_1_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.111111,0</point_f>
+                <point_f>0.111111,0.208333</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -720,10 +730,23 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">textures/hh_human_body_h_wlk_rh_1_2_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.6,0.142857</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>3,9,5,17</rect>
+                <key>scale9Paddings</key>
+                <rect>3,9,5,17</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_2_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.769231,0</point_f>
+                <point_f>0.769231,0.151515</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -736,7 +759,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_2_2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.666667,0</point_f>
+                <point_f>0.666667,0.138889</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -749,7 +772,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_2_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.333333,0</point_f>
+                <point_f>0.333333,0.15625</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -759,10 +782,23 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">textures/hh_human_body_h_wlk_rh_1_3_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.75,0.151515</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>2,8,4,17</rect>
+                <key>scale9Paddings</key>
+                <rect>2,8,4,17</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_3_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.625,0</point_f>
+                <point_f>0.625,0.178571</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -775,7 +811,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_3_2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.625,0</point_f>
+                <point_f>0.625,0.15625</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -788,7 +824,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_3_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0</point_f>
+                <point_f>0.5,0.16129</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -801,7 +837,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_7_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.142857,0</point_f>
+                <point_f>0.142857,0.166667</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -814,7 +850,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_7_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.125,0</point_f>
+                <point_f>0.125,0.166667</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -827,7 +863,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_7_2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0,0.15625</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -840,7 +876,7 @@
             <key type="filename">textures/hh_human_body_h_wlk_rh_1_7_3.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0,0</point_f>
+                <point_f>0,0.178571</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>

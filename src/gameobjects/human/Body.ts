@@ -18,7 +18,7 @@ export class HumanBody extends HumanLayer {
   constructor(attrs: BodyProps) {
     super('bd', 'human/body', attrs)
 
-    this.sprite.anchor.set(0.5, 1)
+    // this.sprite.anchor.set(0.5, 1)
   }
 
   idle() {

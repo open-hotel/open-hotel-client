@@ -880,10 +880,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@open-hotel/pixel@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@open-hotel/pixel/-/pixel-0.2.3.tgz#3f7a962607576776b3d7930320a9c3a9d0f4f6b4"
-  integrity sha512-uGDfnmbBm2vQef/Ws4aQ7c9SglpdUxpSQnVTQZfxvsQCwkTLnV3F7yBsm5pDHQ7I4nMKXY4GkkpsYsDQODW9BQ==
+"@open-hotel/pixel@latest":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@open-hotel/pixel/-/pixel-0.2.4.tgz#b9a1385bfc516b9a86c876a90ca7caf23e1bf6fa"
+  integrity sha512-vkseXny9LjZGui64euC6wmzELtfZljzb+rhTlKrpRLdeDMJVXo1Tz61fLUKqAFdhxEI8UykH8Sz0vTRf5gzI0w==
   dependencies:
     register-service-worker "^1.6.2"
     vue-class-component "^7.0.2"

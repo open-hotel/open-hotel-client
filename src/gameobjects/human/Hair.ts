@@ -18,9 +18,9 @@ export class HumanHair extends HumanLayer {
 
     const anim = this.humanAnimation
 
-    anim.turns({
-      front: this.anchorsC(0.55, 0.9),
-      right: this.anchorsC(0.66, 0.9),
-    })
+    // anim.turns({
+    //   front: this.anchorsC(0.55, 0.9),
+    //   right: this.anchorsC(0.66, 0.9),
+    // })
   }
 }

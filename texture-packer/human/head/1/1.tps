@@ -344,7 +344,7 @@
             <key type="filename">textures/hh_human_body_h_std_hd_1_1_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.37037,0.892857</point_f>
+                <point_f>0.444444,0.821429</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -357,7 +357,7 @@
             <key type="filename">textures/hh_human_body_h_std_hd_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.269231,0.83871</point_f>
+                <point_f>0.461538,0.806452</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
