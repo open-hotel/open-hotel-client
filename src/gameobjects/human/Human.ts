@@ -94,12 +94,17 @@ export class Human extends GameObject<HumanProps> {
     this.rightHand.position.set(-7, -(height - 6))
 
     if (this.attrs2.direction === 0) {
-      this.leftHand.position.set(-9, -(height - 7))
-      this.rightHand.position.set(7, -(height - 8))
+      this.leftHand.position.set(-10, -(height - 4))
+      this.rightHand.position.set(4, -(height - 10))
+    }
+
+    if (this.attrs2.direction === 2) {
+      this.leftHand.position.set(8, -(height - 4))
+      this.rightHand.position.set(-7, -(height - 6))
     }
 
     if (this.attrs2.direction === 4) {
-      this.leftHand.position.set(-9, -(height - 7))
+      this.leftHand.position.set(-8, -(height - 5))
       this.rightHand.position.set(7, -(height - 7))
     }
 
@@ -110,7 +115,7 @@ export class Human extends GameObject<HumanProps> {
 
     if (this.attrs2.direction === 6) {
       this.leftHand.position.set(10, -(height - 5))
-      this.rightHand.position.set(-4, -(height - 9))
+      this.rightHand.position.set(-4, -(height - 5))
     }
 
     if (this.attrs2.direction === 7) {

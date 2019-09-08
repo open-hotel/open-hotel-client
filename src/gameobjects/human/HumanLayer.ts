@@ -113,9 +113,4 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     if (flip) this.sprite.scale.set(-1, 1)
     else this.sprite.scale.set(1)
   }
-
-  render(renderer: PIXI.Renderer) {
-    Debug.anchor(this)
-    return super.render(renderer)
-  }
 }
