@@ -68,13 +68,13 @@ export class HomeScreen extends Scene {
 
     const [humanX, humanY] = floor.getFirstBlockIndexes()
     human.set('map_position', { x: humanX, y: humanY })
-    human.attrs2.direction = 2
+    human.attrs2.direction = 0
 
     floor.getPositionOf(humanX, humanY).copyTo(human.position)
 
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
-    let lastPosition: any = null
+    let lastPosition = null
     floor.addListener('pointertap', async e => {
       if (e.target instanceof GameObject) {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
@@ -93,6 +93,8 @@ export class HomeScreen extends Scene {
           await human.moveTo(target.isoPosition)
 
           human.stop()
+
+          /* eslint-disable require-atomic-updates */
           lastPosition = p
         })
       }

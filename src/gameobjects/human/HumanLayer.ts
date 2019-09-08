@@ -53,7 +53,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.updateSheet()
     this.sprite = new PIXI.AnimatedSprite(this.getAnimation(attrs.action, attrs.direction))
     this.sprite.loop = true
-    this.sprite.animationSpeed = 1 / 6
+    this.sprite.animationSpeed = 1 / 8
 
     this.attrs2.watch('type', () => {
       this.updateSheet()
@@ -63,7 +63,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.attrs2.watch('direction', () => this.updateTexture())
     this.updateFlip()
     this.addChild(this.sprite)
-    // this.updateAnchor()
     this.sprite.onFrameChange = () => this.updateAnchor()
   }
 
@@ -94,20 +93,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     else if (action === 'std') return []
     return this.getAnimation('std', 0)
   }
-
-  // /**
-  //  * Shorthand for HumanLayer.prototype.sprite.anchor.set(x, y)
-  //  */
-  // protected anchors(x: number, y: number) {
-  //   this.sprite.anchor.set(x, y)
-  // }
-
-  // /**
-  //  * Returns a callback that calls HumanLayer.prototype.anchors
-  //  */
-  // protected anchorsC(x: number, y: number) {
-  //   return () => this.anchors(x, y)
-  // }
 
   updateTexture() {
     // this.updateAnchor()

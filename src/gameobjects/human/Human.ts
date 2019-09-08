@@ -4,12 +4,11 @@ import { HumanBody } from './Body'
 import { random } from '../../engine/lib/utils/Util'
 import { HumanLeftHand } from './LeftHand'
 import { HumanRightHand } from './RightHand'
-import { THumanDirection } from './HumanAnimation'
 import { HumanHair } from './Hair'
 import * as PIXI from 'pixi.js'
 
 interface HumanProps {
-  direction: THumanDirection
+  direction: number
   isLay: boolean
   isSpeak: boolean
   isIdle: boolean
@@ -29,7 +28,7 @@ export class Human extends GameObject<HumanProps> {
       isIdle: false,
       isLay: false,
       isSpeak: false,
-      isWalk: false,
+      isWalk: true,
     })
 
     this.interactive = true
@@ -61,10 +60,8 @@ export class Human extends GameObject<HumanProps> {
       direction: this.attrs2.direction,
     })
 
-    this.head.addChild(this.leftHand, this.rightHand)
-
     this.attrs2.addListener(() => this.updateLayers())
-    this.body.addChild(this.head)
+    this.body.addChild(this.head, this.leftHand, this.rightHand)
 
     this.addChild(this.body)
 
@@ -92,9 +89,34 @@ export class Human extends GameObject<HumanProps> {
 
   private positionateLayers() {
     const { height } = this.body.sprite.getLocalBounds()
-    this.head.position.set(0, -height)
-    this.leftHand.position.set(0, 0)
-    this.rightHand.position.set(-7, 12)
+    this.head.position.set(0, -(height - 2))
+    this.leftHand.position.set(8, -(height - 5))
+    this.rightHand.position.set(-7, -(height - 6))
+
+    if (this.attrs2.direction === 0) {
+      this.leftHand.position.set(-9, -(height - 7))
+      this.rightHand.position.set(7, -(height - 8))
+    }
+
+    if (this.attrs2.direction === 4) {
+      this.leftHand.position.set(-9, -(height - 7))
+      this.rightHand.position.set(7, -(height - 7))
+    }
+
+    if (this.attrs2.direction === 5) {
+      this.leftHand.position.set(-5, -(height - 7))
+      this.rightHand.position.set(5, -(height - 7))
+    }
+
+    if (this.attrs2.direction === 6) {
+      this.leftHand.position.set(10, -(height - 5))
+      this.rightHand.position.set(-4, -(height - 9))
+    }
+
+    if (this.attrs2.direction === 7) {
+      this.leftHand.position.set(-7, -(height - 2))
+      this.rightHand.position.set(6, -(height - 3))
+    }
   }
 
   walk() {
