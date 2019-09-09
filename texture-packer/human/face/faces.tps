@@ -887,7 +887,7 @@
             <key type="filename">hh_human_face_h_std_ey_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.2,1.33333</point_f>
+                <point_f>-0.1,1.44444</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -900,7 +900,7 @@
             <key type="filename">hh_human_face_h_std_ey_1_3_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.142857,2.4</point_f>
+                <point_f>0.5,1.8</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>

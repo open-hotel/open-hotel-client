@@ -7,7 +7,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":4,"h":17},
 	"sourceSize": {"w":4,"h":17},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.75,"y":0}
 },
 "hh_human_body_h_crr_lh_1_1_0.png":
 {
@@ -286,7 +286,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":26},
 	"sourceSize": {"w":5,"h":26},
-	"anchor": {"x":0.6,"y":0}
+	"anchor": {"x":1,"y":-0.0384615}
 },
 "hh_human_body_h_std_lh_1_1_0.png":
 {
@@ -529,7 +529,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":29},
 	"sourceSize": {"w":9,"h":29},
-	"anchor": {"x":0.444444,"y":0}
+	"anchor": {"x":0.555556,"y":0}
 },
 "hh_human_body_h_wlk_lh_1_1_3.png":
 {
@@ -574,7 +574,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":4,"h":12},
 	"sourceSize": {"w":4,"h":12},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0,"y":0.0833333}
 },
 "hh_human_body_h_wlk_lh_1_3_0.png":
 {
@@ -583,7 +583,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":34},
 	"sourceSize": {"w":8,"h":34},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0,"y":0.0882353}
 },
 "hh_human_body_h_wlk_lh_1_3_1.png":
 {
@@ -592,7 +592,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":33},
 	"sourceSize": {"w":8,"h":33},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0,"y":0.0909091}
 },
 "hh_human_body_h_wlk_lh_1_3_2.png":
 {
@@ -601,7 +601,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":34},
 	"sourceSize": {"w":8,"h":34},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0,"y":0.0882353}
 },
 "hh_human_body_h_wlk_lh_1_3_3.png":
 {
@@ -610,7 +610,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":30},
 	"sourceSize": {"w":8,"h":30},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0,"y":0.1}
 },
 "hh_human_body_h_wlk_lh_1_7_0.png":
 {
@@ -678,6 +678,6 @@
 	"format": "RGBA8888",
 	"size": {"w":575,"h":64},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:d729489220d52b2e032ddadc9dbd1ff5:0757559eb8e56bebd3566243e9a24e78:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:7cd868986221fb8cd65a312b533f5fb2:0757559eb8e56bebd3566243e9a24e78:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

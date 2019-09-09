@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { Navigation } from './lib/navigation/Navigation'
 import { Logger, Log } from './lib/Logger'
-import * as Tween from '@tweenjs/tween.js'
+import Tween from '@tweenjs/tween.js'
 import { Viewport } from 'pixi-viewport'
 
 interface ApplicationOptions {

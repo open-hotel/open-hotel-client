@@ -34,7 +34,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":29},
 	"sourceSize": {"w":28,"h":29},
-	"anchor": {"x":0.321429,"y":0.965517}
+	"anchor": {"x":0.535714,"y":0.827586}
 },
 "hh_human_body_h_spk_hd_1_0_1.png":
 {
@@ -43,7 +43,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":28},
 	"sourceSize": {"w":28,"h":28},
-	"anchor": {"x":0.321429,"y":0.964286}
+	"anchor": {"x":0.535714,"y":0.857143}
 },
 "hh_human_body_h_spk_hd_1_1_0.png":
 {
@@ -70,7 +70,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":33},
 	"sourceSize": {"w":26,"h":33},
-	"anchor": {"x":0.230769,"y":0.727273}
+	"anchor": {"x":0.461538,"y":0.727273}
 },
 "hh_human_body_h_spk_hd_1_2_1.png":
 {
@@ -79,7 +79,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":31},
 	"sourceSize": {"w":26,"h":31},
-	"anchor": {"x":0.230769,"y":0.741935}
+	"anchor": {"x":0.461538,"y":0.774194}
 },
 "hh_human_body_h_spk_hd_1_3_0.png":
 {
@@ -124,7 +124,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":28},
 	"sourceSize": {"w":28,"h":28},
-	"anchor": {"x":0.357143,"y":0.964286}
+	"anchor": {"x":0.535714,"y":0.857143}
 },
 "hh_human_body_h_std_hd_1_1_0.png":
 {
@@ -133,7 +133,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":28},
 	"sourceSize": {"w":27,"h":28},
-	"anchor": {"x":0.37037,"y":0.892857}
+	"anchor": {"x":0.444444,"y":0.821429}
 },
 "hh_human_body_h_std_hd_1_2_0.png":
 {
@@ -142,7 +142,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":31},
 	"sourceSize": {"w":26,"h":31},
-	"anchor": {"x":0.269231,"y":0.83871}
+	"anchor": {"x":0.461538,"y":0.774194}
 },
 "hh_human_body_h_std_hd_1_3_0.png":
 {
@@ -177,6 +177,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":259},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:d34bbaf58434ba213dc4a91ea648591d:9839dfc1a0e2aa44c2d66e57173de85f:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:6756b0bbfe331e0e171e2f69691e0fb5:9839dfc1a0e2aa44c2d66e57173de85f:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

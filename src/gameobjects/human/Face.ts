@@ -4,8 +4,6 @@ export class HumanFace extends HumanLayer {
   constructor(attrs: HumanAsset) {
     super('ey', 'human/face', getDefaultAssetDefinition(attrs), 'hh_human_face_h')
 
-    const anim = this.humanAnimation
-
     // this.sprite.anchor.set(10, 10)
 
     // anim.turns({
