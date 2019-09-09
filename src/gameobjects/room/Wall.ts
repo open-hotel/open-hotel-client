@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { GameObject } from '../../engine/lib/GameObject'
 import { Floor } from './Floor'
 import { FloorBlock } from './FloorBlock'

@@ -3,6 +3,7 @@ import { Vector3 } from '../../engine/lib/isometric/Vector3'
 import { Cube } from '../../engine/lib/geometry/Cube'
 import { SCALE_MODES, Polygon } from 'pixi.js'
 import { GameObject } from '../../engine/lib/GameObject'
+import * as PIXI from 'pixi.js'
 
 function createSteps(cb: Function) {
   return new Array(4).fill(null).map((_, index) => {

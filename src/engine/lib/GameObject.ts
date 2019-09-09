@@ -1,7 +1,8 @@
+import * as PIXI from 'pixi.js'
 import { Vector3 } from './isometric/Vector3'
 import { ObservableVector3 } from './isometric'
 import { Floor } from '../../gameobjects/room/Floor'
-import { Tween } from '@tweenjs/tween.js'
+import TWEEN from '@tweenjs/tween.js'
 import { IObservable, Observable } from './Observable'
 import { Application } from '../Application'
 
@@ -10,7 +11,7 @@ export class GameObject<Attrs = object> extends PIXI.Sprite {
   public floor: Floor
   private _position_map = new ObservableVector3(() => null)
   private _position_iso = new ObservableVector3(p => p.toVector2().copyTo(this.position))
-  private _tween_position = new Tween()
+  private _tween_position = new TWEEN.Tween()
   public readonly attrs2: IObservable<Attrs>
 
   constructor(attrs?: Attrs) {
@@ -51,7 +52,7 @@ export class GameObject<Attrs = object> extends PIXI.Sprite {
     return new Promise(resolve => {
       const currentPosition = point instanceof Vector3 ? this.isoPosition : this.position
       this._tween_position.stop()
-      this._tween_position = new Tween(currentPosition.clone())
+      this._tween_position = new TWEEN.Tween(currentPosition.clone())
         .to(point.clone(), duration)
         .onComplete(resolve)
         .onUpdate(point => point.copyTo(currentPosition))

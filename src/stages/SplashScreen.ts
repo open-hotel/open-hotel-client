@@ -1,6 +1,7 @@
+import * as PIXI from 'pixi.js'
 import { Scene } from '../engine/lib/Scene'
 import { Progress } from '../gameobjects/Progress'
-import resources from './preload.json'
+import resources from './preload'
 import { Log } from '../engine/lib/Logger'
 
 function mapObject(obj: any, fn: Function, path: string[] = []) {
@@ -106,6 +107,7 @@ export class SplashScreen extends Scene {
 
     window.addEventListener('resize', this.onResize)
 
+    // @ts-ignore
     this.onResize(null)
   }
 

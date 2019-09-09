@@ -1,0 +1,14 @@
+@import './animations.scss';
+
+.text-center {
+  text-align: center;
+}
+
+canvas {
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+.full-width {
+  width: 100%;
+}

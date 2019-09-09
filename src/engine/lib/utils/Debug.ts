@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js'
+
 interface DebugAreaOptions {
   borderColor?: number
   borderWidth?: number
@@ -29,6 +31,7 @@ export class Debug {
 
     area.lineStyle(options.borderWidth, options.borderColor, options.borderOpacity)
     area.beginFill(options.background, options.backgroundOpacity)
+    // @ts-ignore
     area.drawShape(sprite.hitArea)
     area.endFill()
 

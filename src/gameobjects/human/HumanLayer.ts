@@ -1,12 +1,26 @@
+import * as PIXI from 'pixi.js'
 import { GameObject } from '../../engine/lib/GameObject'
 import { Debug } from '../../engine/lib/utils/Debug'
-import { HumanAnimation } from './HumanAnimation'
+// import { HumanAnimation } from './HumanAnimation'
 
 interface HumanLayerProps {
   type: number
   direction: number
   action: string
 }
+
+export interface HumanAsset {
+  type: number
+  direction?: number
+  action?: string
+  prefix: string
+}
+
+export const getDefaultAssetDefinition = (asset: HumanAsset) => ({
+  direction: asset.direction || 2,
+  action: asset.action || 'std',
+  type: asset.type,
+})
 
 export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   static flips: {
@@ -19,17 +33,17 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
 
   public sprite: PIXI.AnimatedSprite
   protected sheet: PIXI.Spritesheet
-  protected humanAnimation: HumanAnimation
+  // protected humanAnimation: HumanAnimation
 
   constructor(
-    private layerName: string,
-    private resourcePath: string,
+    protected layerName: string,
+    protected resourcePath: string,
     attrs: HumanLayerProps = {
       type: 1,
       action: 'std',
       direction: 0,
     },
-    private prefix: string = 'hh_human_body_h',
+    protected prefix: string = 'hh_human_body_h',
   ) {
     super({
       type: attrs.type,
@@ -37,10 +51,10 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
       direction: attrs.direction,
     })
     this.updateSheet()
-
     this.sprite = new PIXI.AnimatedSprite(this.getAnimation(attrs.action, attrs.direction))
     this.sprite.loop = true
-    this.sprite.animationSpeed = 1 / 6
+    this.sprite.animationSpeed = 1 / 8
+
     this.attrs2.watch('type', () => {
       this.updateSheet()
       this.updateTexture()
@@ -49,7 +63,17 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.attrs2.watch('direction', () => this.updateTexture())
     this.updateFlip()
     this.addChild(this.sprite)
-    this.humanAnimation = new HumanAnimation(this)
+    this.sprite.onFrameChange = () => this.updateAnchor()
+    this.sprite.tint = 0xffe0bd
+  }
+
+  private updateAnchor() {
+    const animation = this.sprite && this.sprite.texture
+    if (!animation) {
+      return
+    }
+    const { defaultAnchor } = animation
+    this.sprite.anchor.set(defaultAnchor.x, defaultAnchor.y)
   }
 
   private updateSheet() {
@@ -62,6 +86,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     const flip = HumanLayer.flips[direction] >= 0
     const flipedDirection = flip ? HumanLayer.flips[direction] : direction
     const animationName = `${this.prefix}_${action}_${this.layerName}_${type}_${flipedDirection}`
+
     const frameName = `${animationName}_0.png`
 
     if (animationName in animations) return animations[animationName]
@@ -70,25 +95,14 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     return this.getAnimation('std', 0)
   }
 
-  /**
-   * Shorthand for HumanLayer.prototype.sprite.anchor.set(x, y)
-   */
-  protected anchors(x: number, y: number) {
-    this.sprite.anchor.set(x, y)
-  }
-
-  /**
-   * Returns a callback that calls HumanLayer.prototype.anchors
-   */
-  protected anchorsC(x: number, y: number) {
-    return () => this.anchors(x, y)
-  }
-
   updateTexture() {
     let { action, direction } = this.attrs2
     const animation = this.getAnimation(action, direction)
     if (animation.length) {
+      this.sprite.visible = true
       this.sprite.textures = animation
+    } else {
+      this.sprite.visible = false
     }
     this.sprite.play()
 
@@ -100,10 +114,5 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     const flip = typeof useValue === 'boolean' ? useValue : HumanLayer.flips[direction] >= 0
     if (flip) this.sprite.scale.set(-1, 1)
     else this.sprite.scale.set(1)
-  }
-
-  render(renderer: PIXI.Renderer) {
-    Debug.anchor(this)
-    return super.render(renderer)
   }
 }

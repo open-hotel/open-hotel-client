@@ -14,7 +14,7 @@ export const createFloorTestFunction = (map: Matrix<number>) => (test: Matrix<st
     return blockTest.some(t => {
       if (t === '?') return !mapCol
       if (blockTest === '#') return mapCol > 0
-      const elevation = current + parseInt(t.replace(/[^\d\-]/g, ''))
+      const elevation = current + parseInt(t.replace(/[^\d-]/g, ''))
       return mapCol === elevation
     })
   })

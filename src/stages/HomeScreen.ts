@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import { Scene } from '../engine/lib/Scene'
 import { Floor, FloorMapElevation } from '../gameobjects/room/Floor'
 import { Viewport } from 'pixi-viewport'
@@ -6,7 +7,7 @@ import { Matrix } from '../engine/lib/utils/Matrix'
 import { GameObject } from '../engine/lib/GameObject'
 import { Walkable } from '../engine/lib/utils/Walk'
 import { Observable } from '../engine/lib/Observable'
-import MAP from '../../public/resources/maps/airplane.json'
+import MAP from './maps/airplane'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -15,24 +16,31 @@ export class HomeScreen extends Scene {
   protected $camera: Viewport
 
   setup() {
+    const width = window.innerWidth
+    const height = window.innerHeight
     this.$camera = new Viewport({
-      screenWidth: window.innerWidth,
-      screenHeight: window.innerHeight,
-      worldWidth: window.innerWidth * 2,
-      worldHeight: window.innerHeight * 2,
+      screenWidth: width,
+      screenHeight: height,
+      worldWidth: width * 2,
+      worldHeight: height * 2,
       interaction: this.$app.renderer.plugins.interaction,
     })
       .drag({
         reverse: false,
       })
-      .pinch()
+      .pinch({
+        percent: 20,
+      })
       .wheel()
       .clampZoom({
-        maxHeight: window.innerHeight * MAX_ZOOM,
-        maxWidth: window.innerWidth * MAX_ZOOM,
-        minHeight: window.innerHeight * MIN_ZOOM,
-        minWidth: window.innerWidth * MIN_ZOOM,
+        maxHeight: height * MAX_ZOOM,
+        maxWidth: width * MAX_ZOOM,
+        minHeight: height * MIN_ZOOM,
+        minWidth: width * MIN_ZOOM,
       })
+    if (screen.width < 768) {
+      this.$camera.fit()
+    }
 
     const bg = new PIXI.Graphics()
 
@@ -66,13 +74,12 @@ export class HomeScreen extends Scene {
 
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
-    let lastPosition: any = null
+    let lastPosition = null
     floor.addListener('pointertap', async e => {
       if (e.target instanceof GameObject) {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
-
-          human.zIndex = target.zIndex
+          human.zIndex = target.zIndex + 1
           human.mapPosition.set(p.x, p.y, 0)
           human.walk()
 
@@ -86,6 +93,8 @@ export class HomeScreen extends Scene {
           await human.moveTo(target.isoPosition)
 
           human.stop()
+
+          /* eslint-disable require-atomic-updates */
           lastPosition = p
         })
       }

@@ -1,8 +1,9 @@
+import * as PIXI from 'pixi.js'
 import { Application } from '../../Application'
 import { Class } from '../../types'
 import { Scene } from '../Scene'
 import { Logger } from '../Logger'
-import * as TWEEN from '@tweenjs/tween.js'
+import TWEEN from '@tweenjs/tween.js'
 
 interface NavigationRoutes {
   [key: string]: Class<Scene>
@@ -21,9 +22,6 @@ export class Navigation {
 
   constructor(protected $app: Application, protected target: PIXI.Container = $app.stage) {
     this.$logger = $app.$logger.create('navigation')
-    this.$app.ticker.add(() => {
-      TWEEN.update(this.$app.ticker.lastTime)
-    })
   }
 
   /**

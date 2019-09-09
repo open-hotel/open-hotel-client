@@ -1,5 +1,6 @@
 import { Application } from '../Application'
 import { Logger } from './Logger'
+import * as PIXI from 'pixi.js'
 
 export interface SceneOptions {
   [key: string]: any
