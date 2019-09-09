@@ -64,6 +64,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.updateFlip()
     this.addChild(this.sprite)
     this.sprite.onFrameChange = () => this.updateAnchor()
+    this.sprite.tint = 0xffe0bd
   }
 
   private updateAnchor() {

@@ -225,7 +225,6 @@
                 <false/>
             </struct>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_spk_hr_2321_2_0.png</key>
-            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -344,7 +343,7 @@
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hr_2321_0_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.387097,1</point_f>
+                <point_f>0.548387,0.965517</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -370,7 +369,7 @@
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hr_2321_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.444444,1.03448</point_f>
+                <point_f>0.527778,1</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -409,13 +408,26 @@
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_0_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.516129,1.37931</point_f>
+                <point_f>1.12903,1.37931</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
                 <rect>8,7,15,15</rect>
                 <key>scale9Paddings</key>
                 <rect>8,7,15,15</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_2_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.0833333,0</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,7,18,15</rect>
+                <key>scale9Paddings</key>
+                <rect>9,7,18,15</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

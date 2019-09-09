@@ -24,7 +24,7 @@ export class HumanHead extends HumanLayer {
       type: 1,
     })
 
-    // this.addChild(this.hair)
+    this.addChild(this.hair)
     this.addChild(this.face)
 
     this.attrs2.watch('direction', newDirection => {
