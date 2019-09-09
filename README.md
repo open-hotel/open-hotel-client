@@ -5,7 +5,6 @@ Check out the [Demo](https://open-hotel-demo.netlify.com/)
 Open Hotel is an open-source project that aims to build a brand new canvas-drawn Habbo Remake.
 
 ![Open Hotel Client walking screenshot](./public/resources/images/walk_around.gif)
-![Open Hotel Client screenshot](./public/resources/images/hclient.gif)
 
 ## Roadmap
 
