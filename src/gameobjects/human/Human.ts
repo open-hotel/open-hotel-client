@@ -72,7 +72,7 @@ export class Human extends GameObject<HumanProps> {
       setTimeout(moveHead, random(750, 2000))
     }
 
-    setTimeout(moveHead, random(750, 2000))
+    // setTimeout(moveHead, random(750, 2000))
 
     // const { width, height } = this.getBounds()
     // Posicionar aqui
@@ -115,7 +115,7 @@ export class Human extends GameObject<HumanProps> {
 
     if (this.attrs2.direction === 6) {
       this.leftHand.position.set(10, -(height - 5))
-      this.rightHand.position.set(-4, -(height - 5))
+      this.rightHand.position.set(-6, -(height - 10))
     }
 
     if (this.attrs2.direction === 7) {

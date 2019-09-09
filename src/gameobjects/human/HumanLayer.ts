@@ -85,6 +85,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     const flip = HumanLayer.flips[direction] >= 0
     const flipedDirection = flip ? HumanLayer.flips[direction] : direction
     const animationName = `${this.prefix}_${action}_${this.layerName}_${type}_${flipedDirection}`
+
     const frameName = `${animationName}_0.png`
 
     if (animationName in animations) return animations[animationName]
@@ -97,7 +98,10 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     let { action, direction } = this.attrs2
     const animation = this.getAnimation(action, direction)
     if (animation.length) {
+      this.sprite.visible = true
       this.sprite.textures = animation
+    } else {
+      this.sprite.visible = false
     }
     this.sprite.play()
 

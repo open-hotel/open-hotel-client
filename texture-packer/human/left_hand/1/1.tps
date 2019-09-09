@@ -560,7 +560,6 @@
                 <false/>
             </struct>
             <key type="filename">textures/hh_human_body_h_sit_lh_1_0_0.png</key>
-            <key type="filename">textures/hh_human_body_h_std_lh_1_0_0.png</key>
             <key type="filename">textures/hh_human_body_h_wlk_lh_1_0_0.png</key>
             <key type="filename">textures/hh_human_body_h_wlk_lh_1_0_2.png</key>
             <struct type="IndividualSpriteSettings">
@@ -585,6 +584,19 @@
                 <rect>1,6,3,13</rect>
                 <key>scale9Paddings</key>
                 <rect>1,6,3,13</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">textures/hh_human_body_h_std_lh_1_0_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>1,-0.0384615</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>1,7,3,13</rect>
+                <key>scale9Paddings</key>
+                <rect>1,7,3,13</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
