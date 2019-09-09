@@ -295,7 +295,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":33},
 	"sourceSize": {"w":11,"h":33},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.272727,"y":0.121212}
 },
 "hh_human_body_h_std_rh_1_1_0.png":
 {
@@ -313,7 +313,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":33},
 	"sourceSize": {"w":9,"h":33},
-	"anchor": {"x":0.555556,"y":0}
+	"anchor": {"x":0.777778,"y":0}
 },
 "hh_human_body_h_std_rh_1_3_0.png":
 {
@@ -322,7 +322,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":33},
 	"sourceSize": {"w":8,"h":33},
-	"anchor": {"x":0.75,"y":0}
+	"anchor": {"x":0.875,"y":0.0606061}
 },
 "hh_human_body_h_std_rh_1_7_0.png":
 {
@@ -331,7 +331,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":32},
 	"sourceSize": {"w":8,"h":32},
-	"anchor": {"x":0.375,"y":0}
+	"anchor": {"x":0,"y":0}
 },
 "hh_human_body_h_wlk_rh_1_0_0.png":
 {
@@ -340,7 +340,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":30},
 	"sourceSize": {"w":12,"h":30},
-	"anchor": {"x":0.166667,"y":0}
+	"anchor": {"x":0.25,"y":0.1}
 },
 "hh_human_body_h_wlk_rh_1_0_1.png":
 {
@@ -349,7 +349,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":29},
 	"sourceSize": {"w":12,"h":29},
-	"anchor": {"x":0.166667,"y":0}
+	"anchor": {"x":0.416667,"y":0.103448}
 },
 "hh_human_body_h_wlk_rh_1_0_2.png":
 {
@@ -358,7 +358,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":32},
 	"sourceSize": {"w":12,"h":32},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.166667,"y":0.125}
 },
 "hh_human_body_h_wlk_rh_1_0_3.png":
 {
@@ -367,7 +367,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":27},
 	"sourceSize": {"w":15,"h":27},
-	"anchor": {"x":0.0666667,"y":0}
+	"anchor": {"x":0.133333,"y":0.111111}
 },
 "hh_human_body_h_wlk_rh_1_1_0.png":
 {
@@ -403,7 +403,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":24},
 	"sourceSize": {"w":18,"h":24},
-	"anchor": {"x":0.111111,"y":0}
+	"anchor": {"x":0,"y":0}
 },
 "hh_human_body_h_wlk_rh_1_2_0.png":
 {
@@ -412,7 +412,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":35},
 	"sourceSize": {"w":10,"h":35},
-	"anchor": {"x":0.6,"y":0}
+	"anchor": {"x":0.7,"y":0}
 },
 "hh_human_body_h_wlk_rh_1_2_1.png":
 {
@@ -421,7 +421,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":33},
 	"sourceSize": {"w":13,"h":33},
-	"anchor": {"x":0.769231,"y":0}
+	"anchor": {"x":0.846154,"y":0.030303}
 },
 "hh_human_body_h_wlk_rh_1_2_2.png":
 {
@@ -430,7 +430,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":36},
 	"sourceSize": {"w":9,"h":36},
-	"anchor": {"x":0.666667,"y":0}
+	"anchor": {"x":0.888889,"y":0}
 },
 "hh_human_body_h_wlk_rh_1_2_3.png":
 {
@@ -439,7 +439,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":32},
 	"sourceSize": {"w":15,"h":32},
-	"anchor": {"x":0.333333,"y":0}
+	"anchor": {"x":0.466667,"y":0}
 },
 "hh_human_body_h_wlk_rh_1_3_0.png":
 {
@@ -448,7 +448,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":33},
 	"sourceSize": {"w":8,"h":33},
-	"anchor": {"x":0.75,"y":0}
+	"anchor": {"x":0.875,"y":0.0606061}
 },
 "hh_human_body_h_wlk_rh_1_3_1.png":
 {
@@ -457,7 +457,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":28},
 	"sourceSize": {"w":8,"h":28},
-	"anchor": {"x":0.625,"y":0}
+	"anchor": {"x":1,"y":0.0714286}
 },
 "hh_human_body_h_wlk_rh_1_3_2.png":
 {
@@ -466,7 +466,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":32},
 	"sourceSize": {"w":8,"h":32},
-	"anchor": {"x":0.625,"y":0}
+	"anchor": {"x":1,"y":0.0625}
 },
 "hh_human_body_h_wlk_rh_1_3_3.png":
 {
@@ -475,7 +475,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":31},
 	"sourceSize": {"w":8,"h":31},
-	"anchor": {"x":0.5,"y":0}
+	"anchor": {"x":1,"y":0.0645161}
 },
 "hh_human_body_h_wlk_rh_1_7_0.png":
 {
@@ -484,7 +484,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":30},
 	"sourceSize": {"w":7,"h":30},
-	"anchor": {"x":0.142857,"y":0}
+	"anchor": {"x":0,"y":0}
 },
 "hh_human_body_h_wlk_rh_1_7_1.png":
 {
@@ -533,6 +533,6 @@
 	"format": "RGBA8888",
 	"size": {"w":32,"h":891},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:2fbda252322b0278389bd3502ffe9c12:a0f48f6ef84f99178bc856429d834a57:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b7ad7987d4ff18e14852e76d541cffa2:a0f48f6ef84f99178bc856429d834a57:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

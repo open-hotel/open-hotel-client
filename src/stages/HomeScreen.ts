@@ -74,7 +74,7 @@ export class HomeScreen extends Scene {
 
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
-    let lastPosition: any = null
+    let lastPosition = null
     floor.addListener('pointertap', async e => {
       if (e.target instanceof GameObject) {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
@@ -93,6 +93,8 @@ export class HomeScreen extends Scene {
           await human.moveTo(target.isoPosition)
 
           human.stop()
+
+          /* eslint-disable require-atomic-updates */
           lastPosition = p
         })
       }

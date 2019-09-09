@@ -2086,7 +2086,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":9},
 	"sourceSize": {"w":10,"h":9},
-	"anchor": {"x":0.2,"y":1.33333}
+	"anchor": {"x":-0.1,"y":1.44444}
 },
 "hh_human_face_h_std_ey_1_3_0.png":
 {
@@ -2095,7 +2095,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":5},
 	"sourceSize": {"w":14,"h":5},
-	"anchor": {"x":0.142857,"y":2.4}
+	"anchor": {"x":0.5,"y":1.8}
 },
 "hh_human_face_h_std_ey_2_2_0.png":
 {
@@ -2379,6 +2379,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":484},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:99be35e69d93b82740b965696c8491f9:5030796b6decc1f95981d0a0d7ef427a:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:06b1915ee1dae8708abcca8c8e03531a:5030796b6decc1f95981d0a0d7ef427a:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }
