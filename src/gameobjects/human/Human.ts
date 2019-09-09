@@ -28,7 +28,7 @@ export class Human extends GameObject<HumanProps> {
       isIdle: false,
       isLay: false,
       isSpeak: false,
-      isWalk: true,
+      isWalk: false,
     })
 
     this.interactive = true
@@ -95,7 +95,7 @@ export class Human extends GameObject<HumanProps> {
 
     if (this.attrs2.direction === 0) {
       this.leftHand.position.set(-10, -(height - 4))
-      this.rightHand.position.set(4, -(height - 10))
+      this.rightHand.position.set(5, -(height - 10))
     }
 
     if (this.attrs2.direction === 2) {
