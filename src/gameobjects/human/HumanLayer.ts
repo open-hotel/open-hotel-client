@@ -80,7 +80,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   }
 
   protected getAnimation(action: string, direction: number): PIXI.Texture[] {
-    // this.updateAnchor()
     const { animations, textures } = this.sheet
     const { type } = this.attrs2
     const flip = HumanLayer.flips[direction] >= 0
@@ -95,7 +94,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   }
 
   updateTexture() {
-    // this.updateAnchor()
     let { action, direction } = this.attrs2
     const animation = this.getAnimation(action, direction)
     if (animation.length) {
@@ -107,7 +105,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
   }
 
   updateFlip(useValue?: boolean) {
-    // this.updateAnchor()
     let { direction } = this.attrs2
     const flip = typeof useValue === 'boolean' ? useValue : HumanLayer.flips[direction] >= 0
     if (flip) this.sprite.scale.set(-1, 1)
