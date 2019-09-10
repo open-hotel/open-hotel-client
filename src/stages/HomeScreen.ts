@@ -68,8 +68,7 @@ export class HomeScreen extends Scene {
 
     const [humanX, humanY] = floor.getFirstBlockIndexes()
     human.set('map_position', { x: humanX, y: humanY })
-    human.attrs2.direction = 0
-    human.head.attrs2.direction = 6
+    // human.attrs2.direction = 2
 
     floor.getPositionOf(humanX, humanY).copyTo(human.position)
 

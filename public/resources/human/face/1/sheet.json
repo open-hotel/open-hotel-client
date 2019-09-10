@@ -2077,7 +2077,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":4,"h":5},
 	"sourceSize": {"w":4,"h":5},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":-2,"y":2.4}
 },
 "hh_human_face_h_std_ey_1_2_0.png":
 {
@@ -2347,7 +2347,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":11},
 	"sourceSize": {"w":8,"h":11},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":-1.25,"y":1}
 },
 "hh_human_face_h_std_fc_1_2_0.png":
 {
@@ -2356,7 +2356,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":6,"h":10},
 	"sourceSize": {"w":6,"h":10},
-	"anchor": {"x":0.5,"y":0.5}
+	"anchor": {"x":-0.666667,"y":0.7}
 },
 "hh_human_face_h_std_fc_1_3_0.png":
 {
@@ -2379,6 +2379,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":484},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:06b1915ee1dae8708abcca8c8e03531a:5030796b6decc1f95981d0a0d7ef427a:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ec85d059b8adcd4a883d0a7ab770f295:5030796b6decc1f95981d0a0d7ef427a:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

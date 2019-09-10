@@ -1,6 +1,7 @@
 import { HumanLayer } from './HumanLayer'
 import { HumanHair, hairs } from './Hair'
 import { HumanEyes } from './Eyes'
+import { HumanFace } from './Face'
 
 interface HeadProps {
   type: number
@@ -11,6 +12,7 @@ interface HeadProps {
 export class HumanHead extends HumanLayer {
   private hair: HumanHair
   private eyes: HumanEyes
+  private face: HumanFace
 
   constructor(attrs: HeadProps) {
     super('hd', 'human/head', attrs)
@@ -23,13 +25,24 @@ export class HumanHead extends HumanLayer {
       direction: attrs.direction,
       type: 1,
     })
+    this.face = new HumanFace({
+      action: 'std',
+      prefix: 'hh_human_face_h',
+      direction: attrs.direction,
+      type: 1,
+    })
+
+    this.sortableChildren = true
+    this.eyes.zIndex = this.face.zIndex + 1
 
     this.addChild(this.hair)
     this.addChild(this.eyes)
+    this.addChild(this.face)
 
     this.attrs2.watch('direction', newDirection => {
       this.hair.attrs2.direction = newDirection
       this.eyes.attrs2.direction = newDirection
+      this.face.attrs2.direction = newDirection
     })
   }
 

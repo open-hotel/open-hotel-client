@@ -87,6 +87,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     const animationName = `${this.prefix}_${action}_${layerName}_${type}_${flipedDirection}`
 
     const frameName = `${animationName}_0.png`
+    console.log(frameName)
 
     if (animationName in animations) return animations[animationName]
     else if (frameName in textures) return [textures[frameName]]

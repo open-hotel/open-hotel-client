@@ -3,12 +3,8 @@ import { HumanLayer, HumanAsset, getDefaultAssetDefinition } from './HumanLayer'
 export class HumanEyes extends HumanLayer {
   constructor(attrs: HumanAsset) {
     super('ey', 'human/face', getDefaultAssetDefinition(attrs), 'hh_human_face_h')
-
-    // this.sprite.anchor.set(10, 10)
-
-    // anim.turns({
-    //   front: this.anchorsC(0.55, 0.9),
-    //   right: this.anchorsC(0.66, 0.9),
-    // })
+    this.sprite.tint = 0xffffff
+    console.log(this)
+    this.sprite.zIndex = 100000
   }
 }
