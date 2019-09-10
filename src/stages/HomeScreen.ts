@@ -14,6 +14,8 @@ const MIN_ZOOM = 1 / 4
 
 export class HomeScreen extends Scene {
   protected $camera: Viewport
+  private dragging = false
+  protected floor: Floor = null
 
   setup() {
     const width = window.innerWidth
@@ -54,10 +56,25 @@ export class HomeScreen extends Scene {
     this.addChild(bg, this.$camera)
   }
 
-  ready() {
-    const floor = new Floor({
-      map: Matrix.from(MAP as FloorMapElevation[][]),
+  private avoidDragMove() {
+    const { floor } = this
+    const moveListener = () => {
+      this.dragging = true
+      floor.removeListener('pointermove', moveListener)
+    }
+
+    floor.addListener('pointerdown', () => floor.addListener('pointermove', moveListener))
+    floor.addListener('pointerup', () => {
+      floor.removeListener('pointermove', moveListener)
+      // Run microtask to update after pointertap
+      Promise.resolve().then(() => (this.dragging = false))
     })
+  }
+
+  ready() {
+    const floor = (this.floor = new Floor({
+      map: Matrix.from(MAP as FloorMapElevation[][]),
+    }))
 
     const human = new Human()
     human.floor = floor
@@ -68,31 +85,19 @@ export class HomeScreen extends Scene {
 
     const [humanX, humanY] = floor.getFirstBlockIndexes()
     human.set('map_position', { x: humanX, y: humanY })
-    // human.attrs2.direction = 2
+    human.attrs2.direction = 2
 
     floor.getPositionOf(humanX, humanY).copyTo(human.position)
 
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
-    let dragging = false
-
-    const moveListener = () => {
-      dragging = true
-      floor.removeListener('pointermove', moveListener)
-    }
-
-    floor.addListener('pointerdown', () => floor.addListener('pointermove', moveListener))
-    floor.addListener('pointerup', () => {
-      floor.removeListener('pointermove', moveListener)
-      // Run microtask to update after pointertap
-      Promise.resolve().then(() => (dragging = false))
-    })
+    this.avoidDragMove()
 
     let lastPosition = null
 
     floor.addListener('pointertap', async e => {
       console.log('pointer tap')
-      if (e.target instanceof Floor || dragging) {
+      if (e.target instanceof Floor || this.dragging) {
         return
       }
       if (e.target instanceof GameObject) {
