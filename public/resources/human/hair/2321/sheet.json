@@ -241,7 +241,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":31,"h":29},
 	"sourceSize": {"w":31,"h":29},
-	"anchor": {"x":1.12903,"y":1.37931}
+	"anchor": {"x":0.548387,"y":0.965517}
 },
 "hair_F_backbun_h_std_hrb_2321_1_0.png":
 {
@@ -250,7 +250,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":28},
 	"sourceSize": {"w":36,"h":28},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.5,"y":1}
 },
 "hair_F_backbun_h_std_hrb_2321_2_0.png":
 {
@@ -259,7 +259,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":29},
 	"sourceSize": {"w":36,"h":29},
-	"anchor": {"x":0.0833333,"y":0}
+	"anchor": {"x":0.527778,"y":1}
 },
 "hair_F_backbun_h_std_hrb_2321_7_0.png":
 {
@@ -268,7 +268,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":30},
 	"sourceSize": {"w":30,"h":30},
-	"anchor": {"x":0,"y":0}
+	"anchor": {"x":0.5,"y":1}
 },
 "hair_F_backbun_h_std_hrb_2322_1_0.png":
 {
@@ -531,6 +531,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":531},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:fc22db51dff7b9d1c358103f4a30800d:daa1167506e0898bab47901cf5c26c2d:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:8bf7e529c746abd7140e3bcb7e5b2d3b:daa1167506e0898bab47901cf5c26c2d:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

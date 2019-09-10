@@ -14,7 +14,7 @@ interface HairProps {
 
 export class HumanHair extends HumanLayer {
   constructor(private assetProps: HumanAsset = hairs[0]) {
-    super('hr', 'human/hair', getDefaultAssetDefinition(assetProps), assetProps.prefix)
+    super('hrb', 'human/hair', getDefaultAssetDefinition(assetProps), assetProps.prefix)
     this.sprite.tint = 0x905424
   }
 }
