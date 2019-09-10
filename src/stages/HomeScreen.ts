@@ -74,8 +74,27 @@ export class HomeScreen extends Scene {
 
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
+    let dragging = false
+
+    const moveListener = () => {
+      dragging = true
+      floor.removeListener('pointermove', moveListener)
+    }
+
+    floor.addListener('pointerdown', () => floor.addListener('pointermove', moveListener))
+    floor.addListener('pointerup', () => {
+      floor.removeListener('pointermove', moveListener)
+      // Run microtask to update after pointertap
+      Promise.resolve().then(() => (dragging = false))
+    })
+
     let lastPosition = null
+
     floor.addListener('pointertap', async e => {
+      console.log('pointer tap')
+      if (e.target instanceof Floor || dragging) {
+        return
+      }
       if (e.target instanceof GameObject) {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
