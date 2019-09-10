@@ -33,7 +33,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
 
   public sprite: PIXI.AnimatedSprite
   protected sheet: PIXI.Spritesheet
-  // protected humanAnimation: HumanAnimation
 
   constructor(
     protected layerName: string,
