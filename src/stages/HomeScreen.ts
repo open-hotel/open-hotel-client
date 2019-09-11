@@ -111,7 +111,6 @@ export class HomeScreen extends Scene {
         Walkable.cancelSwitch = false
       }
       if (e.target instanceof GameObject) {
-        console.log('novo caminho')
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
           human.zIndex = target.zIndex + 1
