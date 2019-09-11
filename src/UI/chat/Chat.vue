@@ -73,14 +73,16 @@ export default {
       }
     },
     onEnter(event) {
-      this.checkMoveTop()
-      this.lastTexts.push({
-        text: event.target.value,
-        transformY: 0,
-        id: id++,
-      })
-      this.currentText = ''
-      this.$refs.chatBox.value = ''
+      if (event.target.value) {
+        this.checkMoveTop()
+        this.lastTexts.push({
+          text: event.target.value,
+          transformY: 0,
+          id: id++,
+        })
+        this.currentText = ''
+        this.$refs.chatBox.value = ''
+      }
     },
   },
 }

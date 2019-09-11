@@ -1,6 +1,6 @@
 <template>
   <div v-bind="$attrs" class="speech-root">
-    <span class="speech">You: {{ text }}</span>
+    <span class="speech"><b>You:</b> {{ text }}</span>
   </div>
 </template>
 
@@ -31,6 +31,7 @@ export default {
   border-radius: 5px;
   display: inline-block;
   font: normal 12px Volter;
+  border: 2pt solid #606060;
 }
 
 @media screen and (max-width: 768px) {
