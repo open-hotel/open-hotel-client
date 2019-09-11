@@ -94,17 +94,17 @@ export class HomeScreen extends Scene {
     this.avoidDragMove()
 
     let lastPosition = null
-
+    let lastWalk = Promise.resolve()
     floor.addListener('pointertap', async e => {
       console.log('pointer tap')
       if (e.target instanceof Floor || this.dragging) {
         return
       }
+      await lastWalk
       if (e.target instanceof GameObject) {
         Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
           human.zIndex = target.zIndex + 1
-          human.mapPosition.set(p.x, p.y, 0)
           human.walk()
 
           if (lastPosition) {
@@ -114,7 +114,9 @@ export class HomeScreen extends Scene {
             else if (p.y > lastPosition.y) human.attrs2.direction = 2
           }
 
-          await human.moveTo(target.isoPosition)
+          lastWalk = human.moveTo(target.isoPosition)
+          await lastWalk
+          human.mapPosition.set(p.x, p.y, 0)
 
           human.stop()
 
