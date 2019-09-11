@@ -42,10 +42,18 @@ export class Walkable {
     }
   }
 
+  static cancelSwitch = false
+
   static async walk(path: PointLike[], cb: (point: PointLike, index: number) => Promise<any> | any) {
     let i = 0
     let { length } = path
 
-    while (i < length) await cb(path[i], i++)
+    while (i < length) {
+      if (this.cancelSwitch) {
+        this.cancelSwitch = false
+        return
+      }
+      await cb(path[i], i++)
+    }
   }
 }
