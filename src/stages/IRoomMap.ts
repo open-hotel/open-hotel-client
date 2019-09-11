@@ -1,12 +1,12 @@
-interface MobiDefinition {
+export interface MobiDefinition<StateType = any> {
   area: Array<number[]>
   canLay: boolean
   canSit: boolean
   canStack: boolean
   canWalk: boolean
-  currentState: number
+  currentState: StateType
   id: boolean
-  possibleStates: number[]
+  possibleStates: StateType[]
   type: 'floor' | 'wall'
   name: string
 }

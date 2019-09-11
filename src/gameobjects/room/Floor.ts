@@ -22,7 +22,7 @@ export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 interface FloorOptions {
   map: Matrix<FloorMapElevation> | string
-  furniture?: Furniture[]
+  mobis?: Furniture[]
 }
 
 const WIDTH = 32
@@ -64,7 +64,7 @@ export class Floor extends GameObject {
   constructor(options: FloorOptions) {
     super()
 
-    this.furniture = options.furniture || []
+    this.furniture = options.mobis || []
 
     options = Object.assign(
       {

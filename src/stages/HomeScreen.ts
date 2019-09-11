@@ -8,6 +8,7 @@ import { GameObject } from '../engine/lib/GameObject'
 import { Walkable } from '../engine/lib/utils/Walk'
 import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
+import { Furniture } from '@/gameobjects/furniture/Furniture'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -74,6 +75,7 @@ export class HomeScreen extends Scene {
   ready() {
     const floor = (this.floor = new Floor({
       map: Matrix.from(MAP.map as FloorMapElevation[][]),
+      mobis: MAP.mobis.map(definition => new Furniture(definition)),
     }))
 
     const human = new Human()

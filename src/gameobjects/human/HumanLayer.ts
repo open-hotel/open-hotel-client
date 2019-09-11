@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { GameObject } from '../../engine/lib/GameObject'
 import { Debug } from '../../engine/lib/utils/Debug'
+import { GameEntity } from '@/engine/lib/GameEntity'
 // import { HumanAnimation } from './HumanAnimation'
 
 interface HumanLayerProps {
@@ -22,7 +23,7 @@ export const getDefaultAssetDefinition = (asset: HumanAsset) => ({
   type: asset.type,
 })
 
-export abstract class HumanLayer extends GameObject<HumanLayerProps> {
+export abstract class HumanLayer extends GameEntity<HumanLayerProps> {
   static flips: {
     [k: number]: number
   } = {
@@ -30,9 +31,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     5: 1,
     6: 0,
   }
-
-  public sprite: PIXI.AnimatedSprite
-  protected sheet: PIXI.Spritesheet
 
   constructor(
     protected layerName: string,
@@ -44,67 +42,24 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     },
     protected prefix: string = 'hh_human_body_h',
   ) {
-    super({
+    super(layerName, resourcePath, {
+      prefix: prefix,
       type: attrs.type,
       action: attrs.action,
       direction: attrs.direction,
     })
-    this.updateSheet()
-    this.sprite = new PIXI.AnimatedSprite(this.getAnimation(attrs.action, attrs.direction))
-    this.sprite.loop = true
-    this.sprite.animationSpeed = 1 / 8
-
-    this.attrs2.watch('type', () => {
-      this.updateSheet()
-      this.updateTexture()
-    })
-    this.attrs2.watch('action', () => this.updateTexture())
-    this.attrs2.watch('direction', () => this.updateTexture())
     this.updateFlip()
-    this.addChild(this.sprite)
-    this.sprite.onFrameChange = () => this.updateAnchor()
     this.sprite.tint = 0xffe0bd
   }
 
-  private updateAnchor() {
-    const animation = this.sprite && this.sprite.texture
-    if (!animation) {
-      return
-    }
-    const { defaultAnchor } = animation
-    this.sprite.anchor.set(defaultAnchor.x, defaultAnchor.y)
-  }
-
-  private updateSheet() {
-    this.sheet = this.app.getSpriteSheet(`${this.resourcePath}/${this.attrs2.type}`)
-  }
-
   protected getAnimation(action: string, direction: number, layerName = this.layerName): PIXI.Texture[] {
-    const { animations, textures } = this.sheet
-    const { type } = this.attrs2
     const flip = HumanLayer.flips[direction] >= 0
     const flipedDirection = flip ? HumanLayer.flips[direction] : direction
-    const animationName = `${this.prefix}_${action}_${layerName}_${type}_${flipedDirection}`
-
-    const frameName = `${animationName}_0.png`
-
-    if (animationName in animations) return animations[animationName]
-    else if (frameName in textures) return [textures[frameName]]
-    else if (action === 'std') return []
-    return this.getAnimation('std', 0)
+    return super.getAnimation(action, flipedDirection, layerName)
   }
 
   updateTexture() {
-    let { action, direction } = this.attrs2
-    const animation = this.getAnimation(action, direction)
-    if (animation.length) {
-      this.sprite.visible = true
-      this.sprite.textures = animation
-    } else {
-      this.sprite.visible = false
-    }
-    this.sprite.play()
-
+    super.updateTexture()
     this.updateFlip()
   }
 
