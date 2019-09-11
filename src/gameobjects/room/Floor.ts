@@ -9,6 +9,7 @@ import { GameObject } from '../../engine/lib/GameObject'
 import { PathFinder } from '../../engine/lib/utils/PathFinder'
 import { Wall } from './Wall'
 import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
+import { Furniture } from '../furniture/Furniture'
 
 export interface Block {
   x: number
@@ -21,6 +22,7 @@ export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 interface FloorOptions {
   map: Matrix<FloorMapElevation> | string
+  furniture?: Furniture[]
 }
 
 const WIDTH = 32
@@ -44,6 +46,7 @@ export class Floor extends GameObject {
   public $map: Matrix<FloorMapElevation>
   public $mapBlocks: Matrix<FloorBlock | FloorLadder> = new Matrix()
   public pathFinder: PathFinder
+  public furniture: Furniture[]
 
   static parseMap(str: string): Matrix<FloorMapElevation> {
     const rows = str
@@ -60,6 +63,8 @@ export class Floor extends GameObject {
 
   constructor(options: FloorOptions) {
     super()
+
+    this.furniture = options.furniture || []
 
     options = Object.assign(
       {
@@ -80,6 +85,7 @@ export class Floor extends GameObject {
     })
 
     this.build()
+    this.placeFurniture()
 
     this.interactive = true
     this.sortableChildren = true
@@ -122,6 +128,14 @@ export class Floor extends GameObject {
       [currRow.get(prevCol, 0), currRow.get(x, 0), currRow.get(nextCol, 0)],
       [nextRow.get(prevCol, 0), nextRow.get(x, 0), nextRow.get(nextCol, 0)],
     ])
+  }
+
+  private placeFurniture() {
+    for (const mobi of this.furniture) {
+      this.addChild(mobi)
+      const [x, y] = mobi.blockCoordinates
+      mobi.position.copyFrom(this.$mapBlocks.get(x, y).position)
+    }
   }
 
   private build() {
