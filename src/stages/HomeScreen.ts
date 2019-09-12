@@ -9,6 +9,7 @@ import { Walkable } from '../engine/lib/utils/Walk'
 import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
 import { Furniture } from '@/gameobjects/furniture/Furniture'
+import bus from '../event-bus'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -79,7 +80,10 @@ export class HomeScreen extends Scene {
     }))
 
     const human = new Human()
+
     human.floor = floor
+
+    bus.$on('player:speak', time => human.speak(time))
 
     this.$camera.addChild(floor)
 

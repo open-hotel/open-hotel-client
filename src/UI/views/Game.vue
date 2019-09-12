@@ -9,7 +9,6 @@
   </px-window-manager>
 </template>
 <script>
-import GameBottomBar from '../bottom-bar/BottomBar.vue'
 import { Application } from '@/engine/Application'
 import { Log } from '@/engine/lib/Logger'
 import { load as loadWebFonts } from 'webfontloader'
@@ -17,7 +16,7 @@ import * as PIXI from 'pixi.js'
 
 export default {
   components: {
-    GameBottomBar,
+    GameBottomBar: () => import('../bottom-bar/BottomBar'),
     GameNavigator: () => import('../navigator/Navigator'),
   },
 
