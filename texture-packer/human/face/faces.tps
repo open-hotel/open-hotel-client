@@ -198,14 +198,12 @@
             <key type="filename">hh_human_face_h_sml_ey_10_1_0.png</key>
             <key type="filename">hh_human_face_h_sml_ey_11_1_0.png</key>
             <key type="filename">hh_human_face_h_sml_ey_9_1_0.png</key>
-            <key type="filename">hh_human_face_h_spk_fc_1_3_0.png</key>
             <key type="filename">hh_human_face_h_srp_ey_10_1_0.png</key>
             <key type="filename">hh_human_face_h_srp_ey_11_1_0.png</key>
             <key type="filename">hh_human_face_h_srp_ey_9_1_0.png</key>
             <key type="filename">hh_human_face_h_std_ey_10_1_0.png</key>
             <key type="filename">hh_human_face_h_std_ey_11_1_0.png</key>
             <key type="filename">hh_human_face_h_std_ey_9_1_0.png</key>
-            <key type="filename">hh_human_face_h_std_fc_1_3_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -268,7 +266,6 @@
             <key type="filename">hh_human_face_h_sad_ey_6_1_0.png</key>
             <key type="filename">hh_human_face_h_sml_ey_1_1_0.png</key>
             <key type="filename">hh_human_face_h_sml_ey_6_1_0.png</key>
-            <key type="filename">hh_human_face_h_spk_fc_1_3_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -661,7 +658,6 @@
             </struct>
             <key type="filename">hh_human_face_h_agr_fc_1_2_0.png</key>
             <key type="filename">hh_human_face_h_sad_fc_1_2_0.png</key>
-            <key type="filename">hh_human_face_h_spk_fc_1_2_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -690,7 +686,6 @@
             </struct>
             <key type="filename">hh_human_face_h_blw_fc_1_2_0.png</key>
             <key type="filename">hh_human_face_h_sad_fc_1_1_0.png</key>
-            <key type="filename">hh_human_face_h_spk_fc_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -833,13 +828,65 @@
             <key type="filename">hh_human_face_h_spk_fc_1_1_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
+                <point_f>0.5,0</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
                 <rect>2,3,4,7</rect>
                 <key>scale9Paddings</key>
                 <rect>2,3,4,7</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">hh_human_face_h_spk_fc_1_2_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>2,3,3,6</rect>
+                <key>scale9Paddings</key>
+                <rect>2,3,3,6</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">hh_human_face_h_spk_fc_1_2_1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.4,0</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>1,3,3,5</rect>
+                <key>scale9Paddings</key>
+                <rect>1,3,3,5</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">hh_human_face_h_spk_fc_1_3_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.142857</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>2,2,3,3</rect>
+                <key>scale9Paddings</key>
+                <rect>2,2,3,3</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">hh_human_face_h_spk_fc_1_3_1.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.2</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>1,1,2,3</rect>
+                <key>scale9Paddings</key>
+                <rect>1,1,2,3</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -937,7 +984,7 @@
             <key type="filename">hh_human_face_h_std_fc_1_1_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>-1.25,1</point_f>
+                <point_f>0.5,0.0909091</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
@@ -950,13 +997,26 @@
             <key type="filename">hh_human_face_h_std_fc_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>-0.666667,0.7</point_f>
+                <point_f>0.5,0</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
                 <rect>2,3,3,5</rect>
                 <key>scale9Paddings</key>
                 <rect>2,3,3,5</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">hh_human_face_h_std_fc_1_3_0.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.166667</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>2,2,3,3</rect>
+                <key>scale9Paddings</key>
+                <rect>2,2,3,3</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
