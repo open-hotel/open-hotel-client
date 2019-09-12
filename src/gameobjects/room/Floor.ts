@@ -131,10 +131,17 @@ export class Floor extends GameObject {
   }
 
   private placeFurniture() {
+    const b = this.$mapBlocks.get(0, 1)
+    b.addChild(this.furniture[0])
+    this.sortableChildren = true
     for (const mobi of this.furniture) {
+      const [x, y] = mobi.blockCoordinates[0]
+      const block = this.$mapBlocks.get(x, y)
+      mobi.zIndex = block.zIndex + 2
       this.addChild(mobi)
-      const [x, y] = mobi.blockCoordinates
-      mobi.position.copyFrom(this.$mapBlocks.get(x, y).position)
+      mobi.position.copyFrom(block.position)
+      mobi.position.y -= 45
+      mobi.position.x += 10
     }
   }
 

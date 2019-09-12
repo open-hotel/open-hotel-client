@@ -40,10 +40,12 @@ export class GameEntity<T extends GameEntityAttrs> extends GameObject<T> {
   protected getAnimation(action: string, direction: number, layerName = this.layerName): PIXI.Texture[] {
     const { animations, textures } = this.sheet
     const { type } = this.attrs2
-    const animationName = `${this.attrs2.prefix}_${action}_${layerName}_${type}_${direction}`
+
+    const surroundType = type ? `${type}_` : ''
+
+    const animationName = `${this.attrs2.prefix}_${action}_${layerName}_${surroundType}${direction}`
 
     const frameName = `${animationName}_0.png`
-
     if (animationName in animations) return animations[animationName]
     else if (frameName in textures) return [textures[frameName]]
     else if (action === 'std') return []
@@ -51,7 +53,9 @@ export class GameEntity<T extends GameEntityAttrs> extends GameObject<T> {
   }
 
   protected updateSheet() {
-    this.sheet = this.app.getSpriteSheet(`${this.resourcePath}/${this.attrs2.type}`)
+    const { type } = this.attrs2
+    const path = type ? `${this.resourcePath}/${type}` : this.resourcePath
+    this.sheet = this.app.getSpriteSheet(path)
   }
 
   updateTexture() {
