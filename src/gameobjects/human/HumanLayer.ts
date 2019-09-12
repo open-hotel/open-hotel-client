@@ -23,7 +23,9 @@ export const getDefaultAssetDefinition = (asset: HumanAsset) => ({
   type: asset.type,
 })
 
-export abstract class HumanLayer extends GameEntity<HumanLayerProps> {
+type TODO = any
+
+export abstract class HumanLayer extends GameEntity<TODO> {
   static flips: {
     [k: number]: number
   } = {
