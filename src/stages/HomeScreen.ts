@@ -75,7 +75,7 @@ export class HomeScreen extends Scene {
   ready() {
     const floor = (this.floor = new Floor({
       map: Matrix.from(MAP.map as FloorMapElevation[][]),
-      mobis: MAP.mobis.map(definition => new Furniture(definition)),
+      mobis: MAP.mobis.map(definition => new Furniture({ mobi: definition })),
     }))
 
     const human = new Human()

@@ -35,10 +35,10 @@ const room: IRoomMap = {
       canStack: false,
       canWalk: false,
       currentState: 0,
-      id: true,
+      id: 2,
       possibleStates: [0],
       type: 'floor',
-      name: 'noob_plant',
+      name: '4_noob_plant_noob_plant',
     },
   ],
   door: {

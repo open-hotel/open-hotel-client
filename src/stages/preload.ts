@@ -17,6 +17,9 @@ const sheet: Sheet = {
     hair: ['1', '2321'],
     face: ['1'],
   },
+  furniture: {
+    default: ['2'],
+  },
 }
 
 for (const modKey in sheet) {

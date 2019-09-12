@@ -5,7 +5,7 @@ export interface MobiDefinition<StateType = any> {
   canStack: boolean
   canWalk: boolean
   currentState: StateType
-  id: boolean
+  id: number
   possibleStates: StateType[]
   type: 'floor' | 'wall'
   name: string

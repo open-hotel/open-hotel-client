@@ -7,7 +7,7 @@ interface GameEntityAttrs {
   direction: number
 }
 
-export class GameEntity<T> extends GameObject<GameEntityAttrs & T> {
+export class GameEntity<T extends GameEntityAttrs> extends GameObject<T> {
   public sprite: PIXI.AnimatedSprite
   protected sheet: PIXI.Spritesheet
 
@@ -50,7 +50,7 @@ export class GameEntity<T> extends GameObject<GameEntityAttrs & T> {
     return this.getAnimation('std', 0)
   }
 
-  private updateSheet() {
+  protected updateSheet() {
     this.sheet = this.app.getSpriteSheet(`${this.resourcePath}/${this.attrs2.type}`)
   }
 

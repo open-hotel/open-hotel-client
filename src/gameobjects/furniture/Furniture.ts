@@ -1,24 +1,23 @@
 import { GameObject } from '../../engine/lib/GameObject'
 import { FloorBlock } from '../room/FloorBlock'
 import { MobiDefinition } from '@/stages/IRoomMap'
+import { GameEntity } from '@/engine/lib/GameEntity'
 
-// export interface FurnitureAttrs<StateType = any> extends MobiDefinition {
-//   id: boolean
-//   canSit: boolean
-//   canWalk: boolean
-//   canLay: boolean
-//   canStack: boolean
-//   type: 'wall' | 'floor'
-//   possibleStates: StateType[]
-//   currentState: StateType
-//   block: [number, number]
-//   name: string
-// }
+interface FurnitureAttrs<StateType> {
+  mobi: MobiDefinition<StateType>
+  action?: string
+  direction?: number
+}
 
-export class Furniture<StateType = any> extends GameObject {
-  public blockCoordinates = [0, 0]
-  constructor(options: MobiDefinition<StateType>) {
-    super(options)
-    // this.blockCoordinates = options.
+type TODO = any
+export class Furniture<StateType = any> extends GameEntity<TODO> {
+  constructor({ action = '64', direction = 0, mobi }: FurnitureAttrs<StateType>, layerName: string = 'a') {
+    super(layerName, `furniture/${mobi.id}`, { action, direction, type: 0, prefix: mobi.name })
+  }
+  getAnimation(action, direction, layerName = this.layerName) {
+    const { type } = this.attrs2
+    this.updateSheet()
+    console.log(`${this.attrs2.prefix}_${action}_${layerName}_${type}_${direction}`, this.sheet)
+    return super.getAnimation(action, direction, layerName)
   }
 }
