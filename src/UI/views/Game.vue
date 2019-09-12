@@ -24,7 +24,7 @@ export default {
     return {
       window: {
         navigator: {
-          title: 'Navegador',
+          title: 'Navigator',
           visible: false,
           x: 50,
           y: 50,
@@ -48,6 +48,8 @@ export default {
       view: this.$refs.game,
       resizeTo: this.$refs.gameWrapper,
     })
+
+    this.$store.commit('setApp', app)
 
     if (module.hot) {
       module.hot.dispose(() => location.reload())

@@ -1,6 +1,7 @@
 import { IRoomMap } from '../IRoomMap'
 
 const room: IRoomMap = {
+  name: '--> Stairs',
   map: [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -24,6 +25,7 @@ const room: IRoomMap = {
     coordinates: [0, 0],
     direction: 2,
   },
+  mobis: [],
 }
 
 export default room

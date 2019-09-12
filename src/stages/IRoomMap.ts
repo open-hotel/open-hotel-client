@@ -12,6 +12,7 @@ export interface MobiDefinition<StateType = any> {
 }
 
 export interface IRoomMap {
+  name: string
   map: Array<number[]>
   mobis?: MobiDefinition[]
   door: {

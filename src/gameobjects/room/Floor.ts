@@ -131,8 +131,6 @@ export class Floor extends GameObject {
   }
 
   private placeFurniture() {
-    const b = this.$mapBlocks.get(0, 1)
-    b.addChild(this.furniture[0])
     this.sortableChildren = true
     for (const mobi of this.furniture) {
       const [x, y] = mobi.blockCoordinates[0]

@@ -10,6 +10,9 @@ import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
 import { Furniture } from '@/gameobjects/furniture/Furniture'
 import bus from '../event-bus'
+import store, { RootState } from '@/UI/store'
+import { IRoomMap } from './IRoomMap'
+import { MutationPayload } from 'vuex'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -18,6 +21,8 @@ export class HomeScreen extends Scene {
   protected $camera: Viewport
   private dragging = false
   protected floor: Floor = null
+  protected currentRoom: IRoomMap = MAP
+  protected human: Human
 
   setup() {
     const width = window.innerWidth
@@ -73,13 +78,18 @@ export class HomeScreen extends Scene {
     })
   }
 
-  ready() {
+  private setupFloor() {
+    if (this.floor) {
+      this.floor.destroy()
+    }
+    const { currentRoom } = this
+    const mobis = currentRoom.mobis && []
     const floor = (this.floor = new Floor({
-      map: Matrix.from(MAP.map as FloorMapElevation[][]),
-      mobis: MAP.mobis.map(definition => new Furniture({ mobi: definition })),
+      map: Matrix.from(this.currentRoom.map as FloorMapElevation[][]),
+      mobis: mobis.map(definition => new Furniture({ mobi: definition })),
     }))
 
-    const human = new Human()
+    const { human } = this
 
     human.floor = floor
 
@@ -139,6 +149,22 @@ export class HomeScreen extends Scene {
           lastPosition = p
         })
       }
+    })
+  }
+
+  ready() {
+    const mutationHandler: Record<string, (mutation: MutationPayload, state: RootState) => any> = {
+      setCurrentRoom: (mutation, state) => {
+        this.currentRoom = state.currentRoom
+        this.setupFloor()
+      },
+    }
+    this.human = new Human()
+    this.setupFloor()
+
+    store.subscribe((mutation, state) => {
+      const { type } = mutation
+      mutationHandler[type] && mutationHandler[type](mutation, state)
     })
   }
 }

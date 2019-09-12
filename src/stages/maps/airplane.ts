@@ -1,6 +1,7 @@
 import { IRoomMap } from '../IRoomMap'
 
 const room: IRoomMap = {
+  name: '¬ Airplane',
   map: [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
