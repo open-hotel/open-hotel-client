@@ -2,6 +2,7 @@ import { HumanLayer } from './HumanLayer'
 import { HumanHair, hairs } from './Hair'
 import { HumanEyes } from './Eyes'
 import { HumanFace } from './Face'
+import { random } from '@/engine/lib/utils/Util'
 
 interface HeadProps {
   type: number
@@ -45,20 +46,32 @@ export class HumanHead extends HumanLayer {
       this.face.attrs2.direction = newDirection
       this.updatePositions()
     })
+
+    const blink = () => {
+      this.eyes.blink()
+      setTimeout(blink, random(3000, 6000))
+    }
+
+    setTimeout(blink, random(1000, 5000))
   }
 
   updatePositions() {
     const { direction } = this.attrs2
     if (direction === 1) {
       this.face.position.set(14, -10)
+      this.eyes.position.set(14, -10)
     } else if (direction === 2) {
       this.face.position.set(7, -7)
+      this.eyes.position.set(7, -7)
     } else if (direction === 3) {
       this.face.position.set(0, -2)
+      this.eyes.position.set(0, -7)
     } else if (direction === 4) {
       this.face.position.set(-7, -7)
+      this.eyes.position.set(-7, -7)
     } else if (direction === 5) {
       this.face.position.set(-14, -10)
+      this.eyes.position.set(-14, -10)
     }
   }
 
