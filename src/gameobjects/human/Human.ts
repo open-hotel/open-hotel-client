@@ -91,6 +91,10 @@ export class Human extends GameObject<HumanProps> {
     })
   }
 
+  speak(time) {
+    this.head.speak(time)
+  }
+
   private positionateLayers() {
     const { height } = this.body.sprite.getLocalBounds()
     this.head.position.set(0, -(height - 2))

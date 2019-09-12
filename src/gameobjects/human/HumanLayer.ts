@@ -52,7 +52,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.updateSheet()
     this.sprite = new PIXI.AnimatedSprite(this.getAnimation(attrs.action, attrs.direction))
     this.sprite.loop = true
-    this.sprite.animationSpeed = 1 / 8
+    this.sprite.animationSpeed = 1 / 6
 
     this.attrs2.watch('type', () => {
       this.updateSheet()

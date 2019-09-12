@@ -25,6 +25,7 @@
 
 <script lang="ts">
 import Speech from './Speech.vue'
+import bus from '../../event-bus'
 
 const STEP = 30
 
@@ -73,16 +74,20 @@ export default {
       }
     },
     onEnter(event) {
-      if (event.target.value) {
-        //this.checkMoveTop()
-        this.lastTexts.push({
-          text: event.target.value,
-          transformY: 0,
-          id: id++,
-        })
-        this.currentText = ''
-        this.$refs.chatBox.value = ''
-      }
+      this.checkMoveTop()
+      this.lastTexts.push({
+        text: event.target.value,
+        transformY: 0,
+        id: id++,
+      })
+
+      const words = this.currentText.split(/\s+/).length
+      const time = words * (60000 / 130)
+
+      bus.$emit('player:speak', time)
+
+      this.currentText = ''
+      this.$refs.chatBox.value = ''
     },
   },
 }
