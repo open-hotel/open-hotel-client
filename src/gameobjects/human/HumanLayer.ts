@@ -33,7 +33,6 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
 
   public sprite: PIXI.AnimatedSprite
   protected sheet: PIXI.Spritesheet
-  // protected humanAnimation: HumanAnimation
 
   constructor(
     protected layerName: string,
@@ -53,7 +52,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.updateSheet()
     this.sprite = new PIXI.AnimatedSprite(this.getAnimation(attrs.action, attrs.direction))
     this.sprite.loop = true
-    this.sprite.animationSpeed = 1 / 8
+    this.sprite.animationSpeed = 1 / 6
 
     this.attrs2.watch('type', () => {
       this.updateSheet()
@@ -80,12 +79,12 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.sheet = this.app.getSpriteSheet(`${this.resourcePath}/${this.attrs2.type}`)
   }
 
-  protected getAnimation(action: string, direction: number): PIXI.Texture[] {
+  protected getAnimation(action: string, direction: number, layerName = this.layerName): PIXI.Texture[] {
     const { animations, textures } = this.sheet
     const { type } = this.attrs2
     const flip = HumanLayer.flips[direction] >= 0
     const flipedDirection = flip ? HumanLayer.flips[direction] : direction
-    const animationName = `${this.prefix}_${action}_${this.layerName}_${type}_${flipedDirection}`
+    const animationName = `${this.prefix}_${action}_${layerName}_${type}_${flipedDirection}`
 
     const frameName = `${animationName}_0.png`
 

@@ -67,15 +67,19 @@ export class Human extends GameObject<HumanProps> {
 
     const moveHead = () => {
       const { direction } = this.attrs2
-      const newDirection = random(direction - 1, direction + 1)
-      this.head.attrs2.direction = Math.min(newDirection, Math.max(newDirection, 0))
+      let newDirection = random(direction - 1, direction + 1)
+      if (newDirection === -1) {
+        newDirection = 7
+      } else if (newDirection === 8) {
+        newDirection = 0
+      }
+      this.head.attrs2.direction = newDirection
       setTimeout(moveHead, random(750, 2000))
     }
 
-    // setTimeout(moveHead, random(750, 2000))
+    setTimeout(moveHead, random(750, 2000))
 
-    // const { width, height } = this.getBounds()
-    // Posicionar aqui
+    // Position here
     new PIXI.Point(-30, -25).copyTo(this.pivot)
     this.zIndex = 3
 
@@ -85,6 +89,10 @@ export class Human extends GameObject<HumanProps> {
     this.attrs2.watch('direction', v => {
       this.body.attrs2.direction = this.leftHand.attrs2.direction = this.rightHand.attrs2.direction = v
     })
+  }
+
+  speak(time) {
+    this.head.speak(time)
   }
 
   private positionateLayers() {

@@ -106,7 +106,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":29},
 	"sourceSize": {"w":26,"h":29},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.896552}
 },
 "hh_human_body_h_spk_hd_1_7_1.png":
 {
@@ -115,7 +115,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":28},
 	"sourceSize": {"w":26,"h":28},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.928571}
 },
 "hh_human_body_h_std_hd_1_0_0.png":
 {
@@ -160,7 +160,7 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":26,"h":28},
 	"sourceSize": {"w":26,"h":28},
-	"anchor": {"x":0.5,"y":1}
+	"anchor": {"x":0.5,"y":0.928571}
 }},
 "animations": {
 	"hh_human_body_h_lsp_hd_1_2": ["hh_human_body_h_lsp_hd_1_2_0.png","hh_human_body_h_lsp_hd_1_2_1.png"],
@@ -177,6 +177,6 @@
 	"format": "RGBA8888",
 	"size": {"w":64,"h":259},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:6756b0bbfe331e0e171e2f69691e0fb5:9839dfc1a0e2aa44c2d66e57173de85f:9c44ecd7e9a522007eaff2949095bc1d$"
+	"smartupdate": "$TexturePacker:SmartUpdate:cbe3f756438924d0ec8fca2890a41d74:9839dfc1a0e2aa44c2d66e57173de85f:9c44ecd7e9a522007eaff2949095bc1d$"
 }
 }

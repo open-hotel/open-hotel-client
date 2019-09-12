@@ -184,7 +184,6 @@
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_lay_hrb_2321_2_0.png</key>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_lsp_hr_2321_2_0.png</key>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_spk_hr_2321_1_0.png</key>
-            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_1_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -252,7 +251,6 @@
                 <false/>
             </struct>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_spk_hr_2321_7_0.png</key>
-            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_7_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -341,6 +339,7 @@
                 <false/>
             </struct>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hr_2321_0_0.png</key>
+            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_0_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.548387,0.965517</point_f>
@@ -354,6 +353,7 @@
                 <false/>
             </struct>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hr_2321_1_0.png</key>
+            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_1_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,1</point_f>
@@ -367,6 +367,7 @@
                 <false/>
             </struct>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hr_2321_2_0.png</key>
+            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.527778,1</point_f>
@@ -393,6 +394,7 @@
                 <false/>
             </struct>
             <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hr_2321_7_0.png</key>
+            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_7_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,1</point_f>
@@ -402,32 +404,6 @@
                 <rect>8,8,15,15</rect>
                 <key>scale9Paddings</key>
                 <rect>8,8,15,15</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_0_0.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>1.12903,1.37931</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>8,7,15,15</rect>
-                <key>scale9Paddings</key>
-                <rect>8,7,15,15</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../../../../commands/renameAssets/assets/hair_F_backbun_h_std_hrb_2321_2_0.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.0833333,0</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>9,7,18,15</rect>
-                <key>scale9Paddings</key>
-                <rect>9,7,18,15</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
