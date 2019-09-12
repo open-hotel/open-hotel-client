@@ -74,7 +74,7 @@ export default {
     },
     onEnter(event) {
       if (event.target.value) {
-        this.checkMoveTop()
+        //this.checkMoveTop()
         this.lastTexts.push({
           text: event.target.value,
           transformY: 0,
