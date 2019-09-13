@@ -63,7 +63,7 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.updateFlip()
     this.addChild(this.sprite)
     this.sprite.onFrameChange = () => this.updateAnchor()
-    this.sprite.tint = 0xffe0bd
+    this.sprite.tint = 0xffffff
   }
 
   private updateAnchor() {
@@ -79,7 +79,14 @@ export abstract class HumanLayer extends GameObject<HumanLayerProps> {
     this.sheet = this.app.getSpriteSheet(`${this.resourcePath}/${this.attrs2.type}`)
   }
 
+  setSheet(spritesheet: PIXI.Spritesheet) {
+    this.sheet = spritesheet
+    this.updateTexture()
+    return this
+  }
+
   protected getAnimation(action: string, direction: number, layerName = this.layerName): PIXI.Texture[] {
+    if (!this.sheet) return [PIXI.Texture.EMPTY]
     const { animations, textures } = this.sheet
     const { type } = this.attrs2
     const flip = HumanLayer.flips[direction] >= 0

@@ -62,17 +62,53 @@ export class Application extends PIXI.Application {
     return this.$instance
   }
 
-  getResource(id: any) {
-    return this.loader.resources[id]
+  /**
+   * load a resource or get from loader cache
+   * @param name Resource name
+   */
+  getResource(name: string)
+  /**
+   * load resources or get from loader cache
+   * @param names Resource names
+   */
+  getResource(names: string[])
+  /**
+   * load resources or get from loader cache
+   * @param items Resource names aliases
+   */
+  getResource(items: { [key: string]: string })
+  getResource(idOrArrayOrObject: string | string[] | { [key: string]: string }) {
+    return new Promise((resolve, reject) => {
+      // String
+      if (typeof idOrArrayOrObject === 'string') {
+        return this.loader.add(idOrArrayOrObject).load((_, r) => resolve(r[idOrArrayOrObject]))
+      }
+
+      // Array
+      if (Array.isArray(idOrArrayOrObject)) {
+        return this.loader.add(idOrArrayOrObject).load((_, r) => resolve(idOrArrayOrObject.map(name => r[name])))
+      }
+
+      // Objects
+      return this.loader.add(idOrArrayOrObject).load((_, r) => {
+        const result = {}
+
+        for (let k in idOrArrayOrObject) {
+          result[k] = r[k]
+        }
+
+        resolve(result)
+      })
+    })
   }
 
   getTexture(id: any) {
-    const resource = this.getResource(id)
+    const resource = this.loader.resources[id]
     return resource && resource.texture
   }
 
   getSpriteSheet(id: any) {
-    const resource = this.getResource(id)
+    const resource = this.loader.resources[id]
     return resource && resource.spritesheet
   }
 

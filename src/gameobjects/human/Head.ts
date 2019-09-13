@@ -11,9 +11,9 @@ interface HeadProps {
 }
 
 export class HumanHead extends HumanLayer {
-  private hair: HumanHair
-  private eyes: HumanEyes
-  private face: HumanFace
+  public hair: HumanHair
+  public eyes: HumanEyes
+  public face: HumanFace
 
   constructor(attrs: HeadProps) {
     super('hd', 'human/head', attrs)
