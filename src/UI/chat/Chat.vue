@@ -74,20 +74,22 @@ export default {
       }
     },
     onEnter(event) {
-      this.checkMoveTop()
-      this.lastTexts.push({
-        text: event.target.value,
-        transformY: 0,
-        id: id++,
-      })
+      if (event.target.value) {
+        this.checkMoveTop()
+        this.lastTexts.push({
+          text: event.target.value,
+          transformY: 0,
+          id: id++,
+        })
 
-      const words = this.currentText.split(/\s+/).length
-      const time = words * (60000 / 130)
+        const words = this.currentText.split(/\s+/).length
+        const time = words * (60000 / 130)
 
-      bus.$emit('player:speak', time)
+        bus.$emit('player:speak', time)
 
-      this.currentText = ''
-      this.$refs.chatBox.value = ''
+        this.currentText = ''
+        this.$refs.chatBox.value = ''
+      }
     },
   },
 }
