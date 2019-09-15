@@ -13,6 +13,14 @@ interface HumanProps {
   isSpeak: boolean
   isIdle: boolean
   isWalk: boolean
+  isLoading: boolean
+  look: {
+    skin: number
+    hair: {
+      name: string
+      type: number
+    }
+  }
 }
 
 export class Human extends GameObject<HumanProps> {
@@ -29,6 +37,14 @@ export class Human extends GameObject<HumanProps> {
       isLay: false,
       isSpeak: false,
       isWalk: false,
+      isLoading: true,
+      look: {
+        skin: 0xffe0bd,
+        hair: {
+          name: 'hair_F_backbun_h',
+          type: 1,
+        },
+      },
     })
 
     this.interactive = true
@@ -84,11 +100,39 @@ export class Human extends GameObject<HumanProps> {
     this.zIndex = 3
 
     this.body.sprite.onFrameChange = () => this.positionateLayers()
+
     this.updateLayers()
+    this.updateLook()
 
     this.attrs2.watch('direction', v => {
       this.body.attrs2.direction = this.leftHand.attrs2.direction = this.rightHand.attrs2.direction = v
     })
+  }
+
+  updateLook() {
+    const { look, isLoading } = this.attrs2
+    let { skin } = look
+
+    this.filters = [new PIXI.filters.AlphaFilter(0.4)]
+
+    return this.app
+      .getResource(['resources/human/hair/2321/sheet.json', 'resources/human/face/1/sheet.json'])
+      .then(([hair, face]) => {
+        this.head.hair.setSheet(hair.spritesheet)
+        this.head.face.setSheet(face.spritesheet)
+        this.head.eyes.setSheet(face.spritesheet)
+        this.filters = []
+
+        this.body.sprite.tint = skin
+        this.head.sprite.tint = skin
+        this.head.face.sprite.tint = skin
+        this.leftHand.sprite.tint = skin
+        this.rightHand.sprite.tint = skin
+      })
+  }
+
+  speak(time) {
+    this.head.speak(time)
   }
 
   private positionateLayers() {

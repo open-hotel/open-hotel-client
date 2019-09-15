@@ -14,8 +14,8 @@ const sheet: Sheet = {
     body: ['1'],
     left_hand: ['1'],
     right_hand: ['1'],
-    hair: ['1', '2321'],
-    face: ['1'],
+    // hair: ['1', '2321'],
+    // face: ['1'],
   },
 }
 
