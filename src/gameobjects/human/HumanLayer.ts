@@ -60,6 +60,12 @@ export abstract class HumanLayer extends GameEntity<TODO> {
     return super.getAnimation(action, flipedDirection, layerName)
   }
 
+  setSheet(spritesheet: PIXI.Spritesheet) {
+    this.sheet = spritesheet
+    this.updateTexture()
+    return this
+  }
+
   updateTexture() {
     super.updateTexture()
     this.updateFlip()
