@@ -25,38 +25,22 @@ function processNeighbors(
   const right = grid[current.y] && grid[current.y][nextX]
   const bottom = grid[nextY] && grid[nextY][current.x]
 
-  if (top && !top.closed && top.walkable && canWalk(top, current)) {
-    top.parent = current
-    top.closed = true
-    top.g = heuristic(top, current)
-    top.h = heuristic(top, goal)
-    neighbors.push(top)
-  }
+  // const diagTopLeft = grid[prevX] && grid[prevX][prevY]
+  // const diagTopRight = grid[nextX] && grid[nextX][prevY]
+  // const diagBottomLeft = grid[prevX] && grid[prevX][nextY]
+  // const diagBottomRight = grid[nextX] && grid[nextX][nextY]
 
-  if (left && !left.closed && left.walkable && canWalk(left, current)) {
-    left.parent = current
-    left.closed = true
-    left.g = heuristic(left, current)
-    left.h = heuristic(left, goal)
-    neighbors.push(left)
+  // const possibleNeighbors = [top, left, right, bottom, diagTopLeft, diagTopRight, diagBottomLeft, diagBottomRight]
+  const possibleNeighbors = [top, left, right, bottom]
+  for (const block of possibleNeighbors) {
+    if (block && !block.closed && block.walkable && canWalk(block, current)) {
+      block.parent = current
+      block.closed = true
+      block.g = heuristic(block, current)
+      block.h = heuristic(block, goal)
+      neighbors.push(block)
+    }
   }
-
-  if (right && !right.closed && right.walkable && canWalk(right, current)) {
-    right.parent = current
-    right.closed = true
-    right.g = heuristic(right, current)
-    right.h = heuristic(right, goal)
-    neighbors.push(right)
-  }
-
-  if (bottom && !bottom.closed && bottom.walkable && canWalk(bottom, current)) {
-    bottom.parent = current
-    bottom.closed = true
-    bottom.g = heuristic(bottom, current)
-    bottom.h = heuristic(bottom, goal)
-    neighbors.push(bottom)
-  }
-
   return neighbors
 }
 
