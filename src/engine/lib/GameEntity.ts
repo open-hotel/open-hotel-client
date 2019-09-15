@@ -38,6 +38,7 @@ export class GameEntity<T extends GameEntityAttrs> extends GameObject<T> {
   }
 
   protected getAnimation(action: string, direction: number, layerName = this.layerName): PIXI.Texture[] {
+    if (!this.sheet) return [PIXI.Texture.EMPTY]
     const { animations, textures } = this.sheet
     const { type } = this.attrs2
 
