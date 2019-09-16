@@ -4,7 +4,7 @@ import { Arguments } from 'yargs-parser';
 import app from '../../app';
 import { ShellProvider } from '../shell.provider';
 
-const Table = require('cli-table3')
+const Table = require('cli-table3');
 
 @Injectable()
 export class ApiBin {
@@ -20,43 +20,50 @@ export class ApiBin {
     if (cmd === 'help') return this.help(sh);
   }
 
-  async start(sh:ShellProvider) {
-    sh.print('Start...')
+  async start(sh: ShellProvider) {
+    sh.print('Starting server...');
+    const port = 3000;
 
     const appInstance = await app();
-    appInstance.listen(3000);
+    return appInstance
+      .listen(port)
+      .then(() =>
+        sh.print(`✅ Server started successfully! Listening on port ${port}.`),
+      );
   }
 
-  async stop(sh:ShellProvider) {
-    sh.print('Stopping...')
+  async stop(sh: ShellProvider) {
+    sh.print('Stopping...');
     const appInstance = await app();
     appInstance.close();
   }
 
-  help (sh:ShellProvider) {
+  help(sh: ShellProvider) {
     let table = new Table({
       title: 'Help',
-      head: ['command', 'usage', 'description']
-    })
+      head: ['command', 'usage', 'description'],
+    });
 
-    table.push(
-      ['server', 'server [command]', 'managed the embedded http server']
-    )
+    table.push([
+      'server',
+      'server [command]',
+      'managed the embedded http server',
+    ]);
 
-    sh.print(table.toString())
-    sh.print('Commands: ')
+    sh.print(table.toString());
+    sh.print('Commands: ');
 
     table = new Table({
       title: 'Help',
-      head: ['command', 'usage', 'description']
-    })
+      head: ['command', 'usage', 'description'],
+    });
 
     table.push(
       ['start', 'server start', 'Starts HTTP Server'],
       ['stop', 'server stop', 'Stop HTTP Server'],
-      ['help', 'server help', 'Show this help.']
-    )
+      ['help', 'server help', 'Show this help.'],
+    );
 
-    sh.print(table.toString())
+    sh.print(table.toString());
   }
 }
