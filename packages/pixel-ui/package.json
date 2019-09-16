@@ -2,12 +2,14 @@
   "name": "@open-hotel/pixel",
   "version": "0.2.4",
   "main": "dist/pixel.umd.js",
+  "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:lib": "vue-cli-service build --target lib --name pixel ./src/index.ts",
     "lint": "vue-cli-service lint",
-    "release": "yarn build:lib && release --patch"
+    "release": "yarn build:lib && release --patch",
+    "prepare": "yarn build:lib"
   },
   "types": "dist/types",
   "files": [

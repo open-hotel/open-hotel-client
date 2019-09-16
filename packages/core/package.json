@@ -6,7 +6,8 @@
   "module": "dist/open-hotel-core.mjs",
   "scripts": {
     "test": "jest",
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "prepare": "yarn build"
   },
   "files": [
     "LICENSE",
