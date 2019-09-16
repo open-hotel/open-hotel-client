@@ -1,0 +1,26 @@
+{
+  "name": "@open-hotel/core",
+  "version": "1.0.2",
+  "description": "My webpack project",
+  "main": "dist/open-hotel-core.js",
+  "scripts": {
+    "test": "jest",
+    "build": "webpack",
+    "start": "webpack-dev-server"
+  },
+  "files": [
+    "LICENSE",
+    "src",
+    "dist"
+  ],
+  "types": "dist/src",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "ts-loader": "^6.1.0",
+    "typescript": "^3.6.3",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.8",
+    "webpack-dev-server": "^3.8.0"
+  }
+}
