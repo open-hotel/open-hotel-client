@@ -1,0 +1,38 @@
+{"frames": {
+
+"4_noob_plant_noob_plant_64_a_0_0.png":
+{
+	"frame": {"x":1,"y":1,"w":40,"h":71},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":71},
+	"sourceSize": {"w":40,"h":71}
+},
+"5_noob_plant_noob_plant_32_a_0_0.png":
+{
+	"frame": {"x":43,"y":1,"w":19,"h":37},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":37},
+	"sourceSize": {"w":19,"h":37}
+},
+"9_noob_plant_noob_plant_icon_a.png":
+{
+	"frame": {"x":43,"y":40,"w":19,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":32},
+	"sourceSize": {"w":19,"h":32}
+}},
+"animations": {
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "sheet.png",
+	"format": "RGBA8888",
+	"size": {"w":63,"h":73},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:3b3021034c9b072aefd33324abb7afcd:bf855063063831c22a6b9c9b738a5f27:9c44ecd7e9a522007eaff2949095bc1d$"
+}
+}

@@ -1,60 +1,31 @@
 {
-  "name": "open-hotel",
-  "version": "0.2.0",
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "license": "MIT",
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test": "jest",
-    "testW": "jest --watchAll",
-    "renameAssets": "node ./commands/renameAssets"
+    "prerelease": "lerna version -m 'chore(release): publish'",
+    "release": "lerna publish from-git",
+    "prepare": "lerna run prepare",
+    "changelog": "conventional-changelog -p angular -r 2 -i CHANGELOG.md -s",
+    "test": "lerna run test"
   },
-  "dependencies": {
-    "@open-hotel/pixel": "latest",
-    "@tweenjs/tween.js": "18",
-    "core-js": "^3.2.1",
-    "pixi-viewport": "^4.2.0",
-    "pixi.js": "^5.1.2",
-    "register-service-worker": "^1.6.2",
-    "tween.js": "^16.6.0",
-    "tweenjs": "^1.0.2",
-    "vue": "^2.6.10",
-    "vue-router": "^3.0.3",
-    "vuex": "^3.0.1",
-    "webfontloader": "^1.6.28"
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
   },
   "devDependencies": {
-    "@types/jest": "^24.0.17",
-    "@types/tween.js": "^17.2.0",
-    "@types/webfontloader": "^1.6.29",
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-plugin-pwa": "^3.11.0",
-    "@vue/cli-plugin-typescript": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "@vue/eslint-config-prettier": "^5.0.0",
-    "@vue/eslint-config-typescript": "^4.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^6.3.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "jest": "^24.9.0",
-    "jest-canvas-mock": "^2.1.0",
-    "lint-staged": "^9.2.5",
-    "node-sass": "^4.12.0",
-    "prettier": "^1.18.2",
-    "sass-loader": "^8.0.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "3.4.3",
-    "vue-template-compiler": "^2.6.10"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,vue,ts}": [
-      "vue-cli-service lint",
-      "git add"
-    ]
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "3.0.2",
+    "husky": "^3.0.5",
+    "lerna": "^3.16.4"
   }
 }

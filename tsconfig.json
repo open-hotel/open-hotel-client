@@ -5,17 +5,24 @@
     "strict": false,
     "jsx": "preserve",
     "importHelpers": true,
+    "composite": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": ["webpack-env"],
+    "types": ["webpack-env", "jest", "node"],
     "paths": {
       "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.tsx",
+    "packages/*/src/**/*.vue",
+    "packages/*/tests/**/*.ts",
+    "packages/*/tests/**/*.tsx"
+  ],
   "exclude": ["node_modules"]
 }
