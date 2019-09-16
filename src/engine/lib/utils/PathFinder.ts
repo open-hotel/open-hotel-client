@@ -35,7 +35,7 @@ function processNeighbors(grid: PNode[][], current: PNode, start: PNode, goal: P
       block.parent = current
       block.closed = true
       block.g = instance.heuristic(block, start, instance)
-      block.h = instance.heuristic(block, goal, instance)
+      block.h = instance.heuristic(block, goal, instance) + instance.getCostsOf(block)
       neighbors.push(block)
     }
   }
@@ -97,8 +97,8 @@ export class PathFinder {
   static STRAIGHT_COST = 1
   static Heuristic = {
     Manhattan: (a: PNode, b: PNode, instance: PathFinder) => {
-      const dx = Math.abs(a.x - b.x)
-      const dy = Math.abs(a.x - b.x)
+      const dx = abs(a.x - b.x)
+      const dy = abs(a.x - b.x)
 
       if (instance.diagonalEnabled) {
         return dx < dy ? PathFinder.DIAGONAL_COST * dx + dy : PathFinder.DIAGONAL_COST * dy + dx
@@ -106,12 +106,25 @@ export class PathFinder {
 
       return dx + dy
     },
-    Euclidean: (a: PNode, b: PNode, instance: PathFinder) => Math.sqrt((a.x - b.x) ** 2 + (a.x - b.x) ** 2),
+    Euclidean: (a: PNode, b: PNode) => sqrt((a.x - b.x) ** 2 + (a.x - b.x) ** 2),
   }
 
   public heuristic: PathFinderHeuristic = PathFinder.Heuristic.Manhattan
   public grid: Grid
   public diagonalEnabled = true
+  private costs: {
+    test: (block: PNode) => boolean
+    cost: number
+  }[] = []
+
+  addAdditionalCost(test: (block: PNode) => boolean, cost = 1) {
+    this.costs.push({ cost, test })
+    return this
+  }
+
+  getCostsOf(block: PNode) {
+    return this.costs.filter(item => item.test(block)).reduce((sum, item) => sum + item.cost, 0)
+  }
 
   constructor(grid: Grid | number[][] = [], public canWalk: CanWalkFunction = () => true) {
     if (grid instanceof Grid) this.grid = grid
