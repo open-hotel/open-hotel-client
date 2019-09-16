@@ -1,6 +1,6 @@
 {
   "name": "@open-hotel/core",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "My webpack project",
   "main": "dist/open-hotel-core.js",
   "scripts": {
