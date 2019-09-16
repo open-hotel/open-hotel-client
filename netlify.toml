@@ -3,4 +3,4 @@
 
     publish = "packages/client/dist"
 
-    command = "yarn build"
+    command = "lerna bootstrap && yarn build"
