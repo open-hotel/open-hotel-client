@@ -33,7 +33,7 @@ describe('Deve retornar o caminho mais curto', () => {
       const path = finder.find(start, end)
 
       const result = drawMap(map, path, start)
-      expect(spec).toContainEqual(result)
+      expect(spec.map(i => '\n' + i)).toContainEqual('\n' + result)
     })
   }
 })

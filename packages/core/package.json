@@ -6,6 +6,7 @@
   "module": "dist/open-hotel-core.mjs",
   "scripts": {
     "test": "jest",
+    "testW": "jest --watchAll",
     "build": "rollup -c rollup.config.js",
     "prepare": "yarn build"
   },
