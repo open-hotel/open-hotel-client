@@ -1,4 +1,4 @@
-import { Matrix } from './Matrix'
+import { Matrix } from '@open-hotel/core'
 
 export const createFloorTestFunction = (map: Matrix<number>) => (test: Matrix<string>) => {
   const current = map.get(1, 1)
