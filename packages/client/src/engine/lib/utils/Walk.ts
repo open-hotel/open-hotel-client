@@ -1,6 +1,5 @@
 import TWEEN from '@tweenjs/tween.js'
 import { Constructor } from '@/engine/types'
-import { GameObject } from '../GameObject'
 import { IPoint } from 'pixi.js'
 
 export interface PointLike {
@@ -8,31 +7,21 @@ export interface PointLike {
   y: number
 }
 
-export class WalkRunner implements PromiseLike<any> {
+export class WalkRunner {
   private _cancel = false
-  private _task: Promise<boolean>
 
   constructor(public obj: PIXI.DisplayObject, public tween: TWEEN.Tween) {}
 
-  then(onFinishOrCancel?: (finished: boolean) => any | PromiseLike<any>) {
-    return this._task.then(onFinishOrCancel)
-  }
-
-  follow(points: PointLike[], onStep: (point?: PointLike, index?: number) => any, stepDuration = 400) {
+  async follow(points: PointLike[], onStep: (point?: PointLike, index?: number) => any, stepDuration = 400) {
     points = points.slice(0)
-    // eslint-disable-next-line no-async-promise-executor
-    this._task = new Promise(async (resolve, reject) => {
-      let step: PointLike = null
-      let i = 0
+    let step: PointLike = null
+    let i = 0
 
-      while (!this._cancel && (step = points.shift())) {
-        await onStep(step, i++)
-      }
+    while (!this._cancel && (step = points.shift())) {
+      await onStep(step, i++)
+    }
 
-      return resolve(!this._cancel)
-    })
-
-    return this
+    return !this._cancel
   }
 
   cancel() {
