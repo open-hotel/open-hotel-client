@@ -4,7 +4,21 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "prerelease": "lerna version -m 'chore(release): publish'",
+    "release": "lerna publish from-git",
+    "prepare": "lerna run prepare",
+    "changelog": "conventional-changelog -p angular -r 2 -i CHANGELOG.md -s",
+    "test": "lerna run test"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "devDependencies": {
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "3.0.2",
     "lerna": "^3.16.4"
   }
 }
