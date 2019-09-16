@@ -4,6 +4,9 @@
   "description": "",
   "author": "",
   "license": "MIT",
+  "bin": {
+    "orion": "./dist/main.js"
+  },
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
