@@ -1,0 +1,6 @@
+[build]
+    base = "packages/client"
+
+    publish = "packages/client/dist"
+
+    command = "yarn && yarn build"
