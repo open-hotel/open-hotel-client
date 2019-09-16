@@ -108,7 +108,7 @@ export class HomeScreen extends Scene {
 
     this.avoidDragMove()
 
-    let lastPosition = null
+    let lastPosition = { x: humanX, y: humanY }
     let lastWalk = null
     let path = []
 
@@ -147,7 +147,6 @@ export class HomeScreen extends Scene {
               else if (y > lastY) nextDirection = 2
               human.attrs2.direction = nextDirection
             }
-            // // @ts-ignore
             lastWalk = human.moveTo(target.isoPosition.toVector2())
             await lastWalk
             human.mapPosition.set(p.x, p.y, 0)
