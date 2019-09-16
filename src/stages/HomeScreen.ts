@@ -127,8 +127,11 @@ export class HomeScreen extends Scene {
         Walkable.cancelSwitch = false
       }
       if (e.target instanceof GameObject) {
-        Walkable.walk(floor.pathFinder.find(human.mapPosition, e.target.mapPosition), async p => {
+        const path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
+        floor.tintBlocks(path, 0xaaffff)
+        Walkable.walk(path, async p => {
           const target = floor.$mapBlocks.get(p.x, p.y)
+          target.tint = 0x00aaaa
           human.zIndex = target.zIndex + 1
           human.walk()
 
@@ -143,10 +146,11 @@ export class HomeScreen extends Scene {
           await lastWalk
           human.mapPosition.set(p.x, p.y, 0)
 
-          human.stop()
-
           /* eslint-disable require-atomic-updates */
           lastPosition = p
+        }).then(() => {
+          human.stop()
+          floor.tintBlocks(path, 0xffffff)
         })
       }
     })

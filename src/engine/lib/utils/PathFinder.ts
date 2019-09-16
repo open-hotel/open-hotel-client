@@ -3,16 +3,10 @@ interface Vector2 {
   y: number
 }
 
-type PathFinderHeuristic = (a: PNode, b: PNode) => number
+type PathFinderHeuristic = (a: PNode, b: PNode, instance?: PathFinder) => number
 type CanWalkFunction = (cell: PNode, current: PNode) => boolean
 
-function processNeighbors(
-  grid: PNode[][],
-  current: PNode,
-  goal: PNode,
-  heuristic: PathFinderHeuristic,
-  canWalk: CanWalkFunction,
-) {
+function processNeighbors(grid: PNode[][], current: PNode, start: PNode, goal: PNode, instance: PathFinder) {
   const neighbors = []
 
   const prevX = current.x - 1
@@ -25,19 +19,23 @@ function processNeighbors(
   const right = grid[current.y] && grid[current.y][nextX]
   const bottom = grid[nextY] && grid[nextY][current.x]
 
-  // const diagTopLeft = grid[prevX] && grid[prevX][prevY]
-  // const diagTopRight = grid[nextX] && grid[nextX][prevY]
-  // const diagBottomLeft = grid[prevX] && grid[prevX][nextY]
-  // const diagBottomRight = grid[nextX] && grid[nextX][nextY]
+  const topLeft = grid[prevY] && grid[prevY][prevX]
+  const topRight = grid[prevY] && grid[prevY][nextX]
+  const bottomLeft = grid[nextY] && grid[nextY][prevX]
+  const bottomRight = grid[nextY] && grid[nextY][nextX]
 
-  // const possibleNeighbors = [top, left, right, bottom, diagTopLeft, diagTopRight, diagBottomLeft, diagBottomRight]
   const possibleNeighbors = [top, left, right, bottom]
+
+  if (instance.diagonalEnabled) {
+    possibleNeighbors.push(topLeft, topRight, bottomRight, bottomLeft)
+  }
+
   for (const block of possibleNeighbors) {
-    if (block && !block.closed && block.walkable && canWalk(block, current)) {
+    if (block && !block.closed && block.walkable && instance.canWalk(block, current)) {
       block.parent = current
       block.closed = true
-      block.g = heuristic(block, current)
-      block.h = heuristic(block, goal)
+      block.g = instance.heuristic(block, start, instance)
+      block.h = instance.heuristic(block, goal, instance)
       neighbors.push(block)
     }
   }
@@ -92,15 +90,28 @@ function getPath(node: PNode) {
   return path
 }
 
-const { abs } = Math
+const { abs, sqrt, max, min } = Math
 
 export class PathFinder {
+  static DIAGONAL_COST = 1.4
+  static STRAIGHT_COST = 1
   static Heuristic = {
-    Manhattan: (a: PNode, b: PNode) => abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z),
+    Manhattan: (a: PNode, b: PNode, instance: PathFinder) => {
+      const dx = Math.abs(a.x - b.x)
+      const dy = Math.abs(a.x - b.x)
+
+      if (instance.diagonalEnabled) {
+        return dx < dy ? PathFinder.DIAGONAL_COST * dx + dy : PathFinder.DIAGONAL_COST * dy + dx
+      }
+
+      return dx + dy
+    },
+    Euclidean: (a: PNode, b: PNode, instance: PathFinder) => Math.sqrt((a.x - b.x) ** 2 + (a.x - b.x) ** 2),
   }
 
   public heuristic: PathFinderHeuristic = PathFinder.Heuristic.Manhattan
   public grid: Grid
+  public diagonalEnabled = true
 
   constructor(grid: Grid | number[][] = [], public canWalk: CanWalkFunction = () => true) {
     if (grid instanceof Grid) this.grid = grid
@@ -111,7 +122,6 @@ export class PathFinder {
     const { nodes } = this.grid.clone()
     const startNode = nodes[start.y] && nodes[start.y][start.x]
     const goalNode = nodes[end.y] && nodes[end.y][end.x]
-    const canWalk = this.canWalk.bind(this)
 
     if (!startNode || !goalNode) return null
     if (startNode === goalNode) return []
@@ -122,9 +132,7 @@ export class PathFinder {
     const closed: PNode[] = []
 
     while ((currentNode = opened.shift())) {
-      const neighbors = processNeighbors(nodes, currentNode, goalNode, this.heuristic, canWalk).sort(
-        (a, b) => a.f - b.f,
-      )
+      const neighbors = processNeighbors(nodes, currentNode, startNode, goalNode, this).sort((a, b) => a.f - b.f)
 
       currentNode.closed = true
       closed.push(currentNode)

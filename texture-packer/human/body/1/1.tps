@@ -210,7 +210,7 @@
             <key type="filename">frames/hh_human_body_h_sit_bd_1_2_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
-                <point_f>0.333333,0.714286</point_f>
+                <point_f>0.277778,0.877551</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
