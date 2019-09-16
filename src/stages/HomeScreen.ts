@@ -134,12 +134,21 @@ export class HomeScreen extends Scene {
           target.tint = 0x00aaaa
           human.zIndex = target.zIndex + 1
           human.walk()
-
           if (lastPosition) {
-            if (p.x < lastPosition.x) human.attrs2.direction = 0
-            else if (p.x > lastPosition.x) human.attrs2.direction = 4
-            else if (p.y < lastPosition.y) human.attrs2.direction = 6
-            else if (p.y > lastPosition.y) human.attrs2.direction = 2
+            const { x, y } = p
+            const { x: lastX, y: lastY } = lastPosition
+            let nextDirection = 0
+            // Diagonal positions
+            if (x < lastX && y > lastY) nextDirection = 1
+            else if (x < lastX && y < lastY) nextDirection = 7
+            else if (x > lastX && y > lastY) nextDirection = 3
+            else if (x > lastX && y < lastY) nextDirection = 5
+            // Cross positions
+            else if (x < lastX) nextDirection = 0
+            else if (x > lastX) nextDirection = 4
+            else if (y < lastY) nextDirection = 6
+            else if (y > lastY) nextDirection = 2
+            human.attrs2.direction = nextDirection
           }
           // @ts-ignore
           lastWalk = human.moveTo(target.isoPosition)
