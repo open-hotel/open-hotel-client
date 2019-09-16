@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@open-hotel/core": "^1.0.7",
-    "@open-hotel/pixel": "latest",
+    "@open-hotel/pixel": "^0.2.4",
     "@tweenjs/tween.js": "18",
     "core-js": "^3.2.1",
     "lodash": "^4.17.15",
