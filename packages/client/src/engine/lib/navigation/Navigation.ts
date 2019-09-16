@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js'
 import { Application } from '../../Application'
-import { Class } from '../../types'
+import { Constructor } from '../../types'
 import { Scene } from '../Scene'
 import { Logger } from '../Logger'
 import TWEEN from '@tweenjs/tween.js'
 
 interface NavigationRoutes {
-  [key: string]: Class<Scene>
+  [key: string]: Constructor<Scene>
 }
 
 interface NavigationHistoryItem {
@@ -47,7 +47,7 @@ export class Navigation {
    * @param key Scene unique name
    * @param SceneContructor Scene Container
    */
-  register(key: string, SceneContructorItem: Class<Scene>) {
+  register(key: string, SceneContructorItem: Constructor<Scene>) {
     this.$logger.debug(`definindo ${SceneContructorItem.name} em /${key}...`)
 
     if (key in this.routes) {

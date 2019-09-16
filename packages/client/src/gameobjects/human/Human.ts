@@ -6,6 +6,8 @@ import { HumanLeftHand } from './LeftHand'
 import { HumanRightHand } from './RightHand'
 import { HumanHair } from './Hair'
 import * as PIXI from 'pixi.js'
+import { Walkable } from '@/engine/lib/utils/Walk'
+import { Constructor } from '@/engine/types'
 
 interface HumanProps {
   direction: number
@@ -23,7 +25,7 @@ interface HumanProps {
   }
 }
 
-export class Human extends GameObject<HumanProps> {
+export class Human extends Walkable<Constructor<GameObject<HumanProps>>>(GameObject) {
   public readonly head: HumanHead
   public readonly body: HumanBody
   public readonly leftHand: HumanLeftHand
