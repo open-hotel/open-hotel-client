@@ -181,7 +181,7 @@ export class Floor extends GameObject {
     walls.forEach(wall => wall && this.addChild(wall))
   }
 
-  tintBlock (block: { x: number; y: number }, color = 0xff0000) {
+  tintBlock(block: { x: number; y: number }, color = 0xff0000) {
     const item = this.$mapBlocks.get(block.x, block.y)
     item.tint = color
   }
