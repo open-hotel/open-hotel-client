@@ -24,6 +24,6 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 - [ ] Create floor-mobis basic system
 - [ ] Create wall-mobis basic system
 
-
 ## Contributors
+
 ![Contributors](https://contributors-img.firebaseapp.com/image?repo=open-hotel/open-hotel-client)
