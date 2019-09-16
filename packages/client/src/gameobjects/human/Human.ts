@@ -139,38 +139,35 @@ export class Human extends Walkable<Constructor<GameObject<HumanProps>>>(GameObj
 
   private positionateLayers() {
     const { height } = this.body.sprite.getLocalBounds()
-    this.head.position.set(0, -(height - 2))
-    this.leftHand.position.set(8, -(height - 5))
-    this.rightHand.position.set(-7, -(height - 6))
+    const { leftHand, rightHand, head } = this
 
-    if (this.attrs2.direction === 0) {
-      this.leftHand.position.set(-10, -(height - 4))
-      this.rightHand.position.set(5, -(height - 10))
-    }
+    head.position.set(0, -(height - 2))
+    leftHand.position.set(8, -(height - 5))
+    rightHand.position.set(-7, -(height - 6))
 
-    if (this.attrs2.direction === 2) {
-      this.leftHand.position.set(8, -(height - 4))
-      this.rightHand.position.set(-7, -(height - 6))
-    }
+    const { direction } = this.attrs2
 
-    if (this.attrs2.direction === 4) {
-      this.leftHand.position.set(-8, -(height - 5))
-      this.rightHand.position.set(7, -(height - 7))
-    }
-
-    if (this.attrs2.direction === 5) {
-      this.leftHand.position.set(-5, -(height - 7))
-      this.rightHand.position.set(5, -(height - 7))
-    }
-
-    if (this.attrs2.direction === 6) {
-      this.leftHand.position.set(10, -(height - 5))
-      this.rightHand.position.set(-6, -(height - 10))
-    }
-
-    if (this.attrs2.direction === 7) {
-      this.leftHand.position.set(-7, -(height - 2))
-      this.rightHand.position.set(6, -(height - 3))
+    if (direction === 0) {
+      leftHand.position.set(-10, -(height - 4))
+      rightHand.position.set(5, -(height - 10))
+    } else if (direction === 1) {
+      leftHand.position.set(-3, -(height - 7))
+      rightHand.position.set(-3, -(height - 7))
+    } else if (direction === 2) {
+      leftHand.position.set(8, -(height - 4))
+      rightHand.position.set(-7, -(height - 6))
+    } else if (direction === 4) {
+      leftHand.position.set(-8, -(height - 5))
+      rightHand.position.set(7, -(height - 7))
+    } else if (direction === 5) {
+      leftHand.position.set(2, -(height - 7))
+      rightHand.position.set(2, -(height - 7))
+    } else if (direction === 6) {
+      leftHand.position.set(10, -(height - 5))
+      rightHand.position.set(-6, -(height - 10))
+    } else if (direction === 7) {
+      leftHand.position.set(-7, -(height - 2))
+      rightHand.position.set(6, -(height - 3))
     }
   }
 
