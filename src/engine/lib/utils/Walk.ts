@@ -1,59 +1,66 @@
 import TWEEN from '@tweenjs/tween.js'
+import { Constructor } from '@/engine/types'
+import { GameObject } from '../GameObject'
+import { IPoint } from 'pixi.js'
 
-interface PointLike {
+export interface PointLike {
   x: number
   y: number
 }
 
-export class Walkable {
-  public tween: TWEEN.Tween
+export class WalkRunner implements PromiseLike<any> {
+  private _cancel = false
+  private _task: Promise<boolean>
 
-  constructor(public object?: PIXI.DisplayObject) {
-    this.tween = new TWEEN.Tween(object.position.clone())
+  constructor(public obj: PIXI.DisplayObject, public tween: TWEEN.Tween) {}
+
+  then(onFinishOrCancel?: (finished: boolean) => any | PromiseLike<any>) {
+    return this._task.then(onFinishOrCancel)
   }
 
-  async moveTo(position: PointLike, duration: number = 400) {
-    return new Promise(resolve => {
-      this.tween.stop()
-      this.tween = new TWEEN.Tween(this.object.position.clone())
-        .to(position, duration)
-        .onUpdate((p: PIXI.IPoint) => this.object.position.set(p.x, p.y))
-        .onComplete(resolve)
-        .start()
-    })
-  }
+  follow(points: PointLike[], onStep: (point?: PointLike, index?: number) => any, stepDuration = 400) {
+    points = points.slice(0)
+    // eslint-disable-next-line no-async-promise-executor
+    this._task = new Promise(async (resolve, reject) => {
+      let step: PointLike = null
+      let i = 0
 
-  async followPath(
-    path: PointLike[],
-    duration: number = 400,
-    cb: (point: PointLike, index: number) => any = () => null,
-  ) {
-    return this.forEachPath(path, async (p, i) => {
-      await cb(p, i)
-      return this.moveTo(p, duration)
-    })
-  }
-
-  async forEachPath(path: PointLike[], cb: (point: PointLike, index: number) => any = () => null) {
-    let p,
-      i = 0
-    while ((p = path.shift())) {
-      await cb(p, i++)
-    }
-  }
-
-  static cancelSwitch = false
-
-  static async walk(path: PointLike[], cb: (point: PointLike, index: number) => Promise<any> | any) {
-    let i = 0
-    let { length } = path
-
-    while (i < length) {
-      if (this.cancelSwitch) {
-        this.cancelSwitch = false
-        return
+      while (!this._cancel && (step = points.shift())) {
+        await onStep(step, i++)
       }
-      await cb(path[i], i++)
+
+      return resolve(!this._cancel)
+    })
+
+    return this
+  }
+
+  cancel() {
+    this._cancel = true
+    if (this.tween) this.tween.stop()
+  }
+}
+
+export function Walkable<TBase extends Constructor<PIXI.DisplayObject>>(Base: TBase) {
+  return class extends Base {
+    public _tween: TWEEN.Tween
+    private _walk = new WalkRunner(this, this._tween)
+
+    followPath(points: PointLike[], onStep: (point?: PointLike, index?: number) => any, stepDuration = 300) {
+      this._walk.cancel()
+      this._walk = this._walk = new WalkRunner(this, this._tween)
+      return this._walk.follow(points, onStep, stepDuration)
+    }
+
+    moveTo(position: IPoint, duration = 400) {
+      return new Promise(resolve => {
+        if (this._tween) this._tween.stop()
+        this._tween = new TWEEN.Tween(this.position.clone())
+          .to(position, duration)
+          .onUpdate((p: PIXI.IPoint) => this.position.set(p.x, p.y))
+          .onComplete(resolve)
+          .start()
+      })
     }
   }
 }

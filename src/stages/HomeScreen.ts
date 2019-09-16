@@ -5,7 +5,7 @@ import { Viewport } from 'pixi-viewport'
 import { Human } from '../gameobjects/human/Human'
 import { Matrix } from '../engine/lib/utils/Matrix'
 import { GameObject } from '../engine/lib/GameObject'
-import { Walkable } from '../engine/lib/utils/Walk'
+import { Walkable, WalkRunner } from '../engine/lib/utils/Walk'
 import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
 import { Furniture } from '@/gameobjects/furniture/Furniture'
@@ -111,56 +111,54 @@ export class HomeScreen extends Scene {
 
     let lastPosition = null
     let lastWalk = null
+    let path = []
+
     floor.addListener('pointertap', async e => {
       if (e.target instanceof Floor || this.dragging) {
         return
       }
-      await lastWalk
-      if (lastWalk) {
-        Walkable.cancelSwitch = true
-        const curLastWalk = lastWalk
-        await curLastWalk
-        if (lastWalk === curLastWalk) {
-          /* eslint-disable require-atomic-updates */
-          lastWalk = null
-        }
-        Walkable.cancelSwitch = false
-      }
-      if (e.target instanceof GameObject) {
-        const path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
-        floor.tintBlocks(path, 0xaaffff)
-        Walkable.walk(path, async p => {
-          const target = floor.$mapBlocks.get(p.x, p.y)
-          target.tint = 0x00aaaa
-          human.zIndex = target.zIndex + 1
-          human.walk()
-          if (lastPosition) {
-            const { x, y } = p
-            const { x: lastX, y: lastY } = lastPosition
-            let nextDirection = 0
-            // Diagonal positions
-            if (x < lastX && y > lastY) nextDirection = 1
-            else if (x < lastX && y < lastY) nextDirection = 7
-            else if (x > lastX && y > lastY) nextDirection = 3
-            else if (x > lastX && y < lastY) nextDirection = 5
-            // Cross positions
-            else if (x < lastX) nextDirection = 0
-            else if (x > lastX) nextDirection = 4
-            else if (y < lastY) nextDirection = 6
-            else if (y > lastY) nextDirection = 2
-            human.attrs2.direction = nextDirection
-          }
-          // @ts-ignore
-          lastWalk = human.moveTo(target.isoPosition)
-          await lastWalk
-          human.mapPosition.set(p.x, p.y, 0)
 
-          /* eslint-disable require-atomic-updates */
-          lastPosition = p
-        }).then(() => {
-          human.stop()
-          floor.tintBlocks(path, 0xffffff)
-        })
+      floor.tintBlocks(path, 0xffffff)
+
+      if (e.target instanceof GameObject) {
+        await lastWalk
+        /* eslint-disable require-atomic-updates */
+        path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
+        floor.tintBlocks(path, 0xaaffff)
+
+        human
+          .followPath(path, async p => {
+            const target = floor.$mapBlocks.get(p.x, p.y)
+            target.tint = 0x00aaaa
+            human.zIndex = target.zIndex + 1
+            human.walk()
+            if (lastPosition) {
+              const { x, y } = p
+              const { x: lastX, y: lastY } = lastPosition
+              let nextDirection = 0
+              // Diagonal positions
+              if (x < lastX && y > lastY) nextDirection = 1
+              else if (x < lastX && y < lastY) nextDirection = 7
+              else if (x > lastX && y > lastY) nextDirection = 3
+              else if (x > lastX && y < lastY) nextDirection = 5
+              // Cross positions
+              else if (x < lastX) nextDirection = 0
+              else if (x > lastX) nextDirection = 4
+              else if (y < lastY) nextDirection = 6
+              else if (y > lastY) nextDirection = 2
+              human.attrs2.direction = nextDirection
+            }
+            // // @ts-ignore
+            lastWalk = human.moveTo(target.isoPosition.toVector2())
+            await lastWalk
+            human.mapPosition.set(p.x, p.y, 0)
+
+            /* eslint-disable require-atomic-updates */
+            lastPosition = p
+          })
+          .then(finished => {
+            if (finished) human.stop()
+          })
       }
     })
   }
