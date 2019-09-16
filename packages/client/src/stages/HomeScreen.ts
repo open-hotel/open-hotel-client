@@ -86,6 +86,7 @@ export class HomeScreen extends Scene {
     const floor = (this.floor = new Floor({
       map: Matrix.from(this.currentRoom.map as FloorMapElevation[][]),
       mobis: mobis.map(definition => new Furniture({ mobi: definition })),
+      tintBlocks: false,
     }))
 
     const { human } = this
@@ -128,7 +129,7 @@ export class HomeScreen extends Scene {
         human
           .followPath(path, async p => {
             const target = floor.$mapBlocks.get(p.x, p.y)
-            target.tint = 0x00aaaa
+            floor.tintBlock(p, 0x00aaaa)
             human.zIndex = target.zIndex + 1
             human.walk()
             if (lastPosition) {

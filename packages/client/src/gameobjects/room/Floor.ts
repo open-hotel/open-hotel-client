@@ -23,6 +23,7 @@ export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 interface FloorOptions {
   map: Matrix<FloorMapElevation> | string
   mobis?: Furniture[]
+  tintBlocks?: boolean
 }
 
 const WIDTH = 32
@@ -47,6 +48,7 @@ export class Floor extends GameObject {
   public $mapBlocks: Matrix<FloorBlock | FloorLadder> = new Matrix()
   public pathFinder: PathFinder
   public furniture: Furniture[]
+  public debugPathTint = false
 
   static parseMap(str: string): Matrix<FloorMapElevation> {
     const rows = str
@@ -72,6 +74,8 @@ export class Floor extends GameObject {
       },
       options,
     )
+
+    this.debugPathTint = options.tintBlocks
 
     this.$map = typeof options.map === 'string' ? Floor.parseMap(options.map) : options.map
 
@@ -182,10 +186,16 @@ export class Floor extends GameObject {
   }
 
   tintBlock(block: { x: number; y: number }, color = 0xff0000) {
+    if (!this.debugPathTint) {
+      return
+    }
     const item = this.$mapBlocks.get(block.x, block.y)
     item.tint = color
   }
   tintBlocks(blocks: { x: number; y: number }[], color = 0xff0000) {
+    if (!this.debugPathTint) {
+      return
+    }
     for (let p of blocks) {
       this.tintBlock(p, color)
     }
