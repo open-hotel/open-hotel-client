@@ -1,4 +1,4 @@
-import { PathFinder } from '../src/engine/lib/utils/PathFinder'
+import { PathFinder } from '../src/PathFinder'
 import tests from './map-matches'
 import { isEqual } from 'lodash'
 

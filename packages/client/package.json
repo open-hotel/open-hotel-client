@@ -1,6 +1,7 @@
 {
   "name": "open-hotel",
   "version": "0.2.0",
+  "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,6 +11,7 @@
     "renameAssets": "node ./commands/renameAssets"
   },
   "dependencies": {
+    "@open-hotel/core": "^1.0.6",
     "@open-hotel/pixel": "latest",
     "@tweenjs/tween.js": "18",
     "core-js": "^3.2.1",

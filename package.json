@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "license": "MIT",
   "scripts": {
     "prerelease": "lerna version -m 'chore(release): publish'",
     "release": "lerna publish from-git",
