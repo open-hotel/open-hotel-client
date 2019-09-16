@@ -6,11 +6,11 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 
 ## Walking
 
-![Open Hotel Client walking screenshot](./public/resources/images/walk_around.gif)
+![Open Hotel Client walking screenshot](./packages/client/public/resources/images/walk_around.gif)
 
 ## Stairs
 
-![Open Hotel Client screenshot](./public/resources/images/hclient.gif)
+![Open Hotel Client screenshot](./packages/client/public/resources/images/hclient.gif)
 
 ## Roadmap
 
@@ -24,6 +24,8 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 - [ ] Create floor-mobis basic system
 - [ ] Create wall-mobis basic system
 
-
 ## Contributors
+
 ![Contributors](https://contributors-img.firebaseapp.com/image?repo=open-hotel/open-hotel-client)
+
+Want to become a contributor? Read our [contribution guide](./CONTRIBUTING.md)
