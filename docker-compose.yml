@@ -1,0 +1,26 @@
+version: '3'
+services:
+  client:
+    build: .
+    command: 'yarn --cwd packages/client dev'
+    ports:
+      - '8080:8080'
+    volumes:
+      - .:/code
+      - /code/node_modules
+    links:
+      - mongo
+  emulator:
+    build: .
+    command: 'yarn --cwd packages/orion-emulator start:dev'
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/code
+      - /code/node_modules
+  mongo:
+    image: mongo
+    volumes:
+      - ./docker/db:/data/db
+    ports:
+      - '27017:27017'
