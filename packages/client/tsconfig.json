@@ -12,7 +12,8 @@
     "baseUrl": ".",
     "types": ["webpack-env", "jest", "node"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@open-hotel/*": ["../*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
