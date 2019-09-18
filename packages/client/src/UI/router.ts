@@ -1,16 +1,32 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import Router, { RouteConfig } from 'vue-router'
 
 Vue.use(Router)
+
+const isDemo = process.env.NODE_ENV === 'demo'
+
+const routes: RouteConfig[] = [
+  {
+    path: isDemo ? '/' : '/demo',
+    name: 'demo',
+    component: () => import('./views/Game.vue'),
+  },
+]
+
+if (!isDemo) {
+  routes.push(
+    ...[
+      {
+        path: '/',
+        name: 'root',
+        component: () => import('./views/Index.vue'),
+      },
+    ],
+  )
+}
 
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: () => import('./views/Game.vue'),
-    },
-  ],
+  routes,
 })

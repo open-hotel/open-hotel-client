@@ -39,7 +39,7 @@
 </style>
 
 <script>
-import Chat from '../chat/Chat'
+import { Chat } from '@open-hotel/pixel'
 
 export default {
   components: {

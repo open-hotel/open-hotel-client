@@ -14,9 +14,7 @@ export interface CubeOptions {
   [key: string]: any
 }
 
-export type CubeFaces = {
-  [k in CubeFaceName]?: [Vector3, Vector3, Vector3, Vector3]
-}
+export type CubeFaces = { [k in CubeFaceName]?: [Vector3, Vector3, Vector3, Vector3] }
 
 export class Cube extends PIXI.Graphics {
   public $options: IObservable<CubeOptions> = Observable.create<CubeOptions>({
@@ -56,9 +54,7 @@ export class Cube extends PIXI.Graphics {
 
   get facesShape() {
     const { faces = [] } = this.$options
-    const shapes: {
-      [key in CubeFaceName]: PIXI.Polygon
-    } = {}
+    const shapes: { [key in CubeFaceName]: PIXI.Polygon } = {}
 
     for (let f of ['back', 'bottom', 'right', 'left', 'top', 'front'].filter(f => faces.includes(f))) {
       if (f in this.$faces) {
