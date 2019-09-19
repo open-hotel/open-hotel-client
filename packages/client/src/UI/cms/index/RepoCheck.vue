@@ -4,7 +4,9 @@
       Check out the Repository
     </template>
     <template slot="image-link">
-      <img src="/img/github-logo.svg">
+      <a target="_blank" href="https://github.com/open-hotel/open-hotel-client">
+        <img src="/img/github-logo.svg" />
+      </a>
     </template>
   </check-block>
 </template>
