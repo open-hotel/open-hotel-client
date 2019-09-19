@@ -6,7 +6,7 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 
 ## Walking
 
-![Open Hotel Client walking screenshot](./packages/client/public/resources/images/walk_around.gif)
+![Open Hotel Client walking screenshot](./packages/client/public/resources/images/rungif.gif)
 
 ## Stairs
 
