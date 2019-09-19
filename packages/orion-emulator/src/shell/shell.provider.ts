@@ -51,7 +51,7 @@ export class ShellProvider implements OnApplicationBootstrap {
 
   async start() {
     let exit = false;
-
+    await this.run('server start')
     while (!exit) {
       const input = await this.prompt();
       const exitCode = await this.run(input);
