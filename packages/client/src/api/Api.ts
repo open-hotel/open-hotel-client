@@ -1,14 +1,14 @@
 export class Api {
-  constructor (public prefix: string) {
+  constructor (protected prefix: string) {
 
   }
 
   private async request<T> (method: string, url: string, data: any): Promise<T> {
-    // TODO: figure out how to pass just these parameters to fetch
-    // @ts-ignore
-    const response = await fetch({
+    if (process.env.NODE_ENV === 'demo') {
+      return (await import(`./dummies/${this.prefix}.dummy.ts`))[url]
+    }
+    const response = await fetch(`${process.env.VUE_APP_API_URL}/${this.prefix}/${url || ''}`, {
       method,
-      url: `${process.env.VUE_APP_API_URL}/${this.prefix}/${url || ''}`,
       body: data
     })
 
