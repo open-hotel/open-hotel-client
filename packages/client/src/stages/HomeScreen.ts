@@ -86,7 +86,7 @@ export class HomeScreen extends Scene {
     const floor = (this.floor = new Floor({
       map: Matrix.from(this.currentRoom.map as FloorMapElevation[][]),
       mobis: mobis.map(definition => new Furniture({ mobi: definition })),
-      tintBlocks: process.env.NODE_ENV !== 'production',
+      tintBlocks: false,
     }))
 
     const { human } = this
@@ -101,7 +101,7 @@ export class HomeScreen extends Scene {
 
     const [humanX, humanY] = floor.getFirstBlockIndexes()
     human.set('map_position', { x: humanX, y: humanY })
-    human.attrs2.direction = 2
+    human.attrs2.direction = 5
 
     floor.getPositionOf(humanX, humanY).copyTo(human.position)
 
