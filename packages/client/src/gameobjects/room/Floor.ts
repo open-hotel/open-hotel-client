@@ -9,7 +9,7 @@ import { GameObject } from '../../engine/lib/GameObject'
 import { PathFinder } from '@open-hotel/core'
 import { Wall } from './Wall'
 import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
-import { Furniture } from '../furniture/Furniture'
+import { GameFurniture } from '../furniture/GameFurniture'
 
 export interface Block {
   x: number
@@ -22,7 +22,7 @@ export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 interface FloorOptions {
   map: Matrix<FloorMapElevation> | string
-  mobis?: Furniture[]
+  mobis?: GameFurniture[]
   tintBlocks?: boolean
 }
 
@@ -47,7 +47,7 @@ export class Floor extends GameObject {
   public $map: Matrix<FloorMapElevation>
   public $mapBlocks: Matrix<FloorBlock | FloorLadder> = new Matrix()
   public pathFinder: PathFinder
-  public furniture: Furniture[]
+  public furniture: GameFurniture[]
   public debugPathTint = false
 
   static parseMap(str: string): Matrix<FloorMapElevation> {

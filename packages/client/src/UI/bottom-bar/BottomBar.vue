@@ -2,7 +2,10 @@
   <div class="game-bottom-bar">
     <chat />
     <button class="icon-button" @click="$emit('click-navigator')">
-      <img src="./icons/navigator.png" alt="" />
+      <img src="./icons/navigator.png" alt="See rooms icon" />
+    </button>
+    <button class="icon-button" @click="$emit('click-inventory')">
+      <img src="./icons/inventory.png" alt="See inventory icon" />
     </button>
   </div>
 </template>
@@ -20,6 +23,9 @@
   border-top: 2px solid rgba(#fff, 0.25);
   border-radius: 4px 4px 0 0;
   z-index: 99999999;
+  & > button {
+    margin-right: 10px;
+  }
 }
 
 .icon-button {

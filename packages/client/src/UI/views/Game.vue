@@ -1,10 +1,16 @@
 <template>
   <px-window-manager ref="gameWrapper" class="game">
     <canvas id="game" ref="game"></canvas>
-    <game-bottom-bar @click-navigator="toggleWindow('navigator')" />
+    <game-bottom-bar
+      @click-navigator="toggleWindow('navigator')"
+      @click-inventory="toggleWindow('inventory')"
+    />
 
     <px-window v-bind.sync="window.navigator">
       <GameNavigator />
+    </px-window>
+    <px-window v-bind.sync="window.inventory">
+      <GameInventory />
     </px-window>
   </px-window-manager>
 </template>
@@ -17,7 +23,8 @@ import * as PIXI from 'pixi.js'
 export default {
   components: {
     GameBottomBar: () => import('../bottom-bar/BottomBar'),
-    GameNavigator: () => import('../navigator/Navigator'),
+    GameNavigator: () => import('../navigation/Navigator'),
+    GameInventory: () => import('../navigation/Inventory'),
   },
 
   data() {
@@ -25,6 +32,15 @@ export default {
       window: {
         navigator: {
           title: 'Navigator',
+          visible: false,
+          x: 50,
+          y: 50,
+          width: 320,
+          height: 480,
+          resizable: true,
+        },
+        inventory: {
+          title: 'Inventory',
           visible: false,
           x: 50,
           y: 50,

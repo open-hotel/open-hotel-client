@@ -7,7 +7,7 @@ import { Matrix } from '@open-hotel/core'
 import { GameObject } from '../engine/lib/GameObject'
 import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
-import { Furniture } from '@/gameobjects/furniture/Furniture'
+import { GameFurniture } from '@/gameobjects/furniture/GameFurniture'
 import bus from '../event-bus'
 import store, { RootState } from '@/UI/store'
 import { IRoomMap } from './IRoomMap'
@@ -85,7 +85,7 @@ export class HomeScreen extends Scene {
     const mobis = currentRoom.mobis && []
     const floor = (this.floor = new Floor({
       map: Matrix.from(this.currentRoom.map as FloorMapElevation[][]),
-      mobis: mobis.map(definition => new Furniture({ mobi: definition })),
+      mobis: mobis.map(definition => new GameFurniture({ mobi: definition })),
       tintBlocks: false,
     }))
 
@@ -101,7 +101,7 @@ export class HomeScreen extends Scene {
 
     const [humanX, humanY] = floor.getFirstBlockIndexes()
     human.set('map_position', { x: humanX, y: humanY })
-    human.attrs2.direction = 5
+    human.attrs2.direction = 2
 
     floor.getPositionOf(humanX, humanY).copyTo(human.position)
 
