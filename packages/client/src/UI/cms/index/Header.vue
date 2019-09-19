@@ -14,21 +14,23 @@
       </div>
     </nav>
     <svg class="wave" viewBox="0 0 4096 690.58">
-      <path class="wave-path" fill="black" d="M0 0v690.58s365.72 11.77 800.48-160.7c263.68-104.61 593.41 42.08 800.73 27.26 181-12.95 178.54-61.69 347.77-91.17s266.94 7.16 503.74-122.81c172.6-94.74 451.68-314.28 856.62-245.79S4096 109 4096 0z" />
+      <path
+        class="wave-path"
+        fill="black"
+        d="M0 0v690.58s365.72 11.77 800.48-160.7c263.68-104.61 593.41 42.08 800.73 27.26 181-12.95 178.54-61.69 347.77-91.17s266.94 7.16 503.74-122.81c172.6-94.74 451.68-314.28 856.62-245.79S4096 109 4096 0z"
+      />
     </svg>
   </header>
 </template>
 
 <script>
-  export default {
-
-  }
+export default {}
 </script>
 
 <style lang="scss" scoped>
 .navbar {
   display: grid;
-  grid-template-columns: 1fr .2fr;
+  grid-template-columns: 1fr 0.2fr;
 }
 
 .sign-bar {
