@@ -8,13 +8,11 @@
 
 <script>
 import SignBlock from './SignBlock'
-  export default {
-    components: {
-      SignBlock
-    }
-  }
+export default {
+  components: {
+    SignBlock,
+  },
+}
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

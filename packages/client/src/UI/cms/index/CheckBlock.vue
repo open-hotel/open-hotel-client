@@ -10,9 +10,7 @@
 </template>
 
 <script>
-  export default {
-
-  }
+export default {}
 </script>
 
 <style lang="scss" scoped>
@@ -28,7 +26,7 @@
     width: 300px;
     height: 250px;
     border-radius: 4px;
-    transition: transform .2s;
+    transition: transform 0.2s;
     cursor: pointer;
     &:hover {
       transform: scale(1.05);
@@ -36,6 +34,5 @@
   }
 }
 .sign-title {
-
 }
 </style>
