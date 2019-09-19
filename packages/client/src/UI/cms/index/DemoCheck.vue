@@ -4,7 +4,9 @@
       Check out the Demo
     </template>
     <template slot="image-link">
-      <img src="/resources/images/walk_around.gif">
+      <router-link :to="{ name: 'demo' }">
+        <img src="/resources/images/walk_around.gif">
+      </router-link>
     </template>
   </check-block>
 </template>
