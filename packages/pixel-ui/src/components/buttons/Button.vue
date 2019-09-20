@@ -25,6 +25,10 @@ $shadowPressed = 50%;
   position: relative;
   margin: 2px;
 
+  &[disabled] {
+    cursor: default;
+  }
+
   &:before {
     content: '';
     display: block;
