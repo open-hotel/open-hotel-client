@@ -10,6 +10,7 @@ import { PathFinder } from '@open-hotel/core'
 import { Wall } from './Wall'
 import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
 import { GameFurniture } from '../furniture/GameFurniture'
+import store from '../../UI/store'
 
 export interface Block {
   x: number
@@ -49,6 +50,10 @@ export class Floor extends GameObject {
   public pathFinder: PathFinder
   public furniture: GameFurniture[]
   public debugPathTint = false
+  private placingMobi: GameFurniture
+
+  // TODO: maybe it's better to put this in GameObject class
+  private unwatchers: (() => any)[] = []
 
   static parseMap(str: string): Matrix<FloorMapElevation> {
     const rows = str
@@ -95,8 +100,50 @@ export class Floor extends GameObject {
     this.sortableChildren = true
 
     const { x, y, width, height } = this.getBounds()
+    this.setupMobiPlacing()
 
     this.pivot.set(width / 2 + x, height / 2 + y)
+  }
+
+  private setupMobiPlacing () {
+    const unwatch = store.watch((state) => state.placingMobi, newMobi => {
+      this.placingMobi = newMobi
+      if (newMobi) {
+        newMobi.zIndex = this.zIndex + 5
+        newMobi.position.set(-99999, -99999)
+        this.addChild(newMobi)
+      }
+    })
+
+    this.$mapBlocks.forEach((block, x, y) => {
+      if (!block) {
+        return
+      }
+      block.addListener('pointerover', () => {
+        if (!this.placingMobi) {
+          return
+        }
+        const { x, y } = block.position
+        this.placingMobi.zIndex = 300
+        this.placingMobi.position.set(x + 10, y - 50)
+      })
+      .addListener('pointertap', async () => {
+        if (!this.placingMobi) {
+          return
+        }
+        // Running microtask to
+        // place mobi only after human walk pointertap
+        // listener checks that lockWalk is falsy and avoid walking
+        // while placing mobi.
+        // To see walk pointertap listener see HomeScreen.ts
+        await Promise.resolve()
+        this.placingMobi.blockCoordinates[0] = [x, y]
+        this.placeMobi(this.placingMobi)
+        store.dispatch('placeMobi')
+      })
+    })
+
+    this.unwatchers.push(unwatch)
   }
 
   public static getPositionOf(floor: Floor, x: number, y: number): PIXI.IPoint {
@@ -137,14 +184,18 @@ export class Floor extends GameObject {
   private placeFurniture() {
     this.sortableChildren = true
     for (const mobi of this.furniture) {
-      const [x, y] = mobi.blockCoordinates[0]
-      const block = this.$mapBlocks.get(x, y)
-      mobi.zIndex = block.zIndex + 2
-      this.addChild(mobi)
-      mobi.position.copyFrom(block.position)
-      mobi.position.y -= 45
-      mobi.position.x += 10
+      this.placeMobi(mobi)
     }
+  }
+
+  private placeMobi(mobi: GameFurniture) {
+    const [x, y] = mobi.blockCoordinates[0]
+    const block = this.$mapBlocks.get(x, y)
+    mobi.zIndex = block.zIndex + 2
+    this.addChild(mobi)
+    mobi.position.copyFrom(block.position)
+    mobi.position.y -= 45
+    mobi.position.x += 10
   }
 
   private build() {
@@ -199,5 +250,12 @@ export class Floor extends GameObject {
     for (let p of blocks) {
       this.tintBlock(p, color)
     }
+  }
+
+  destroy(options = undefined) {
+    for (const unwatch of this.unwatchers) {
+      unwatch()
+    }
+    super.destroy(options)
   }
 }

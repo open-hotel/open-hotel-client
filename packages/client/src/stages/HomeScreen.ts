@@ -114,7 +114,7 @@ export class HomeScreen extends Scene {
     let path = []
 
     floor.addListener('pointertap', async e => {
-      if (e.target instanceof Floor || this.dragging) {
+      if (e.target instanceof Floor || this.dragging || store.state.lockWalking) {
         return
       }
 

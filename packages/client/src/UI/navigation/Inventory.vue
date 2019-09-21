@@ -7,7 +7,7 @@
       <px-tab-view v-model="tab" name="mobis" class="mobis-tab">
         <div @click="selectedMobi = null" class="mobi-list">
           <div
-            v-for="(mobiPayload, idx) in mobiImages"
+            v-for="(mobiPayload, idx) in filteredMobis"
             :key="idx"
             :class="{ 'selected-mobi': selectedMobi === mobiPayload }"
             class="mobi-item"
@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="inventory-toolbar">
-          <px-btn v-if="selectedMobi">
+          <px-btn v-if="selectedMobi" @click="addMobi">
             Add
           </px-btn>
         </div>
@@ -42,6 +42,12 @@ export default {
       selectedMobi: null,
     }
   },
+  computed: {
+    filteredMobis() {
+      const { roomMobis } = this.$store.state
+      return this.mobiImages.filter(mobi => roomMobis.indexOf(mobi.sprite) === -1)
+    },
+  },
   created() {
     MobisApi.getInventory().then(mobis => this.setMobis(mobis))
   },
@@ -50,16 +56,17 @@ export default {
       if (!this.selectedMobi) {
         return
       }
+      this.$store.dispatch('selectMobi', this.selectedMobi.sprite)
     },
     setMobis(mobis) {
       this.mobis = mobis
       this.mobiImages = mobis.map(mobi => {
         const sprite = new GameFurniture({ mobi })
         const image = sprite.app.renderer.plugins.extract.image(sprite.sprite).src
-        sprite.destroy()
         return {
           mobi,
           image,
+          sprite,
         }
       })
     },
