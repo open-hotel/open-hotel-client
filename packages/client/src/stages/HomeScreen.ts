@@ -12,6 +12,7 @@ import bus from '../event-bus'
 import store, { RootState } from '@/UI/store'
 import { IRoomMap } from './IRoomMap'
 import { MutationPayload } from 'vuex'
+import { PointLike } from '@/engine/lib/utils/Walk'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -114,14 +115,18 @@ export class HomeScreen extends Scene {
     let path = []
 
     floor.addListener('pointertap', async e => {
-      if (e.target instanceof Floor || this.dragging || store.state.lockWalking) {
+      const { lockWalking } = store.state
+      if (e.target instanceof Floor || this.dragging || lockWalking) {
+        return
+      }
+
+      if (!(e.target instanceof GameObject) || !floor.canWalkTo(e.target.mapPosition.x, e.target.mapPosition.y)) {
         return
       }
 
       floor.tintBlocks(path, 0xffffff)
 
-      if (e.target instanceof GameObject) {
-        await lastWalk
+      await lastWalk
         /* eslint-disable require-atomic-updates */
         path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
         floor.tintBlocks(path, 0xaaffff)
@@ -158,7 +163,6 @@ export class HomeScreen extends Scene {
           .then(finished => {
             if (finished) human.stop()
           })
-      }
     })
   }
 

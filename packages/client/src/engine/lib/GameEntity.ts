@@ -1,7 +1,7 @@
 import { GameObject } from './GameObject'
 
-interface GameEntityAttrs {
-  type: number
+export interface GameEntityAttrs {
+  type: number | null
   prefix: string
   action: string
   direction: number
@@ -55,7 +55,7 @@ export class GameEntity<T extends GameEntityAttrs> extends GameObject<T> {
 
   protected updateSheet() {
     const { type } = this.attrs2
-    const path = type ? `${this.resourcePath}/${type}` : this.resourcePath
+    const path = type !== null ? `${this.resourcePath}/${type}` : this.resourcePath
     this.sheet = this.app.getSpriteSheet(path)
   }
 

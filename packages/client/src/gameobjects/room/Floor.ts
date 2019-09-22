@@ -11,6 +11,7 @@ import { Wall } from './Wall'
 import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
 import { GameFurniture } from '../furniture/GameFurniture'
 import store from '../../UI/store'
+import { PointLike } from '@/engine/lib/utils/Walk'
 
 export interface Block {
   x: number
@@ -90,6 +91,10 @@ export class Floor extends GameObject {
       const a = grid[cell.y][cell.x]
       const b = grid[curr.y][curr.x]
 
+      if (!this.canWalkTo(cell.x, cell.y)) {
+        return false
+      }
+
       return a === b || Math.abs(a - b) === 1
     })
 
@@ -149,6 +154,15 @@ export class Floor extends GameObject {
 
   public static getPositionOf(floor: Floor, x: number, y: number): PIXI.IPoint {
     return floor.$mapBlocks.get(x, y, { position: new PIXI.Point() }).position.clone()
+  }
+
+  public canWalkTo(x: number, y: number) {
+    const blockKey = `${x},${y}`
+      const mobisInBlock = store.state.blockToMobisMap[blockKey]
+      if (mobisInBlock && mobisInBlock.every(mobi => !mobi.attrs2.mobi.canWalk)) {
+        return false
+      }
+      return true
   }
 
   public getPositionOf(x: number, y: number): PIXI.IPoint {
