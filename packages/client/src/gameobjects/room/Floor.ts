@@ -109,7 +109,8 @@ export class Floor extends GameObject {
     const unwatch = store.watch((state) => state.placingMobi, newMobi => {
       this.placingMobi = newMobi
       if (newMobi) {
-        newMobi.zIndex = this.zIndex + 5
+        newMobi.zIndex = 20
+        newMobi.alpha = .5
         newMobi.position.set(-99999, -99999)
         this.addChild(newMobi)
       }
@@ -124,7 +125,7 @@ export class Floor extends GameObject {
           return
         }
         const { x, y } = block.position
-        this.placingMobi.zIndex = 300
+        // this.placingMobi.zIndex = 300
         this.placingMobi.position.set(x + 10, y - 50)
       })
       .addListener('pointertap', async () => {
@@ -192,6 +193,7 @@ export class Floor extends GameObject {
     const [x, y] = mobi.blockCoordinates[0]
     const block = this.$mapBlocks.get(x, y)
     mobi.zIndex = block.zIndex + 2
+    mobi.alpha = 1
     this.addChild(mobi)
     mobi.position.copyFrom(block.position)
     mobi.position.y -= 45
