@@ -9,7 +9,9 @@ import { GameObject } from '../../engine/lib/GameObject'
 import { PathFinder } from '@open-hotel/core'
 import { Wall } from './Wall'
 import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
-import { Furniture } from '../furniture/Furniture'
+import { GameFurniture } from '../furniture/GameFurniture'
+import store from '../../UI/store'
+import { PointLike } from '@/engine/lib/utils/Walk'
 
 export interface Block {
   x: number
@@ -22,7 +24,7 @@ export type FloorMapElevation = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 interface FloorOptions {
   map: Matrix<FloorMapElevation> | string
-  mobis?: Furniture[]
+  mobis?: GameFurniture[]
   tintBlocks?: boolean
 }
 
@@ -47,8 +49,12 @@ export class Floor extends GameObject {
   public $map: Matrix<FloorMapElevation>
   public $mapBlocks: Matrix<FloorBlock | FloorLadder> = new Matrix()
   public pathFinder: PathFinder
-  public furniture: Furniture[]
+  public furniture: GameFurniture[]
   public debugPathTint = false
+  private placingMobi: GameFurniture
+
+  // TODO: maybe it's better to put this in GameObject class
+  private unwatchers: (() => any)[] = []
 
   static parseMap(str: string): Matrix<FloorMapElevation> {
     const rows = str
@@ -85,6 +91,10 @@ export class Floor extends GameObject {
       const a = grid[cell.y][cell.x]
       const b = grid[curr.y][curr.x]
 
+      if (!this.canWalkTo(cell.x, cell.y)) {
+        return false
+      }
+
       return a === b || Math.abs(a - b) === 1
     })
 
@@ -95,12 +105,64 @@ export class Floor extends GameObject {
     this.sortableChildren = true
 
     const { x, y, width, height } = this.getBounds()
+    this.setupMobiPlacing()
 
     this.pivot.set(width / 2 + x, height / 2 + y)
   }
 
+  private setupMobiPlacing () {
+    const unwatch = store.watch((state) => state.placingMobi, newMobi => {
+      this.placingMobi = newMobi
+      if (newMobi) {
+        newMobi.zIndex = 20
+        newMobi.alpha = .5
+        newMobi.position.set(-99999, -99999)
+        this.addChild(newMobi)
+      }
+    })
+
+    this.$mapBlocks.forEach((block, x, y) => {
+      if (!block) {
+        return
+      }
+      block.addListener('pointerover', () => {
+        if (!this.placingMobi) {
+          return
+        }
+        const { x, y } = block.position
+        // this.placingMobi.zIndex = 300
+        this.placingMobi.position.set(x + 10, y - 50)
+      })
+      .addListener('pointertap', async () => {
+        if (!this.placingMobi) {
+          return
+        }
+        // Running microtask to
+        // place mobi only after human walk pointertap
+        // listener checks that lockWalk is falsy and avoid walking
+        // while placing mobi.
+        // To see walk pointertap listener see HomeScreen.ts
+        await Promise.resolve()
+        this.placingMobi.blockCoordinates[0] = [x, y]
+        this.placeMobi(this.placingMobi)
+        store.dispatch('placeMobi')
+      })
+    })
+
+    this.unwatchers.push(unwatch)
+  }
+
   public static getPositionOf(floor: Floor, x: number, y: number): PIXI.IPoint {
     return floor.$mapBlocks.get(x, y, { position: new PIXI.Point() }).position.clone()
+  }
+
+  public canWalkTo(x: number, y: number) {
+    const blockKey = `${x},${y}`
+      const mobisInBlock = store.state.blockToMobisMap[blockKey]
+      if (mobisInBlock && mobisInBlock.every(mobi => !mobi.attrs2.mobi.canWalk)) {
+        return false
+      }
+      return true
   }
 
   public getPositionOf(x: number, y: number): PIXI.IPoint {
@@ -137,14 +199,19 @@ export class Floor extends GameObject {
   private placeFurniture() {
     this.sortableChildren = true
     for (const mobi of this.furniture) {
-      const [x, y] = mobi.blockCoordinates[0]
-      const block = this.$mapBlocks.get(x, y)
-      mobi.zIndex = block.zIndex + 2
-      this.addChild(mobi)
-      mobi.position.copyFrom(block.position)
-      mobi.position.y -= 45
-      mobi.position.x += 10
+      this.placeMobi(mobi)
     }
+  }
+
+  private placeMobi(mobi: GameFurniture) {
+    const [x, y] = mobi.blockCoordinates[0]
+    const block = this.$mapBlocks.get(x, y)
+    mobi.zIndex = block.zIndex + 2
+    mobi.alpha = 1
+    this.addChild(mobi)
+    mobi.position.copyFrom(block.position)
+    mobi.position.y -= 45
+    mobi.position.x += 10
   }
 
   private build() {
@@ -199,5 +266,12 @@ export class Floor extends GameObject {
     for (let p of blocks) {
       this.tintBlock(p, color)
     }
+  }
+
+  destroy(options = undefined) {
+    for (const unwatch of this.unwatchers) {
+      unwatch()
+    }
+    super.destroy(options)
   }
 }

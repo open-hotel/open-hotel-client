@@ -7,11 +7,12 @@ import { Matrix } from '@open-hotel/core'
 import { GameObject } from '../engine/lib/GameObject'
 import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
-import { Furniture } from '@/gameobjects/furniture/Furniture'
+import { GameFurniture } from '@/gameobjects/furniture/GameFurniture'
 import bus from '../event-bus'
 import store, { RootState } from '@/UI/store'
 import { IRoomMap } from './IRoomMap'
 import { MutationPayload } from 'vuex'
+import { PointLike } from '@/engine/lib/utils/Walk'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -85,7 +86,7 @@ export class HomeScreen extends Scene {
     const mobis = currentRoom.mobis && []
     const floor = (this.floor = new Floor({
       map: Matrix.from(this.currentRoom.map as FloorMapElevation[][]),
-      mobis: mobis.map(definition => new Furniture({ mobi: definition })),
+      mobis: mobis.map(definition => new GameFurniture({ mobi: definition })),
       tintBlocks: false,
     }))
 
@@ -101,7 +102,7 @@ export class HomeScreen extends Scene {
 
     const [humanX, humanY] = floor.getFirstBlockIndexes()
     human.set('map_position', { x: humanX, y: humanY })
-    human.attrs2.direction = 5
+    human.attrs2.direction = 2
 
     floor.getPositionOf(humanX, humanY).copyTo(human.position)
 
@@ -114,14 +115,18 @@ export class HomeScreen extends Scene {
     let path = []
 
     floor.addListener('pointertap', async e => {
-      if (e.target instanceof Floor || this.dragging) {
+      const { lockWalking } = store.state
+      if (e.target instanceof Floor || this.dragging || lockWalking) {
+        return
+      }
+
+      if (!(e.target instanceof GameObject) || !floor.canWalkTo(e.target.mapPosition.x, e.target.mapPosition.y)) {
         return
       }
 
       floor.tintBlocks(path, 0xffffff)
 
-      if (e.target instanceof GameObject) {
-        await lastWalk
+      await lastWalk
         /* eslint-disable require-atomic-updates */
         path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
         floor.tintBlocks(path, 0xaaffff)
@@ -158,7 +163,6 @@ export class HomeScreen extends Scene {
           .then(finished => {
             if (finished) human.stop()
           })
-      }
     })
   }
 

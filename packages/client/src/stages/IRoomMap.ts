@@ -1,15 +1,4 @@
-export interface MobiDefinition<StateType = any> {
-  area: Array<number[]>
-  canLay: boolean
-  canSit: boolean
-  canStack: boolean
-  canWalk: boolean
-  currentState: StateType
-  id: number
-  possibleStates: StateType[]
-  type: 'floor' | 'wall'
-  name: string
-}
+import { MobiDefinition } from '@open-hotel/core'
 
 export interface IRoomMap {
   name: string

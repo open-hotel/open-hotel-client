@@ -78,19 +78,20 @@ export class Application extends PIXI.Application {
    */
   getResource(items: { [key: string]: string })
   getResource(idOrArrayOrObject: string | string[] | { [key: string]: string }) {
+    const loader = new PIXI.Loader('/', 20)
     return new Promise((resolve, reject) => {
       // String
       if (typeof idOrArrayOrObject === 'string') {
-        return this.loader.add(idOrArrayOrObject).load((_, r) => resolve(r[idOrArrayOrObject]))
+        return loader.add(idOrArrayOrObject).load((_, r) => resolve(r[idOrArrayOrObject]))
       }
 
       // Array
       if (Array.isArray(idOrArrayOrObject)) {
-        return this.loader.add(idOrArrayOrObject).load((_, r) => resolve(idOrArrayOrObject.map(name => r[name])))
+        return loader.add(idOrArrayOrObject).load((_, r) => resolve(idOrArrayOrObject.map(name => r[name])))
       }
 
       // Objects
-      return this.loader.add(idOrArrayOrObject).load((_, r) => {
+      return loader.add(idOrArrayOrObject).load((_, r) => {
         const result = {}
 
         for (let k in idOrArrayOrObject) {
