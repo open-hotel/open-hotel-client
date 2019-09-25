@@ -57,6 +57,8 @@ please [open an issue](https://github.com/open-hotel/open-hotel-client/issues/ne
 
 ### Development Environment
 
+If you want to run all projects at once, you can check out our [docker kit](https://github.com/open-hotel/docker-kit).
+
 We highly recommend using [yarn](https://yarnpkg.com/lang/en/) to install dependencies.
 Just install yarn and run:
 ```bash
