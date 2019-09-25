@@ -1,10 +1,7 @@
 <template>
   <px-window-manager ref="gameWrapper" class="game">
     <canvas id="game" ref="game"></canvas>
-    <game-bottom-bar
-      @click-navigator="toggleWindow('navigator')"
-      @click-inventory="toggleWindow('inventory')"
-    />
+    <game-bottom-bar @click-navigator="toggleWindow('navigator')" @click-inventory="toggleWindow('inventory')" />
 
     <px-window v-bind.sync="window.navigator">
       <GameNavigator />

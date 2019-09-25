@@ -4,7 +4,7 @@ import { Api } from './Api'
 const api = new Api('mobi')
 
 export default {
-  getInventory (): Promise<MobiDefinition[]> {
+  getInventory(): Promise<MobiDefinition[]> {
     return api.get<MobiDefinition[]>('inventory')
-  }
+  },
 }

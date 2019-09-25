@@ -8,10 +8,10 @@ Vue.use(Vuex)
 
 export interface RootState {
   app: Application
-  currentRoom: IRoomMap,
-  placingMobi: GameFurniture,
-  lockWalking: boolean,
-  roomMobis: GameFurniture[],
+  currentRoom: IRoomMap
+  placingMobi: GameFurniture
+  lockWalking: boolean
+  roomMobis: GameFurniture[]
   blockToMobisMap: Record<string, GameFurniture[]>
 }
 
@@ -22,7 +22,7 @@ export default new Vuex.Store<RootState>({
     placingMobi: null,
     lockWalking: false,
     roomMobis: [],
-    blockToMobisMap: Object.create(null)
+    blockToMobisMap: Object.create(null),
   },
   mutations: {
     setPlacingMobi(state, newMobi: GameFurniture) {
@@ -53,7 +53,7 @@ export default new Vuex.Store<RootState>({
       } else {
         state.blockToMobisMap[blockKey] = [placingMobi]
       }
-    }
+    },
   },
   actions: {
     selectMobi({ commit }, newMobi: GameFurniture) {
@@ -63,6 +63,6 @@ export default new Vuex.Store<RootState>({
     placeMobi({ dispatch, commit }) {
       commit('addMobiToRoom')
       dispatch('selectMobi', null)
-    }
+    },
   },
 })

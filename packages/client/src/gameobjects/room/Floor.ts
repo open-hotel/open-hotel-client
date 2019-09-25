@@ -110,43 +110,47 @@ export class Floor extends GameObject {
     this.pivot.set(width / 2 + x, height / 2 + y)
   }
 
-  private setupMobiPlacing () {
-    const unwatch = store.watch((state) => state.placingMobi, newMobi => {
-      this.placingMobi = newMobi
-      if (newMobi) {
-        newMobi.zIndex = 20
-        newMobi.alpha = .5
-        newMobi.position.set(-99999, -99999)
-        this.addChild(newMobi)
-      }
-    })
+  private setupMobiPlacing() {
+    const unwatch = store.watch(
+      state => state.placingMobi,
+      newMobi => {
+        this.placingMobi = newMobi
+        if (newMobi) {
+          newMobi.zIndex = 20
+          newMobi.alpha = 0.5
+          newMobi.position.set(-99999, -99999)
+          this.addChild(newMobi)
+        }
+      },
+    )
 
     this.$mapBlocks.forEach((block, x, y) => {
       if (!block) {
         return
       }
-      block.addListener('pointerover', () => {
-        if (!this.placingMobi) {
-          return
-        }
-        const { x, y } = block.position
-        // this.placingMobi.zIndex = 300
-        this.placingMobi.position.set(x + 10, y - 50)
-      })
-      .addListener('pointertap', async () => {
-        if (!this.placingMobi) {
-          return
-        }
-        // Running microtask to
-        // place mobi only after human walk pointertap
-        // listener checks that lockWalk is falsy and avoid walking
-        // while placing mobi.
-        // To see walk pointertap listener see HomeScreen.ts
-        await Promise.resolve()
-        this.placingMobi.blockCoordinates[0] = [x, y]
-        this.placeMobi(this.placingMobi)
-        store.dispatch('placeMobi')
-      })
+      block
+        .addListener('pointerover', () => {
+          if (!this.placingMobi) {
+            return
+          }
+          const { x, y } = block.position
+          // this.placingMobi.zIndex = 300
+          this.placingMobi.position.set(x + 10, y - 50)
+        })
+        .addListener('pointertap', async () => {
+          if (!this.placingMobi) {
+            return
+          }
+          // Running microtask to
+          // place mobi only after human walk pointertap
+          // listener checks that lockWalk is falsy and avoid walking
+          // while placing mobi.
+          // To see walk pointertap listener see HomeScreen.ts
+          await Promise.resolve()
+          this.placingMobi.blockCoordinates[0] = [x, y]
+          this.placeMobi(this.placingMobi)
+          store.dispatch('placeMobi')
+        })
     })
 
     this.unwatchers.push(unwatch)
@@ -158,11 +162,11 @@ export class Floor extends GameObject {
 
   public canWalkTo(x: number, y: number) {
     const blockKey = `${x},${y}`
-      const mobisInBlock = store.state.blockToMobisMap[blockKey]
-      if (mobisInBlock && mobisInBlock.every(mobi => !mobi.attrs2.mobi.canWalk)) {
-        return false
-      }
-      return true
+    const mobisInBlock = store.state.blockToMobisMap[blockKey]
+    if (mobisInBlock && mobisInBlock.every(mobi => !mobi.attrs2.mobi.canWalk)) {
+      return false
+    }
+    return true
   }
 
   public getPositionOf(x: number, y: number): PIXI.IPoint {

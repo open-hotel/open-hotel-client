@@ -5,7 +5,7 @@
     </px-tab-list>
     <px-tab-container>
       <px-tab-view v-model="tab" name="mobis" class="mobis-tab">
-        <div @click="selectedMobi = null" class="mobi-list">
+        <div class="mobi-list" @click="selectedMobi = null">
           <div
             v-for="(mobiPayload, idx) in filteredMobis"
             :key="idx"
@@ -81,7 +81,7 @@ export default {
   align-items: center;
   font-size: 8px;
   word-break: break-all;
-  background-color: #CBCBCB;
+  background-color: #cbcbcb;
   border-radius: 4px;
   padding: 5px;
   border: 1px solid #000;
