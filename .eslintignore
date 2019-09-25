@@ -1,2 +1,3 @@
 **/dist
 packages/pixel-ui/dist
+*.log
