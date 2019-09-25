@@ -24,13 +24,13 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 - [ ] Create floor-mobis basic system
 - [ ] Create wall-mobis basic system
 
+## Related repositories
+
+- [Orion Emulator](https://github.com/open-hotel/orion-emulator)
+- [Docker Kit](https://github.com/open-hotel/docker-kit)
+
 ## Contributors
 
 ![Contributors](https://contributors-img.firebaseapp.com/image?repo=open-hotel/open-hotel-client)
 
 Want to become a contributor? Read our [contribution guide](./CONTRIBUTING.md)
-
-## Related repositories
-
-- [Orion Emulator](https://github.com/open-hotel/orion-emulator)
-- [Docker Kit](https://github.com/open-hotel/docker-kit)
