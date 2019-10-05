@@ -18,6 +18,11 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
+  },
   "devDependencies": {
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "3.0.2",
