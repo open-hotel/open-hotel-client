@@ -15,6 +15,7 @@
     "@open-hotel/pixel": "^0.2.4",
     "@tweenjs/tween.js": "18",
     "core-js": "^3.2.1",
+    "crypto-js": "^3.1.9-1",
     "lodash": "^4.17.15",
     "pixi-viewport": "^4.2.0",
     "pixi.js": "^5.1.2",
@@ -24,7 +25,8 @@
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vuex": "^3.0.1",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "what-the-pack": "^2.0.3"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
