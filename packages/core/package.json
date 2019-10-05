@@ -1,6 +1,6 @@
 {
   "name": "@open-hotel/core",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "My webpack project",
   "main": "dist/open-hotel-core.js",
   "module": "dist/open-hotel-core.mjs",
@@ -23,5 +23,10 @@
     "rollup-plugin-typescript2": "^0.24.2",
     "ts-loader": "^6.1.0",
     "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "uuid": "^3.3.3",
+    "what-the-pack": "^2.0.3"
   }
 }
