@@ -5,18 +5,16 @@ export class Socket extends EventEmitter {
   private connection: WebSocket
   private secret: string = '123'
 
-  constructor (
-    private url: string
-  ) {
+  constructor(private url: string) {
     super()
   }
 
-  connect (ticket: string = '12345678') {
+  connect(ticket: string = '12345678') {
     this.disconnect()
     this.connection = new WebSocket(`${this.url}?ticket=${ticket}`)
-    this.connection.onmessage = async (event) => {
-      const buffer = await event.data.arrayBuffer()
-      const packet = Packet.from(buffer)
+    this.connection.binaryType = 'arraybuffer'
+    this.connection.onmessage = async (event:MessageEvent) => {
+      const packet = Packet.from(event.data)
       if (!packet.validate(this.secret)) {
         return
       }
@@ -29,21 +27,19 @@ export class Socket extends EventEmitter {
     })
   }
 
-  disconnect () {
+  disconnect() {
     if (!this.connection) {
       return
     }
     this.connection.close()
   }
 
-  on (event: string, handler: Function) {
+  on(event: string, handler: Function) {
     super.on(event, handler)
   }
 
-  emit (event: string, ...payload: any[]) {
-    const packet = new Packet(event, payload)
-      .sign(this.secret)
-      .toBuffer()
+  emit(event: string, ...payload: any[]) {
+    const packet = new Packet(event, payload).sign(this.secret).toBuffer()
     this.connection.send(packet)
   }
 }
