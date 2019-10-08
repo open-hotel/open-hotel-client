@@ -1,6 +1,6 @@
 <template>
   <div class="game-bottom-bar">
-    <chat />
+    <chat @player:speak="speak" />
     <button class="icon-button" @click="$emit('click-navigator')">
       <img src="./icons/navigator.png" alt="See rooms icon" />
     </button>
@@ -46,10 +46,16 @@
 
 <script>
 import { Chat } from '@open-hotel/pixel'
+import bus from '@/event-bus'
 
 export default {
   components: {
     Chat,
+  },
+  methods: {
+    speak(time) {
+      bus.$emit('player:speak', time)
+    },
   },
 }
 </script>

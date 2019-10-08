@@ -3,17 +3,17 @@ import { Matrix } from '@open-hotel/core'
 export const createFloorTestFunction = (map: Matrix<number>) => (test: Matrix<string>) => {
   const current = map.get(1, 1)
   return map.every((mapCol, rowIndex, colIndex) => {
-    let blockTest: string | string[] = test.get(rowIndex, colIndex)
+    const blockTest: string = test.get(rowIndex, colIndex)
 
     if (blockTest === '*') return true
     if (blockTest === '?') return !mapCol
     if (blockTest === '#') return mapCol > 0
 
-    blockTest = blockTest.split('|')
+    const splitblockTest = blockTest.split('|')
 
-    return blockTest.some(t => {
+    return splitblockTest.some(t => {
       if (t === '?') return !mapCol
-      if (blockTest === '#') return mapCol > 0
+      if (t === '#') return mapCol > 0
       const elevation = current + parseInt(t.replace(/[^\d-]/g, ''))
       return mapCol === elevation
     })

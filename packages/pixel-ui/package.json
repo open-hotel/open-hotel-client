@@ -1,6 +1,6 @@
 {
   "name": "@open-hotel/pixel",
-  "version": "0.2.4",
+  "version": "0.2.7",
   "main": "dist/pixel.umd.js",
   "license": "MIT",
   "scripts": {

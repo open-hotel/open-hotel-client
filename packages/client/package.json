@@ -11,7 +11,7 @@
     "renameAssets": "node ./commands/renameAssets"
   },
   "dependencies": {
-    "@open-hotel/core": "^1.0.7",
+    "@open-hotel/core": "^1.0.13",
     "@open-hotel/pixel": "^0.2.4",
     "@tweenjs/tween.js": "18",
     "core-js": "^3.2.1",
