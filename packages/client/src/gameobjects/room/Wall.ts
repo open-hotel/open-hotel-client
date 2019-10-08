@@ -45,12 +45,12 @@ export class Wall extends GameObject {
     type Block = FloorBlock | FloorLadder
 
     return floor.$map.map((value, x, y) => {
-      // Não colocar parede se o bloco não existir
+      // If there is no block, there is no wall
       if (!value) return null
 
-      // If there're blocks in previous y and previous x at the same time, it should not have walls
       for (let row = y - 1; row >= 0; row--) {
         for (let col = 0; col <= x - 1; col++) {
+          // If there're blocks in previous y and previous x at the same time, it should not have walls
           if (floor.$map.get(col, row)) {
             return
           }
@@ -62,6 +62,11 @@ export class Wall extends GameObject {
       const wall = wallTests.find(item => getWall(item.test))
 
       if (!wall) return null
+
+      // if last y and same x is not filled, dont make corner blocks
+      if (!floor.$map.get(x, y - 1) && y > 1 && wall.value === 3) {
+        wall.value = 4
+      }
 
       const block = floor.$mapBlocks.get(x, y)
 
