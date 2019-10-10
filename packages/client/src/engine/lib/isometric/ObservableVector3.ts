@@ -7,13 +7,35 @@ export class ObservableVector3 extends Vector3 {
   private _x: number
   private _y: number
   private _z: number
+  private _cb: IsoPointListener
 
-  constructor(private readonly cb: IsoPointListener, x: number = 0, y: number = 0, z: number = 0) {
+  constructor(cb: IsoPointListener, x: number = 0, y: number = 0, z: number = 0) {
     super()
 
     this._x = x
     this._y = y
     this._z = z
+
+    Object.defineProperties(this, {
+      _x: {
+        enumerable: false,
+        value: x,
+      },
+      _y: {
+        enumerable: false,
+        value: y,
+      },
+      _z: {
+        enumerable: false,
+        value: z,
+      },
+      _cb: {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: cb,
+      },
+    })
   }
 
   get x() {
@@ -47,7 +69,7 @@ export class ObservableVector3 extends Vector3 {
   }
 
   private notify(newPoint: Vector3Interface, oldPoint: Vector3Interface) {
-    if (this.cb) this.cb(newPoint, oldPoint)
+    if (this._cb) this._cb(newPoint, oldPoint)
   }
 
   set(x: number, y: number, z: number): ObservableVector3 {
@@ -60,5 +82,20 @@ export class ObservableVector3 extends Vector3 {
     this.notify(this, oldPoint)
 
     return this
+  }
+
+  toObject() {
+    return {
+      x: this.x,
+      y: this.y,
+      z: this.z,
+    }
+  }
+  toArray() {
+    return [this.x, this.y, this.z]
+  }
+
+  valueOf() {
+    return this.toObject()
   }
 }

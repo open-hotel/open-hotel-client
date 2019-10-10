@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "prerelease": "lerna version -m 'chore(release): publish'",
+    "dev": "lerna run dev",
     "release": "lerna publish from-git",
     "prepare": "lerna run prepare",
     "changelog": "conventional-changelog -p angular -r 2 -i CHANGELOG.md -s",

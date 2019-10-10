@@ -12,7 +12,7 @@ import bus from '../event-bus'
 import store, { RootState } from '@/UI/store'
 import { IRoomMap } from './IRoomMap'
 import { MutationPayload } from 'vuex'
-import { PointLike } from '@/engine/lib/utils/Walk'
+import { Application } from '@/engine/Application'
 
 const MAX_ZOOM = 4
 const MIN_ZOOM = 1 / 4
@@ -127,6 +127,7 @@ export class HomeScreen extends Scene {
       floor.tintBlocks(path, 0xffffff)
 
       await lastWalk
+      Application.get().$ws.emit('ME.WALK', human.mapPosition.toArray())
       /* eslint-disable require-atomic-updates */
       path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
       floor.tintBlocks(path, 0xaaffff)

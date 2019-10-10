@@ -3,6 +3,7 @@ import { Navigation } from './lib/navigation/Navigation'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
 import { Viewport } from 'pixi-viewport'
+import { Socket } from '@open-hotel/core'
 
 interface ApplicationOptions {
   autoStart?: boolean
@@ -24,12 +25,14 @@ interface ApplicationOptions {
   resizeTo?: Window | HTMLElement
   logLevel?: Log | number
   logContext?: string[]
+  websocketServer?: string
 }
 
 export class Application extends PIXI.Application {
   public readonly $logger = new Logger('Application')
   public $router: Navigation
   public $camera: Viewport
+  public $ws: Socket
   static $instance: Application
 
   constructor(options: ApplicationOptions = {}) {
@@ -39,6 +42,7 @@ export class Application extends PIXI.Application {
       {
         logLevel: Log.ERROR,
         logContext: null,
+        websocketServer: 'ws://localhost:65432/orion',
       },
       options,
     )
@@ -55,6 +59,31 @@ export class Application extends PIXI.Application {
     this.renderer.autoDensity = true
 
     this.ticker.add(() => Tween.update(this.ticker.lastTime))
+    this.initWebSocket(options)
+  }
+
+  private initWebSocket(options) {
+    this.$ws = new Socket(options.websocketServer)
+
+    const wsLogger = this.$logger.create('WebSocket')
+
+    this.$ws.on('ws:connect', () => wsLogger.info('Connected!'))
+    this.$ws.on('ws:disconnect', () => wsLogger.error('Disconnected!'))
+    this.$ws.on('ws:error', e => wsLogger.error('ws:error', e))
+    this.$ws.on('ws:input', packet =>
+      wsLogger.info(
+        `[${packet.event}] <= #${packet.uuid} (${packet.toBuffer().byteLength} B) => `,
+        JSON.stringify(packet.payload),
+      ),
+    )
+    this.$ws.on('ws:output', packet =>
+      wsLogger.info(
+        `[${packet.event}] => #${packet.uuid} (${packet.toBuffer().byteLength} B) => `,
+        JSON.stringify(packet.payload),
+      ),
+    )
+
+    this.$ws.connect()
   }
 
   static get(options?: ApplicationOptions) {

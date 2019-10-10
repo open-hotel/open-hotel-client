@@ -1,5 +1,3 @@
-import './ws/teste'
-
 export class Api {
   constructor(protected prefix: string) {}
 

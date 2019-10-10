@@ -13,17 +13,44 @@ export class Socket extends EventEmitter {
     this.disconnect()
     this.connection = new WebSocket(`${this.url}?ticket=${ticket}`)
     this.connection.binaryType = 'arraybuffer'
-    this.connection.onmessage = async (event:MessageEvent) => {
-      const packet = Packet.from(event.data)
-      if (!packet.validate(this.secret)) {
-        return
-      }
-      super.emit(packet.event, ...[].concat(packet.payload))
-    }
 
-    return new Promise((res, rej) => {
-      this.connection.onopen = res
-      this.connection.onerror = rej
+    // Receive Messages
+    this.connection.addEventListener('message', async (event: MessageEvent) => {
+      const packet = Packet.from(event.data)
+
+      if (packet.validate(this.secret)) {
+        super.emit('ws:input', packet)
+        super.emit(packet.event, ...[].concat(packet.payload))
+      }
+    })
+
+    return new Promise((resolve, reject) => {
+      this.connection.addEventListener(
+        'open',
+        () => {
+          super.emit('ws:connect')
+          resolve(this)
+        },
+        { once: true },
+      )
+      this.connection.addEventListener(
+        'error',
+        error => {
+          super.emit('ws:error')
+          reject(error)
+        },
+        { once: true },
+      )
+      this.connection.addEventListener(
+        'close',
+        e => {
+          super.emit('ws:disconnect')
+          if (e.code !== 1000) {
+            setTimeout(() => this.connect(ticket), 5000)
+          }
+        },
+        { once: true },
+      )
     })
   }
 
@@ -34,12 +61,9 @@ export class Socket extends EventEmitter {
     this.connection.close()
   }
 
-  on(event: string, handler: Function) {
-    super.on(event, handler)
-  }
-
   emit(event: string, ...payload: any[]) {
-    const packet = new Packet(event, payload).sign(this.secret).toBuffer()
-    this.connection.send(packet)
+    const packet = new Packet(event, payload).sign(this.secret)
+    super.emit('ws:output', packet)
+    this.connection.send(packet.toBuffer())
   }
 }
