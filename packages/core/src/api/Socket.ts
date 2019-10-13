@@ -1,8 +1,9 @@
 import { ClientPacket as Packet } from './ClientPacket'
 import { EventEmitter } from '../reactivity'
+import io, { Socket as Client } from 'socket.io-client'
 
 export class Socket extends EventEmitter {
-  private connection: WebSocket
+  private connection: typeof Client
   private secret: string = '123'
 
   constructor(private url: string) {
@@ -11,8 +12,7 @@ export class Socket extends EventEmitter {
 
   connect(ticket: string = '12345678') {
     this.disconnect()
-    this.connection = new WebSocket(`${this.url}?ticket=${ticket}`)
-    this.connection.binaryType = 'arraybuffer'
+    this.connection = io(`${this.url}?ticket=${ticket}`)
 
     // Receive Messages
     this.connection.addEventListener('message', async (event: MessageEvent) => {
@@ -25,31 +25,28 @@ export class Socket extends EventEmitter {
     })
 
     return new Promise((resolve, reject) => {
-      this.connection.addEventListener(
+      this.connection.once(
         'open',
         () => {
           super.emit('ws:connect')
           resolve(this)
-        },
-        { once: true },
+        }
       )
-      this.connection.addEventListener(
+      this.connection.once(
         'error',
         error => {
           super.emit('ws:error')
           reject(error)
-        },
-        { once: true },
+        }
       )
-      this.connection.addEventListener(
+      this.connection.once(
         'close',
         e => {
           super.emit('ws:disconnect')
           if (e.code !== 1000) {
             setTimeout(() => this.connect(ticket), 5000)
           }
-        },
-        { once: true },
+        }
       )
     })
   }
