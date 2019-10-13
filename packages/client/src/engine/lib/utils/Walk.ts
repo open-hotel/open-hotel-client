@@ -12,9 +12,9 @@ export class WalkRunner {
 
   constructor(public obj: PIXI.DisplayObject, public tween: TWEEN.Tween) {}
 
-  async follow(points: PointLike[], onStep: (point?: PointLike, index?: number) => any, stepDuration = 400) {
+  async follow(points: number[][], onStep: (point?: number[], index?: number) => any, stepDuration = 400) {
     points = points.slice(0)
-    let step: PointLike = null
+    let step: number[] = null
     let i = 0
 
     while (!this._cancel && (step = points.shift())) {
@@ -35,7 +35,7 @@ export function Walkable<TBase extends Constructor<PIXI.DisplayObject>>(Base: TB
     public _tween: TWEEN.Tween
     private _walk = new WalkRunner(this, this._tween)
 
-    followPath(points: PointLike[], onStep: (point?: PointLike, index?: number) => any, stepDuration = 300) {
+    followPath(points: number[][], onStep: (point?: number[], index?: number) => any, stepDuration = 300) {
       this._walk.cancel()
       this._walk = this._walk = new WalkRunner(this, this._tween)
       return this._walk.follow(points, onStep, stepDuration)

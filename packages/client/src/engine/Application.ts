@@ -3,7 +3,7 @@ import { Navigation } from './lib/navigation/Navigation'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
 import { Viewport } from 'pixi-viewport'
-import { Socket } from '@open-hotel/core'
+import io from 'socket.io-client'
 
 interface ApplicationOptions {
   autoStart?: boolean
@@ -32,7 +32,7 @@ export class Application extends PIXI.Application {
   public readonly $logger = new Logger('Application')
   public $router: Navigation
   public $camera: Viewport
-  public $ws: Socket
+  public $ws: SocketIOClient.Socket
   static $instance: Application
 
   constructor(options: ApplicationOptions = {}) {
@@ -63,27 +63,10 @@ export class Application extends PIXI.Application {
   }
 
   private initWebSocket(options) {
-    this.$ws = new Socket(options.websocketServer)
-
-    const wsLogger = this.$logger.create('WebSocket')
-
-    this.$ws.on('ws:connect', () => wsLogger.info('Connected!'))
-    this.$ws.on('ws:disconnect', () => wsLogger.error('Disconnected!'))
-    this.$ws.on('ws:error', e => wsLogger.error('ws:error', e))
-    this.$ws.on('ws:input', packet =>
-      wsLogger.info(
-        `[${packet.event}] <= #${packet.uuid} (${packet.toBuffer().byteLength} B) => `,
-        JSON.stringify(packet.payload),
-      ),
-    )
-    this.$ws.on('ws:output', packet =>
-      wsLogger.info(
-        `[${packet.event}] => #${packet.uuid} (${packet.toBuffer().byteLength} B) => `,
-        JSON.stringify(packet.payload),
-      ),
-    )
-
-    this.$ws.connect()
+    this.$ws = io(process.env.VUE_APP_API_URL)
+    this.$ws.emit(`rooms:join`, {
+      roomId: 'default',
+    })
   }
 
   static get(options?: ApplicationOptions) {

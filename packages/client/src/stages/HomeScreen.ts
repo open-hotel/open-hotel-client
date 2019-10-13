@@ -9,7 +9,7 @@ import { Observable } from '../engine/lib/Observable'
 import MAP from './maps/airplane'
 import { GameFurniture } from '@/gameobjects/furniture/GameFurniture'
 import bus from '../event-bus'
-import store, { RootState } from '@/UI/store'
+import store, { RootState } from '@/UI/store/'
 import { IRoomMap } from './IRoomMap'
 import { MutationPayload } from 'vuex'
 import { Application } from '@/engine/Application'
@@ -22,9 +22,54 @@ export class HomeScreen extends Scene {
   private dragging = false
   protected floor: Floor = null
   protected currentRoom: IRoomMap = MAP
-  protected human: Human
+  protected users: Map<string, Human> = new Map()
 
   setup() {
+    this.configureCamera()
+    this.configureEvents()
+  }
+
+  get human () {
+    return this.users.get(this.$app.$ws.id)
+  }
+
+  private configureEvents () {
+    const ws = this.$app.$ws
+
+    ws.emit('room:join', { roomId: 'default' })
+
+    ws.on('room:state', ({ map, mobis, users }) => {
+      for (const user of users) {
+        const newHuman = this.buildHuman(user)
+        this.users.set(user.socketId, newHuman)
+      }
+    })
+
+    ws.on('user:leave', ({ socketId }) => {
+      const oldUser = this.users.get(socketId)
+      this.floor.removeChild(oldUser)
+      oldUser.destroy()
+      oldUser.removeAllListeners()
+      this.users.delete(socketId)
+    })
+
+    ws.on('user:walk', ({ path, socketId }) => {
+      const user = this.users.get(socketId)
+      user.walk(path)
+    })
+
+    ws.on('room:join', (userState) => {
+      const human = this.buildHuman(userState)
+      this.users.set(userState.socketId, human)
+    })
+
+    ws.on('disconnect', () => {
+      alert('You were disconnected. Reloading page...')
+      window.location.reload()
+    })
+  }
+
+  private configureCamera () {
     const width = window.innerWidth
     const height = window.innerHeight
     this.$camera = new Viewport({
@@ -78,6 +123,25 @@ export class HomeScreen extends Scene {
     })
   }
 
+  private buildHuman (user: {
+    position: [number, number]
+    socketId: string
+  }) {
+    const human = new Human()
+    const { floor } = this
+
+    human.floor = floor
+
+    floor.addChild(human)
+
+    const [humanX, humanY] = user.position
+    human.set('map_position', { x: humanX, y: humanY })
+    human.attrs2.direction = 2
+    floor.getPositionOf(humanX, humanY).copyTo(human.position)
+
+    return human
+  }
+
   private setupFloor() {
     if (this.floor) {
       this.floor.destroy()
@@ -90,31 +154,14 @@ export class HomeScreen extends Scene {
       tintBlocks: false,
     }))
 
-    const { human } = this
-
-    human.floor = floor
-
-    bus.$on('player:speak', time => human.speak(time))
-
     this.$camera.addChild(floor)
-
-    floor.addChild(human)
-
-    const [humanX, humanY] = floor.getFirstBlockIndexes()
-    human.set('map_position', { x: humanX, y: humanY })
-    human.attrs2.direction = 2
-
-    floor.getPositionOf(humanX, humanY).copyTo(human.position)
 
     floor.position.set(this.$app.view.width / 2, this.$app.view.height / 2)
 
     this.avoidDragMove()
 
-    let lastPosition = { x: humanX, y: humanY }
-    let lastWalk = null
-    let path = []
-
     floor.addListener('pointertap', async e => {
+      const { human } = this
       const { lockWalking } = store.state
       if (e.target instanceof Floor || this.dragging || lockWalking) {
         return
@@ -123,47 +170,8 @@ export class HomeScreen extends Scene {
       if (!(e.target instanceof GameObject) || !floor.canWalkTo(e.target.mapPosition.x, e.target.mapPosition.y)) {
         return
       }
-
-      floor.tintBlocks(path, 0xffffff)
-
-      await lastWalk
-      Application.get().$ws.emit('ME.WALK', human.mapPosition.toArray())
-      /* eslint-disable require-atomic-updates */
-      path = floor.pathFinder.find(human.mapPosition, e.target.mapPosition)
-      floor.tintBlocks(path, 0xaaffff)
-
-      human
-        .followPath(path, async p => {
-          const target = floor.$mapBlocks.get(p.x, p.y)
-          floor.tintBlock(p, 0x00aaaa)
-          human.zIndex = target.zIndex + 1
-          human.walk()
-          if (lastPosition) {
-            const { x, y } = p
-            const { x: lastX, y: lastY } = lastPosition
-            let nextDirection = 0
-            // Diagonal positions
-            if (x < lastX && y > lastY) nextDirection = 1
-            else if (x < lastX && y < lastY) nextDirection = 7
-            else if (x > lastX && y > lastY) nextDirection = 3
-            else if (x > lastX && y < lastY) nextDirection = 5
-            // Cross positions
-            else if (x < lastX) nextDirection = 0
-            else if (x > lastX) nextDirection = 4
-            else if (y < lastY) nextDirection = 6
-            else if (y > lastY) nextDirection = 2
-            human.attrs2.direction = nextDirection
-          }
-          lastWalk = human.moveTo(target.isoPosition.toVector2())
-          await lastWalk
-          human.mapPosition.set(p.x, p.y, 0)
-
-          /* eslint-disable require-atomic-updates */
-          lastPosition = p
-        })
-        .then(finished => {
-          if (finished) human.stop()
-        })
+      const { x, y } = e.target.mapPosition
+      this.$app.$ws.emit('user:walk', [x, y])
     })
   }
 
@@ -174,7 +182,6 @@ export class HomeScreen extends Scene {
         this.setupFloor()
       },
     }
-    this.human = new Human()
     this.setupFloor()
 
     store.subscribe((mutation, state) => {

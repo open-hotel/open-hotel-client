@@ -10,7 +10,7 @@ import { PathFinder } from '@open-hotel/core'
 import { Wall } from './Wall'
 import { createFloorTestFunction } from '../../engine/lib/utils/FloorUtils'
 import { GameFurniture } from '../furniture/GameFurniture'
-import store from '../../UI/store'
+import store from '../../UI/store/'
 import { PointLike } from '@/engine/lib/utils/Walk'
 
 export interface Block {
@@ -256,14 +256,14 @@ export class Floor extends GameObject {
     walls.forEach(wall => wall && this.addChild(wall))
   }
 
-  tintBlock(block: { x: number; y: number }, color = 0xff0000) {
+  tintBlock([x, y]: number[], color = 0xff0000) {
     if (!this.debugPathTint) {
       return
     }
-    const item = this.$mapBlocks.get(block.x, block.y)
+    const item = this.$mapBlocks.get(x, y)
     item.tint = color
   }
-  tintBlocks(blocks: { x: number; y: number }[], color = 0xff0000) {
+  tintBlocks(blocks: number[][], color = 0xff0000) {
     if (!this.debugPathTint) {
       return
     }

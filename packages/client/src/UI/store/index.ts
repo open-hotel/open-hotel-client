@@ -4,6 +4,8 @@ import { Application } from '@/engine/Application'
 import { IRoomMap } from '@/stages/IRoomMap'
 import { GameFurniture } from '@/gameobjects/furniture/GameFurniture'
 
+import { chatModule } from './chat'
+
 Vue.use(Vuex)
 
 export interface RootState {
@@ -23,6 +25,9 @@ export default new Vuex.Store<RootState>({
     lockWalking: false,
     roomMobis: [],
     blockToMobisMap: Object.create(null),
+  },
+  modules: {
+    chat: chatModule,
   },
   mutations: {
     setPlacingMobi(state, newMobi: GameFurniture) {
