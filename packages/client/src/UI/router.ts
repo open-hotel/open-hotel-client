@@ -3,7 +3,9 @@ import Router, { RouteConfig } from 'vue-router'
 
 Vue.use(Router)
 
-const isDemo = process.env.NODE_ENV === 'demo'
+// not implemented on orion
+// const isDemo = process.env.NODE_ENV === 'demo'
+const isDemo = true
 
 const routes: RouteConfig[] = [
   {
