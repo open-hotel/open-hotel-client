@@ -34,6 +34,7 @@ export class Application extends PIXI.Application {
   public $camera: Viewport
   public $ws: SocketIOClient.Socket
   static $instance: Application
+  public worker: Worker
 
   constructor(options: ApplicationOptions = {}) {
     super(options)
@@ -53,6 +54,7 @@ export class Application extends PIXI.Application {
     this.$router = new Navigation(this)
 
     window.addEventListener('resize', this.onResize.bind(this))
+    this.tickerFallback()
 
     this.onResize()
 
@@ -60,6 +62,26 @@ export class Application extends PIXI.Application {
 
     this.ticker.add(() => Tween.update(this.ticker.lastTime))
     this.initWebSocket(options)
+  }
+
+  tickerFallback() {
+    this.worker = new Worker('./worker.js')
+    this.worker.addEventListener('message', e => {
+      if (e.data === 'ticker') {
+        this.ticker.update()
+      }
+    })
+
+    const updateTicker = () => {
+      if (document.hidden) {
+        this.worker.postMessage('startTicker')
+      } else {
+        this.worker.postMessage('stopTicker')
+      }
+    }
+
+    updateTicker()
+    document.addEventListener('visibilitychange', updateTicker)
   }
 
   private initWebSocket(options) {

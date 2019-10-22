@@ -6,7 +6,7 @@ import { HumanLeftHand } from './LeftHand'
 import { HumanRightHand } from './RightHand'
 import { HumanHair } from './Hair'
 import * as PIXI from 'pixi.js'
-import { Walkable, PointLike } from '@/engine/lib/utils/Walk'
+import { Walkable } from '@/engine/lib/utils/Walk'
 import { Constructor } from '@/engine/types'
 
 interface HumanProps {
@@ -31,6 +31,7 @@ export class Human extends Walkable<Constructor<GameObject<HumanProps>>>(GameObj
   public readonly leftHand: HumanLeftHand
   public readonly rightHand: HumanRightHand
   public readonly hair: HumanHair
+  private lastPath = []
 
   constructor() {
     super({
@@ -51,8 +52,6 @@ export class Human extends Walkable<Constructor<GameObject<HumanProps>>>(GameObj
 
     this.interactive = true
     this.sortableChildren = true
-
-    this.addListener('pointertap', () => this.head.speak(5000))
 
     this.head = new HumanHead({
       type: 1,
@@ -171,50 +170,50 @@ export class Human extends Walkable<Constructor<GameObject<HumanProps>>>(GameObj
     }
   }
 
-  async walk (path: number[][]) {
+  async walk(path: number[][]) {
     const { floor } = this
 
     let lastPosition = [this.mapPosition.x, this.mapPosition.y]
     let lastWalk = null
 
-    floor.tintBlocks(path, 0xffffff)
+    floor.tintBlocks(this.lastPath, 0xffffff)
+    this.lastPath = path
 
     await lastWalk
     /* eslint-disable require-atomic-updates */
     floor.tintBlocks(path, 0xaaffff)
 
     this.followPath(path, async p => {
-          const [ x, y ] = p
-          const target = floor.$mapBlocks.get(x, y)
-          floor.tintBlock(p, 0x00aaaa)
-          this.zIndex = target.zIndex + 1
-          this.animateWalk()
-          if (lastPosition) {
-            const [lastX, lastY ] = lastPosition
-            let nextDirection = 0
-            // Diagonal positions
-            if (x < lastX && y > lastY) nextDirection = 1
-            else if (x < lastX && y < lastY) nextDirection = 7
-            else if (x > lastX && y > lastY) nextDirection = 3
-            else if (x > lastX && y < lastY) nextDirection = 5
-            // Cross positions
-            else if (x < lastX) nextDirection = 0
-            else if (x > lastX) nextDirection = 4
-            else if (y < lastY) nextDirection = 6
-            else if (y > lastY) nextDirection = 2
-            this.attrs2.direction = nextDirection
-          }
-          lastWalk = this.moveTo(target.isoPosition.toVector2())
-          await lastWalk
-          this.app.$ws.emit('user:step')
-          this.mapPosition.set(x, y, 0)
+      const [x, y] = p
+      const target = floor.$mapBlocks.get(x, y)
+      floor.tintBlock(p, 0x00aaaa)
+      this.zIndex = target.zIndex + 1
+      this.animateWalk()
+      if (lastPosition) {
+        const [lastX, lastY] = lastPosition
+        let nextDirection = 0
+        // Diagonal positions
+        if (x < lastX && y > lastY) nextDirection = 1
+        else if (x < lastX && y < lastY) nextDirection = 7
+        else if (x > lastX && y > lastY) nextDirection = 3
+        else if (x > lastX && y < lastY) nextDirection = 5
+        // Cross positions
+        else if (x < lastX) nextDirection = 0
+        else if (x > lastX) nextDirection = 4
+        else if (y < lastY) nextDirection = 6
+        else if (y > lastY) nextDirection = 2
+        this.attrs2.direction = nextDirection
+      }
+      lastWalk = this.moveTo(target.isoPosition.toVector2())
+      await lastWalk
+      this.app.$ws.emit('user:step')
+      this.mapPosition.set(x, y, 0)
 
-          /* eslint-disable require-atomic-updates */
-          lastPosition = p
-        })
-        .then(finished => {
-          if (finished) this.stop()
-        })
+      /* eslint-disable require-atomic-updates */
+      lastPosition = p
+    }).then(finished => {
+      if (finished) this.stop()
+    })
   }
 
   animateWalk() {

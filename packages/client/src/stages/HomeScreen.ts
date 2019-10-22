@@ -29,14 +29,16 @@ export class HomeScreen extends Scene {
     this.configureEvents()
   }
 
-  get human () {
+  get human() {
     return this.users.get(this.$app.$ws.id)
   }
 
-  private configureEvents () {
-    const ws = this.$app.$ws
+  private configureEvents() {
+    const ws = this.$app.$ws.removeAllListeners()
 
-    ws.emit('room:join', { roomId: 'default' })
+    ws.emit('room:join', { roomId: 'default' }, result => {
+      console.log(result)
+    })
 
     ws.on('room:state', ({ map, mobis, users }) => {
       for (const user of users) {
@@ -58,7 +60,7 @@ export class HomeScreen extends Scene {
       user.walk(path)
     })
 
-    ws.on('room:join', (userState) => {
+    ws.on('room:join', userState => {
       const human = this.buildHuman(userState)
       this.users.set(userState.socketId, human)
     })
@@ -69,7 +71,7 @@ export class HomeScreen extends Scene {
     })
   }
 
-  private configureCamera () {
+  private configureCamera() {
     const width = window.innerWidth
     const height = window.innerHeight
     this.$camera = new Viewport({
@@ -123,10 +125,7 @@ export class HomeScreen extends Scene {
     })
   }
 
-  private buildHuman (user: {
-    position: [number, number]
-    socketId: string
-  }) {
+  private buildHuman(user: { position: [number, number]; socketId: string }) {
     const human = new Human()
     const { floor } = this
 
@@ -151,7 +150,7 @@ export class HomeScreen extends Scene {
     const floor = (this.floor = new Floor({
       map: Matrix.from(this.currentRoom.map as FloorMapElevation[][]),
       mobis: mobis.map(definition => new GameFurniture({ mobi: definition })),
-      tintBlocks: false,
+      tintBlocks: true,
     }))
 
     this.$camera.addChild(floor)
