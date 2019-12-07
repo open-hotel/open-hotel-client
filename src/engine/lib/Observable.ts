@@ -11,7 +11,7 @@ export class Observable<T = any> {
   private readonly [$key]: string
   private readonly [$parent]: Observable
   private readonly [$state]: any
-  private readonly [$listeners]: {
+  private [$listeners]: {
     prop: string
     fn: ObservableListener
   }[]
@@ -62,6 +62,7 @@ export class Observable<T = any> {
           return this[$state][k]
         },
         set(v) {
+          console.log('SET', k, v)
           const old = this[$state][k]
           this.$set(k, v)
           this.notify(k, v, old)
@@ -72,6 +73,8 @@ export class Observable<T = any> {
   }
 
   notify(key: any, value: any, oldValue: any) {
+    if (value === oldValue) return;
+    
     this[$listeners].forEach(listener => {
       if (listener.prop === null || listener.prop === key) listener.fn(value, oldValue, key)
     })
@@ -96,6 +99,11 @@ export class Observable<T = any> {
       fn: fn,
     })
 
+    return this
+  }
+
+  removeAllListeners () {
+    this[$listeners] = []
     return this
   }
 

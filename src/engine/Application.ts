@@ -7,7 +7,7 @@ import { Game } from '../game/Game'
 import { Scene } from './lib/Scene'
 
 interface ApplicationOptions {
-  game?: Game,
+  game?: Game
   autoStart?: boolean
   width?: number
   height?: number
@@ -93,6 +93,15 @@ export class Application extends PIXI.Application {
     return this.$instance
   }
 
+  getLibs(libs: string[]) {
+    return this.getResource(
+      libs.reduce((items, l) => {
+        items[l] = `dist/${l}/${l}.json`
+        return items
+      }, {}),
+    )
+  }
+
   /**
    * load a resource or get from loader cache
    * @param name Resource name
@@ -109,28 +118,66 @@ export class Application extends PIXI.Application {
    */
   getResource(items: { [key: string]: string })
   getResource(idOrArrayOrObject: string | string[] | { [key: string]: string }) {
-    const loader = new PIXI.Loader('/', 20)
+    const loader = this.loader
+    
     return new Promise((resolve, reject) => {
       // String
       if (typeof idOrArrayOrObject === 'string') {
-        return loader.add(idOrArrayOrObject).load((_, r) => resolve(r[idOrArrayOrObject]))
+        if (loader.resources[idOrArrayOrObject]) {
+          return resolve(loader.resources[idOrArrayOrObject])
+        }
+        loader.add(idOrArrayOrObject, idOrArrayOrObject, {}, res => {
+          resolve(res[idOrArrayOrObject])
+        })
       }
 
       // Array
-      if (Array.isArray(idOrArrayOrObject)) {
-        return loader.add(idOrArrayOrObject).load((_, r) => resolve(idOrArrayOrObject.map(name => r[name])))
+      else if (Array.isArray(idOrArrayOrObject)) {
+        let count = idOrArrayOrObject.length
+        const resources = idOrArrayOrObject.filter(k => !loader.resources[k])
+        resources.forEach(res => {
+          loader.add(res, {}, () => {
+            if (--count === 0) {
+              resolve(idOrArrayOrObject.map(r => loader.resources[r]))
+            }
+          })
+        })
       }
-
+      
       // Objects
-      return loader.add(idOrArrayOrObject).load((_, r) => {
-        const result = {}
-
-        for (let k in idOrArrayOrObject) {
-          result[k] = r[k]
+      else if (typeof idOrArrayOrObject === 'object') {
+        
+        const entries = Object.entries(idOrArrayOrObject)
+        
+        let count = entries.length
+        let hasResourcesToLoad = false;
+        
+        for (const [key, url] of entries) {
+          if (loader.resources[key]) continue
+          hasResourcesToLoad = true;
+          loader.add(key, url, {}, () => {
+            if (--count === 0) {
+              const resources = entries.reduce((obj, [k]) => {
+                obj[k] = loader.resources[k]
+                return obj
+              }, {})
+              resolve(resources)
+            }
+          })
         }
 
-        resolve(result)
-      })
+        if (!hasResourcesToLoad) {
+          const resources = entries.reduce((obj, [k]) => {
+            obj[k] = loader.resources[k]
+            return obj
+          }, {})
+          resolve(resources)
+        }
+      }
+
+      if (!loader.loading) {
+        loader.load()
+      }
     })
   }
 

@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js';
+
 import Room from './Room'
 import { Matrix } from '../../engine/lib/util/Matrix'
 import { createFloorTestFunction } from '../../engine/lib/util/FloorUtils'

@@ -1,6 +1,9 @@
+const env = require('dotenv').config()
 const path = require('path')
+const webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 
 /** @type import('webpack').Configuration */
 const config = {
@@ -50,6 +53,12 @@ const config = {
     ],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      "process.env": Object.entries(env.parsed).reduce((acc, [key, value]) => {
+        acc[key] = JSON.stringify(value)
+        return acc
+      }, {})
+    }),
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       title: 'Open Hotel',
@@ -60,9 +69,9 @@ const config = {
   devServer: {
     contentBase: './public',
   },
-  externals: {
-    'pixi.js': 'PIXI'
-  }
+  // externals: {
+  //   'pixi.js': 'PIXI'
+  // }
 }
 
 module.exports = config

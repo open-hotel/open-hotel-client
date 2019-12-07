@@ -1,4 +1,4 @@
-import { SCALE_MODES, Polygon, Rectangle } from "pixi.js";
+import { SCALE_MODES, Polygon, Graphics } from "pixi.js";
 import { Cube, CubeOptions } from "../../engine/geometry/Cube";
 import { Vector3 } from "../../engine/isometric";
 import { Application } from "../../engine/Application";
@@ -30,7 +30,7 @@ export class RoomImager {
       width: 32,
     })
 
-    const borderStroke = new PIXI.Polygon([
+    const borderStroke = new Polygon([
       new Vector3(1, 31, 0).toVector2(),
       new Vector3(1, 1, 0).toVector2(),
       new Vector3(31, 1, 0).toVector2(),
@@ -45,10 +45,10 @@ export class RoomImager {
   }
 
   generateStairTexture (direction: StairDirection, thickness: number = DEFAULT_THICKNESS) {
-    const g = new PIXI.Graphics()
+    const g = new Graphics()
 
-    const border = new PIXI.Graphics()
-    const borderPolygon = new PIXI.Polygon()
+    const border = new Graphics()
+    const borderPolygon = new Polygon()
 
     let hitArea = new Polygon([
       new Vector3(32, 0).toVector2(),
@@ -204,7 +204,7 @@ export class RoomImager {
       },
     }
 
-    const walls = new PIXI.Graphics()
+    const walls = new Graphics()
 
     
     if (conner) {
@@ -247,7 +247,7 @@ export class RoomImager {
   }
 
   generateFloorSelectionTexture () {
-    const g = new PIXI.Graphics()
+    const g = new Graphics()
 
     const polygon = new Polygon([
       new IsoPoint(0, 0).toPoint(),
