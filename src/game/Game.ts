@@ -31,9 +31,8 @@ export class Game {
     this.app = Application.get({
       game: this,
       view: canvas,
+      debug: true,
       resizeTo: canvas.parentElement,
-      antialias: true,
-      forceFXAA: true,
       resolution: window.devicePixelRatio || 1,
     })
 

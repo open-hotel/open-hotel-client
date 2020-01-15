@@ -5,6 +5,8 @@ import Tween from '@tweenjs/tween.js'
 import { Viewport } from 'pixi-viewport'
 import { Game } from '../game/Game'
 import { Scene } from './lib/Scene'
+import { stat } from 'fs'
+const GStats = require('gstats')
 
 interface ApplicationOptions {
   game?: Game
@@ -27,7 +29,8 @@ interface ApplicationOptions {
   resizeTo?: Window | HTMLElement
   logLevel?: Log | number
   logContext?: string[]
-  websocketServer?: string
+  websocketServer?: string,
+  debug?: boolean
 }
 
 export class Application extends PIXI.Application {
@@ -66,6 +69,20 @@ export class Application extends PIXI.Application {
     this.renderer.autoDensity = true
 
     this.ticker.add(() => Tween.update(this.ticker.lastTime))
+    
+    if (options.debug) {
+      // const pixiHooks = new GStats.PIXIHooks(this);
+      // const stats = new GStats.StatsJSAdapter(pixiHooks);
+      // const el = stats.stats.dom || stats.stats.domElement
+
+      // el.style.position = 'fixed';
+      // el.style.top = 0;
+      // el.style.right = 0;
+
+      // document.body.appendChild(el);
+      
+      // this.ticker.add(() => stats.update())
+    }
   }
 
   tickerFallback() {
@@ -93,13 +110,14 @@ export class Application extends PIXI.Application {
     return this.$instance
   }
 
-  getLibs(libs: string[]) {
+  async getLibs(libs: string[]) {
+    if (!libs.length) return [];
     return this.getResource(
       libs.reduce((items, l) => {
         items[l] = `dist/${l}/${l}.json`
         return items
       }, {}),
-    )
+    );
   }
 
   /**
@@ -127,7 +145,7 @@ export class Application extends PIXI.Application {
           return resolve(loader.resources[idOrArrayOrObject])
         }
         loader.add(idOrArrayOrObject, idOrArrayOrObject, {}, res => {
-          resolve(res[idOrArrayOrObject])
+          if (res.name === idOrArrayOrObject) resolve(res[idOrArrayOrObject])
         })
       }
 
@@ -136,8 +154,8 @@ export class Application extends PIXI.Application {
         let count = idOrArrayOrObject.length
         const resources = idOrArrayOrObject.filter(k => !loader.resources[k])
         resources.forEach(res => {
-          loader.add(res, {}, () => {
-            if (--count === 0) {
+          loader.add(res, {}, (r) => {
+            if (r.name === res && --count === 0) {
               resolve(idOrArrayOrObject.map(r => loader.resources[r]))
             }
           })
@@ -155,8 +173,9 @@ export class Application extends PIXI.Application {
         for (const [key, url] of entries) {
           if (loader.resources[key]) continue
           hasResourcesToLoad = true;
-          loader.add(key, url, {}, () => {
-            if (--count === 0) {
+          loader.add(key, url, {}, (r) => {
+            if (r.name === key) count--;
+            if (count <= 0) {
               const resources = entries.reduce((obj, [k]) => {
                 obj[k] = loader.resources[k]
                 return obj

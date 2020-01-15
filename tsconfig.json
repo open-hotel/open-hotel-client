@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["dom","es6"]
+    "lib": ["dom", "ES2019", "ES2019.Array"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

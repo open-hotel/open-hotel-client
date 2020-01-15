@@ -69,9 +69,9 @@ const config = {
   devServer: {
     contentBase: './public',
   },
-  // externals: {
-  //   'pixi.js': 'PIXI'
-  // }
+  externals: {
+    'pixi.js': 'PIXI'
+  }
 }
 
 module.exports = config

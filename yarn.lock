@@ -1864,6 +1864,11 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
+dotenv@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+  integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
+
 duplexify@^3.4.2, duplexify@^3.6.0:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/duplexify/-/duplexify-3.7.1.tgz#2a4df5317f6ccfd91f86d6fd25d8d8a103b88309"
@@ -2554,6 +2559,11 @@ graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.2.tgz#6f0952605d0140c1cfdb138ed005775b92d67b02"
   integrity sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
+
+gstats@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/gstats/-/gstats-0.1.0.tgz#75129cdce9cdb4508279dd2decdd5c34920d8d4b"
+  integrity sha512-4PieOEZT1uPRsGRCXHz3Wu/N1za7fMGFHmjO8SYrsgBESGz3nAW5b5ImP0zojgj85IvvSfKqV2H5+XRA7LX1DA==
 
 handle-thing@^2.0.0:
   version "2.0.0"

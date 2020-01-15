@@ -1,14 +1,101 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js'
 import { Game } from '../../Game'
 import { HumanChunk } from './HumanChunk'
-import { SCALE_MODES } from 'pixi.js'
 
-type HumanImagerFigure = Record<string, { id: string; color?: string }>
+type HumanImagerFigure = Record<string, { id: string; colors?: string[] }>
 type HumanImagerAction = Record<string, boolean | string>
 
+export class Figure {
+  constructor(public attrs: HumanImagerFigure) {}
+
+  static encode(figure: HumanImagerFigure) {
+    return Object.entries(figure)
+      .map(([key, { id, colors = [] }]) => ([key, id, ...colors]).join('-'))
+      .join('.')
+  }
+
+  static decode(figureEncoded: string) {
+    return figureEncoded.split('.').reduce<HumanImagerFigure>((fig, part) => {
+      const [key = '', id = '1', ...colors] = part.split('-')
+
+      fig[key] = {
+        id,
+        colors
+      }
+
+      return fig
+    }, {})
+  }
+
+  static from(figureEncoded: string) {
+    return new Figure(this.decode(figureEncoded))
+  }
+
+  set(type: string, id: string, ...colors: string[]) {
+    this.attrs[type] = { id, colors }
+    return this
+  }
+
+  get(type: string) {
+    return this.attrs[type]
+  }
+
+  toString() {
+    return Figure.encode(this.attrs)
+  }
+
+  entries() {
+    return Object.entries(this.attrs)
+  }
+}
+
+export class Action {
+  constructor(public attrs: HumanImagerAction) {}
+
+  static encode(action: HumanImagerAction) {
+    return Object.entries(action)
+      .reduce((acc, [action, value]) => {
+        if (value === true) acc.push(action)
+        else if (value) acc.push([action, value].join('='))
+        return acc
+      }, [])
+      .join(',')
+  }
+
+  static decode(actionEncoded: string) {
+    return actionEncoded.split(',').reduce<HumanImagerAction>((acc, item) => {
+      const [name, value = true] = item.split('=')
+      acc[name] = value
+      return acc
+    }, {})
+  }
+
+  get(action: string) {
+    return this.attrs[action]
+  }
+
+  set(action: string, value: boolean | string = true) {
+    if (value === false) {
+      delete this.attrs[action]
+    } else {
+      this.attrs[action] = value
+    }
+
+    return this
+  }
+
+  static from(figureEncoded: string) {
+    return new Action(this.decode(figureEncoded))
+  }
+
+  toString() {
+    return Action.encode(this.attrs)
+  }
+}
+
 export interface HumanImagerProps {
-  figure: HumanImagerFigure
-  action: HumanImagerAction
+  figure: string
+  action: Record<string, string | boolean>
   size: string
   gesture: string
   head_direction: number
@@ -21,9 +108,25 @@ export class HumanImager {
   textureCache: Record<string, PIXI.Texture> = {}
   animationCache: Record<string, PIXI.Texture[]> = {}
 
+  get figuremap() {
+    return Game.current.app.loader.resources.figuremap.data
+  }
+
+  get figuredata() {
+    return Game.current.app.loader.resources.figuredata.data
+  }
+
+  get draworder() {
+    return Game.current.app.loader.resources.draworder.data
+  }
+
+  get partsets() {
+    return Game.current.app.loader.resources.partsets.data
+  }
+
   normalizeFrameNumber(part: HumanChunk, frame: number, delay = 0) {
     const resource = Game.current.app.loader.resources[part.lib]
-    const { animations = {} } = resource ? resource.spritesheet : {}
+    const { animations = {} } = (resource && resource.spritesheet) || {}
     const animation = animations[part.resourceName] || []
     const total = animation.length
     if (!total) return 0
@@ -45,460 +148,118 @@ export class HumanImager {
   ) {
     return chunks
       .map(c => {
-        if (c === 'figure') return this.encodeFigure(props.figure)
-        if (c === 'action') return this.encodeAction(props.action)
+        if (c === 'figure') return props.figure.toString()
+        if (c === 'action') return props.action.toString()
         return props[c]
       })
       .join(';')
   }
 
-  encodeFigure(figure: HumanImagerFigure): string {
-    return Object.entries(figure)
-      .map(([key, { id, color }]) => (color ? [key, id, color] : [key, id]).join('-'))
-      .join('.')
+
+  getColorFor(type:string, colorId:string) {
+    const settype = this.figuredata.settype[type]
+    const paletteid = settype && settype.paletteid
+    const palette = this.figuredata.palette[paletteid]
+    const color = palette && palette[colorId]
+    return color ? parseInt(color.color, 16) : 0xffffff
   }
 
-  decodeFigure(figure: string): HumanImagerFigure {
-    return figure.split('.').reduce<HumanImagerFigure>((fig, part) => {
-      const [key = '', id = '1', color = null] = part.split('-')
+  async render(props: Partial<HumanImagerProps>): Promise<PIXI.Texture> {
+    const parts = await this.createParts(props)
+    const libs = this.getResources(parts)
 
-      fig[key] = {
-        id,
-        color,
-      }
+    await Game.current.app.getLibs(libs)
 
-      return fig
-    }, {})
-  }
+    const figureContainer = new PIXI.Container()
 
-  encodeAction(action: HumanImagerAction) {
-    return Object.entries(action)
-      .reduce((acc, [action, value]) => {
-        if (value === true) acc.push(action)
-        else if (value) acc.push([action, value].join('='))
-        return acc
-      }, [])
-      .join(',')
-  }
-
-  decodeAction(action: string) {
-    return action.split(',').reduce<HumanImagerAction>((acc, item) => {
-      const [name, value = true] = item.split('=')
-      acc[name] = value
-      return acc
-    }, {})
-  }
-
-  getColor(paletteId: string, colorId: string) {
-    const {
-      figuredata: { data: figureData },
-    } = Game.current.app.loader.resources
-
-    const palette = figureData.palette[paletteId]
-    const { color = null } = (palette && palette[colorId]) || {}
-
-    return Number(`0x${color || 'FFFFFF'}`)
-  }
-
-  getPalettePart(part: string) {
-    const {
-      figuredata: { data: figureData },
-    } = Game.current.app.loader.resources
-    const setType = figureData.settype[part]
-    return setType ? setType.paletteid : '1'
-  }
-
-  getFigureOptions(
-    type: string,
-    figure: HumanImagerFigure,
-    defaults: { type?: string; id?: string; tint?: number } = {},
-  ) {
-    const { resources } = Game.current.app.loader
-    const {
-      figuremap: { data: figureMap },
-    } = resources
-    const part = figure[type]
-
-    if (!part) {
-      return {
-        type,
-        id: null,
-        lib: figureMap[type][defaults.id],
-        tint: 0xffffff,
-        frame: 0,
-        ...defaults,
-      }
+    for (const part of parts) {
+      const sprite = new PIXI.Sprite(part.texture)
+      figureContainer.addChild(sprite)
+      sprite.pivot.set(part.offset.x, part.offset.y)
+      if (Number.isInteger(part.color)) sprite.tint = part.color
     }
 
-    const { id, color } = part
-
-    return {
-      type,
-      id: id,
-      lib: figureMap[type][id],
-      tint: this.getColor(this.getPalettePart(type), color),
-      frame: 0
-    }
+    return Game.current.app.renderer.generateTexture(figureContainer, 1, 1)
   }
 
-  async generateTexture(props: Partial<HumanImagerProps>) {
-    props = Object.assign(
-      {
-        figure: {},
-        action: {},
-        direction: 2,
-        gesture: 'std',
-        frame: 0,
-        head_direction: 2,
-        size: 'h',
-        is_ghost: false,
-      },
-      props,
-    )
-
-    const cacheName = this.createCacheName(props)
-
-    if (cacheName in this.textureCache) return this.textureCache[cacheName]
-
-    // Prepare parts
-    const parts = this.createParts(props)
-
-    await Game.current.app.getLibs(this.getResources(parts))
-
-    return this.renderParts(parts, cacheName)
+  getActivePartsets(parts: HumanChunk[], groupName: string) {
+    return parts.filter(p => this.partsets.activePartSets[groupName].includes(p.type))
   }
 
-  createParts(props: Partial<HumanImagerProps>) {
-    let { action, direction, figure, frame, gesture, head_direction, is_ghost, size = 'h' } = props
-    const hdFigure = this.getFigureOptions('hd', figure, { id: '1' })
+  async createParts(props: Partial<HumanImagerProps>): Promise<HumanChunk[]> {
+    const figure = Figure.from(props.figure)
+    let parts: HumanChunk[] = []
 
-    // Body Layers
-    const parts: Record<string, HumanChunk> = {
-      // Head
-      hd: new HumanChunk({
-        ...hdFigure,
-        direction: head_direction,
-        size: size,
-      }),
-      // Body
-      bd: new HumanChunk({
-        ...this.getFigureOptions('bd', figure, { id: '1' }),
-        tint: hdFigure.tint,
-        direction: direction,
-        size: size,
-      }),
-      // Left Hand
-      lh: new HumanChunk({
-        ...this.getFigureOptions('lh', figure, { id: '1' }),
-        tint: hdFigure.tint,
-        direction: direction,
-        size: size,
-      }),
-      // Right Hand
-      rh: new HumanChunk({
-        ...this.getFigureOptions('rh', figure, { id: '1' }),
-        tint: hdFigure.tint,
-        direction: direction,
-        size: size,
-      }),
-    }
+    for (const [type, { id, colors }] of figure.entries()) {
+      const { parts: subParts, hiddenlayers = null } = this.figuredata.settype[type].set[id]
+      for (const subPart of subParts) {
+        const libId = this.figuremap.parts[subPart.type][subPart.id]
+        const lib = libId && this.figuremap.libs[libId]
 
-    // Actions Normalize
-    if (action.wlk) {
-      action.sit = action.lay = false
-    }
+        if (!lib) continue
 
-    if (action.sit) {
-      action.wlk = action.lay = false
-    }
-
-    if (action.lay) {
-      if (['wav'].includes(gesture)) gesture = 'std'
-      action.wlk = action.sit = action.drk = action.sig = action.crr = false
-    }
-
-    if (is_ghost) {
-      parts.hd.tint = parts.bd.tint = parts.lh.tint = parts.rh.tint = 0xffffff
-    } else {
-      // Hair Layer
-      if (figure.hr) {
-        parts.hr = new HumanChunk({
-          ...this.getFigureOptions('hr', figure),
-          direction: head_direction,
-          size: size,
+        const part = new HumanChunk({
+          lib: lib.id,
+          id: subPart.id,
+          type: subPart.type,
+          color: subPart.colorable === 1 && subPart.colorindex > 0 && subPart.type !== 'ey'
+            ? this.getColorFor(subPart.type, colors[subPart.colorindex - 1])
+            : null,
+          direction: props.direction,
         })
+
+        parts.push(part)
       }
 
-      // Eye Layer
-      if (figure.ey) {
-        parts.ey = new HumanChunk({
-          ...this.getFigureOptions('ey', figure),
-          direction: head_direction,
-          size: size,
-        })
-      }
-
-      // Face Layer
-      if (figure.fc) {
-        parts.fc = new HumanChunk({
-          ...this.getFigureOptions('fc', figure),
-          tint: hdFigure.tint,
-          direction: head_direction,
-          size: size,
-        })
-      }
-
-      // Hats Layer
-      if (figure.ha) {
-        parts.ha = new HumanChunk({
-          ...this.getFigureOptions('ha', figure),
-          direction: direction,
-          size: size,
-        })
-      }
-
-      // Eye accessories Layer
-      if (figure.ea) {
-        parts.ea = new HumanChunk({
-          ...this.getFigureOptions('ea', figure),
-          direction: head_direction,
-          size: size,
-        })
-      }
-
-      // Head accessories Layer
-      if (figure.he) {
-        parts.he = new HumanChunk({
-          ...this.getFigureOptions('he', figure),
-          direction: head_direction,
-          size: size,
-        })
-      }
-
-      // Drinks Layer
-      if ((action.drk || action.crr) && !action.blw) {
-        parts.ri = new HumanChunk({
-          lib: 'hh_human_item',
-          type: 'ri',
-          action: action.drk ? 'drk' : 'crr',
-          id: (action.drk || action.crr) as string,
-          direction: direction,
-          size: size,
-        })
-      }
-
-      // Signals
-      if (action.sig) {
-        parts.li = new HumanChunk({
-          lib: 'hh_human_item',
-          type: 'li',
-          action: 'sig',
-          id: action.sig as string,
-          direction: direction,
-          size: size,
-        })
+      if (Array.isArray(hiddenlayers)) {
+        parts = parts.filter(p => !hiddenlayers.includes(p.type))
       }
     }
 
-    // Speak
-    if (action.spk) {
-      for (const type of ['hd', 'fc']) {
-        if (parts[type]) {
-          parts[type].action = 'spk'
-          parts[type].frame = this.normalizeFrameNumber(parts[type], frame)
-        }
-      }
+    for (const headPart of this.getActivePartsets(parts, 'head')) {
+      headPart.direction = props.head_direction
     }
 
-    // Walk
-    if (action.wlk) {
-      for (const type of ['bd', 'lh', 'rh']) {
-        if (parts[type]) {
-          parts[type].action = 'wlk'
-          parts[type].frame = this.normalizeFrameNumber(parts[type], frame)
-        }
-      }
+    const hrAction = props.gesture === 'blw' ? 'blw' : props.action.crr ? 'crr' : props.action.drk ? 'drk' : 'std'
+
+    for (const handRight of this.getActivePartsets(parts, 'handRight')) {
+      handRight.action = hrAction
     }
 
-    // Sit
-    if (action.sit) {
-      for (const type of ['bd']) {
-        if (parts[type]) parts[type].action = 'sit'
-      }
+    const hlAction =
+      props.gesture === 'respect'
+        ? 'respect'
+        : props.gesture === 'wav'
+        ? 'wav'
+        : props.action.crr
+        ? 'crr'
+        : props.action.sig
+        ? 'sig'
+        : 'std'
+
+    for (const handLeft of this.getActivePartsets(parts, 'handLeft')) {
+      handLeft.action = hlAction
     }
 
-    // Lay
-    if (action.lay) {
-      for (const type of ['bd', 'hd', 'lh', 'rh', 'fc', 'ey', 'hr', 'ha', 'he', 'ea']) {
-        if (parts[type]) parts[type].action = 'lay'
-      }
-    }
+    const actionName = props.action.sit ? 'sit' : 'std'
+    const order = this.draworder[actionName][props.direction]
 
-    // Right Items
-    if (action.crr) {
-      for (const type of ['rh']) {
-        if (parts[type]) {
-          parts[type].action = 'crr'
-          parts[type].frame = 0
-        }
-      }
-    }
+    return parts.sort((a, b) => {
+      const aIndex = order.indexOf(a.type)
+      const bIndex = order.indexOf(b.type)
 
-    // Drinks
-    if (action.drk) {
-      for (const type of ['rh']) {
-        if (parts[type]) {
-          parts[type].action = 'drk'
-          parts[type].frame = 0
-        }
-      }
-    }
-
-    // Signal
-    if (action.sig) {
-      gesture = 'std'
-      for (const type of ['lh']) {
-        if (parts[type]) {
-          parts[type].action = 'sig'
-          parts[type].frame = 0
-        }
-      }
-    }
-
-    // Wave
-    if (gesture === 'wav') {
-      for (const type of ['lh']) {
-        if (parts[type]) {
-          parts[type].action = 'wav'
-          parts[type].frame = this.normalizeFrameNumber(parts[type], frame)
-        }
-      }
-    } else if (['sml', 'agr', 'srp', 'sad'].includes(gesture)) {
-      for (const type of ['ey', 'fc']) {
-        if (parts[type]) {
-          parts[type].action = gesture
-          parts[type].frame = this.normalizeFrameNumber(parts[type], frame)
-        }
-      }
-    }
-
-    // Blow
-    if (action.blw) {
-      for (const type of ['rh']) {
-        if (parts[type]) {
-          parts[type].action = 'blw'
-          parts[type].frame = this.normalizeFrameNumber(parts[type], frame, 4)
-        }
-      }
-    }
-
-    // Eye Blink
-    if (action.eyb) {
-      for (const type of ['ey']) {
-        if (parts[type]) {
-          parts[type].action = 'eyb'
-          parts[type].frame = this.normalizeFrameNumber(parts[type], frame, 4)
-        }
-      }
-    }
-
-    return parts
+      return aIndex < 0 || bIndex < 0 ? 0 : aIndex - bIndex
+    })
   }
 
-  renderParts(parts: Record<string, HumanChunk>, cacheName: string) {
-    const { app } = Game.current
-    const { resources } = app.loader
-    const {
-      draworder: { data: drawOrder },
-    } = resources
-    let drawAction: string
-
-    if (parts.bd) {
-      if (parts.bd.action === 'sit') {
-        drawAction = 'sit'
-      } else if (parts.bd.action === 'lay') {
-        drawAction = 'lay'
-      }
-    }
-
-    if (parts.lh) {
-      if (['sig', 'crr', 'wav'].includes(parts.lh.action)) {
-        drawAction = drawAction ? `${drawAction}.lh-up` : 'lh-up'
-      }
-    }
-
-    if (parts.rh) {
-      if (['drk', 'crr', 'blw'].includes(parts.rh.action) && !/lh-up$/.test(drawAction)) {
-        drawAction = drawAction ? `${drawAction}.rh-up` : 'rh-up'
-      }
-    }
-
-    drawAction = drawAction || 'std'
-
-    // Render
-    const g = new PIXI.Container()
-    const fallbackDrawAction = drawOrder[drawAction.split('.')[0]] || drawOrder.std
-    const order = drawOrder[drawAction] || fallbackDrawAction
-
-    if (!order) return PIXI.Texture.EMPTY
-
-    const orderDirection =
-      order[parts.bd.direction] || fallbackDrawAction[parts.bd.direction] || drawOrder.std[parts.bd.direction]
-
-    if (!orderDirection) return PIXI.Texture.EMPTY
-
-    const rect = new PIXI.Rectangle(9, -79, 39, 86);
-
-    for (const type of orderDirection) {
-      if (parts[type]) {
-        const part = parts[type]
-        if (!part.texture) console.log(part.filename, part.spritesheet)
-        const sprite = new PIXI.Sprite(part.texture)
-        const spritesheet = part.spritesheet;
-        const offset = spritesheet ? spritesheet.data.meta.offset[part.filename] : { x: 0, y: 0 }
-
-        if (offset) sprite.pivot.set(Number(offset.x), Number(offset.y))
-        sprite.tint = part.tint
-
-        g.addChild(sprite)
-      }
-    }
-
-    return (this.textureCache[cacheName] = app.renderer.generateTexture(
-      g,
-      SCALE_MODES.NEAREST,
-      1,
-      rect,
-    ))
+  async createAnimation(props) {
+    return [await this.render(props)]
   }
 
-  getResources(parts: Record<string, HumanChunk>) {
+  getResources(parts: HumanChunk[]) {
     return Object.values(parts)
+      .flat()
+      .filter(p => !p.libLoaded)
       .map(p => p.lib)
-      .filter(lib => lib && !Game.current.app.loader.resources[lib])
-  }
-
-  async createAnimation(props: Partial<HumanImagerProps>) {
-    const cacheName = this.createCacheName(props, [
-      ...(props.is_ghost ? [] : ['figure']),
-      'action',
-      'size',
-      'gesture',
-      'head_direction',
-      'direction',
-    ])
-
-    if (cacheName in this.animationCache) return this.animationCache[cacheName]
-
-    const parts = this.createParts(props)
-    const maxFrameCount = Object.values(parts).reduce((max, part) => max + part.animation.length, 1)
-    const animation = new Array(maxFrameCount).fill(null).map((_, frame) =>
-      this.generateTexture({
-        ...props,
-        frame,
-      }),
-    )
-
-    return (this.animationCache[cacheName] = await Promise.all(animation))
   }
 }

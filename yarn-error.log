@@ -1,11 +1,11 @@
 Arguments: 
-  /usr/bin/node /usr/share/yarn/bin/yarn.js add @pixi/pixi.js
+  /usr/bin/node /usr/share/yarn/bin/yarn.js add -D @types/gstats
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/snap/bin:/opt/flutter/bin:/home/sallon/.npm-global/bin:/home/sallon/Android/Sdk/platform-tools:/home/sallon/Android/Sdk/emulator:/home/sallon/Android/Sdk/tools/bin:/opt/flutter/bin:/home/sallon/.npm-global/bin:/home/sallon/Android/Sdk/platform-tools:/home/sallon/Android/Sdk/emulator:/home/sallon/Android/Sdk/tools/bin
 
 Yarn version: 
-  1.19.1
+  1.19.2
 
 Node version: 
   10.17.0
@@ -14,13 +14,13 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@pixi%2fpixi.js: Not found
-      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66926:18)
-      at Request.self.callback (/usr/share/yarn/lib/cli.js:140564:22)
+  Error: https://registry.yarnpkg.com/@types%2fgstats: Not found
+      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66927:18)
+      at Request.self.callback (/usr/share/yarn/lib/cli.js:140586:22)
       at Request.emit (events.js:198:13)
-      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:141536:10)
+      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:141558:10)
       at Request.emit (events.js:198:13)
-      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:141458:12)
+      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:141480:12)
       at Object.onceWrapper (events.js:286:20)
       at IncomingMessage.emit (events.js:203:15)
       at endReadableNT (_stream_readable.js:1143:12)
@@ -50,7 +50,9 @@ npm manifest:
       "commitizen": "^4.0.3",
       "css-loader": "^3.2.0",
       "cz-conventional-changelog": "3.0.2",
+      "dotenv": "^8.2.0",
       "file-loader": "^4.2.0",
+      "gstats": "^0.1.0",
       "html-webpack-plugin": "^3.2.0",
       "husky": "^3.0.5",
       "ts-loader": "^6.2.1",
@@ -1951,6 +1953,11 @@ Lockfile:
       dom-serializer "0"
       domelementtype "1"
   
+  dotenv@^8.2.0:
+    version "8.2.0"
+    resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+    integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
+  
   duplexify@^3.4.2, duplexify@^3.6.0:
     version "3.7.1"
     resolved "https://registry.yarnpkg.com/duplexify/-/duplexify-3.7.1.tgz#2a4df5317f6ccfd91f86d6fd25d8d8a103b88309"
@@ -2641,6 +2648,11 @@ Lockfile:
     version "4.2.2"
     resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.2.tgz#6f0952605d0140c1cfdb138ed005775b92d67b02"
     integrity sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
+  
+  gstats@^0.1.0:
+    version "0.1.0"
+    resolved "https://registry.yarnpkg.com/gstats/-/gstats-0.1.0.tgz#75129cdce9cdb4508279dd2decdd5c34920d8d4b"
+    integrity sha512-4PieOEZT1uPRsGRCXHz3Wu/N1za7fMGFHmjO8SYrsgBESGz3nAW5b5ImP0zojgj85IvvSfKqV2H5+XRA7LX1DA==
   
   handle-thing@^2.0.0:
     version "2.0.0"

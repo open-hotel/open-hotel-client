@@ -1,113 +1,146 @@
-type ObservableListener = (newValue: any, oldValue: any, key: string) => any
+import { isObject } from "./util/Util";
 
-export type IObservable<T> = T & Observable<T>
+export type IObservable<T extends object> = T & Observable<T>;
+type ObservableListener<T extends object> = (
+  obs: T,
+  oldState: [string | string[], any][]
+) => void;
 
-const $state: unique symbol = Symbol()
-const $key: unique symbol = Symbol()
-const $parent: unique symbol = Symbol()
-const $listeners: unique symbol = Symbol()
+interface ObservableMeta<T extends object> {
+  listenners: {
+    properties?: string[];
+    handler: ObservableListener<T>;
+  }[];
+  parentObservable: Observable;
+  parentKey: string;
+  state: T;
+}
 
-export class Observable<T = any> {
-  private readonly [$key]: string
-  private readonly [$parent]: Observable
-  private readonly [$state]: any
-  private [$listeners]: {
-    prop: string
-    fn: ObservableListener
-  }[]
+export class Observable<T extends object = object> {
+  private static meta = new WeakMap<object, ObservableMeta<any>>();
 
-  constructor(state: T, _parent?: Observable, key?: string) {
-    Object.defineProperties(this, {
-      [$state]: {
-        value: { ...state },
-        enumerable: false,
-        configurable: false,
-        writable: false,
-      },
-      [$listeners]: {
-        value: [],
-        enumerable: false,
-        configurable: false,
-        writable: false,
-      },
-      [$key]: {
-        value: key,
-        configurable: false,
-        enumerable: false,
-        writable: false,
-      },
-      [$parent]: {
-        value: _parent,
-        configurable: false,
-        enumerable: false,
-        writable: false,
-      },
-    })
+  private static register(
+    obs: Observable,
+    parentObservable?: Observable,
+    parentKey?: string
+  ) {
+    if (this.meta.has(obs)) return;
+    this.meta.set(obs, {
+      listenners: [],
+      parentObservable: parentObservable,
+      parentKey: parentKey,
+      state: {}
+    });
+  }
 
-    for (let k in state) {
-      this.$set(k, this[$state][k])
+  private static getMeta(obs: Observable) {
+    const meta = this.meta.get(obs);
+    if (!meta) throw new ReferenceError("Observable not exists!");
+    return meta;
+  }
+
+  static subscribe<T extends Observable>(
+    obs: T,
+    ...listeners: ObservableListener<T>[]
+  ) {
+    const meta = this.getMeta(obs);
+
+    meta.listenners.push(
+      ...listeners.map(listener => ({
+        properties: null,
+        handler: listener
+      }))
+    );
+
+    this.meta.set(obs, meta);
+  }
+
+  static notify(obs: Observable, oldState: [string | string[], any][]) {
+    const meta = this.getMeta(obs);
+    const old = meta.parentObservable
+      ? oldState
+      : oldState.map<[string, any]>(([key, value]) => [
+          (key as string[]).join("."),
+          value
+        ]);
+
+    meta.listenners.forEach(listener => {
+      if (
+        !listener.properties ||
+        listener.properties.find(k => {
+          if (Array.isArray(old[0])) {
+            return old[0].includes(k);
+          }
+          return old[0] === k;
+        })
+      ) {
+        return listener.handler(obs, old);
+      }
+    });
+
+    if (meta.parentObservable) {
+      const oldStatePath = oldState.map(state => {
+        state[0] = [meta.parentKey].concat(state[0]);
+        return state;
+      });
+
+      this.notify(meta.parentObservable, oldStatePath);
     }
   }
-  $set(k: string, v: any) {
-    const old = this[$state][k]
-    this[$state][k] = v
 
-    if (v && v.constructor === Object) {
-      this[$state][k] = Observable.create<typeof v>(v, this, k)
+  static set(obs: Observable, state: object, notify = true) {
+    const meta = this.getMeta(obs);
+    const old = [];
+
+    for (let [key, value] of Object.entries(state)) {
+      if (isObject(value)) {
+        value = new Observable(value, obs, key);
+      }
+      // Define new properties
+      if (!(key in obs)) {
+        Object.defineProperty(obs, key, {
+          enumerable: true,
+          set(v) {
+            Observable.set(obs, { [key]: v });
+          },
+          get() {
+            return Observable.getState(obs)[key];
+          }
+        });
+      }
+      meta.state[key] = value;
+      old.push([[key], value]);
     }
-    if (!(k in this)) {
-      Object.defineProperty(this, k, {
-        enumerable: true,
-        get() {
-          return this[$state][k]
-        },
-        set(v) {
-          console.log('SET', k, v)
-          const old = this[$state][k]
-          this.$set(k, v)
-          this.notify(k, v, old)
-        },
-      })
-      this.notify(k, v, old)
-    }
+
+    this.meta.set(obs, meta);
+    if (notify) this.notify(obs, old);
   }
 
-  notify(key: any, value: any, oldValue: any) {
-    if (value === oldValue) return;
-    
-    this[$listeners].forEach(listener => {
-      if (listener.prop === null || listener.prop === key) listener.fn(value, oldValue, key)
-    })
-
-    if (this[$key] && this[$parent]) {
-      this[$parent].notify(`${this[$key]}.${key}`, value, oldValue)
-    }
+  private static getState(obs: Observable) {
+    const meta = this.getMeta(obs);
+    return meta && meta.state;
   }
 
-  addListener(fn: ObservableListener) {
-    this[$listeners].push({
-      prop: null,
-      fn: fn,
-    })
-
-    return this
+  static watch<T extends Observable>(
+    obs: T,
+    properties: string[],
+    ...listeners: ObservableListener<T>[]
+  ) {
+    const meta = this.getMeta(obs);
+    meta.listenners.push(
+      ...listeners.map(listener => ({
+        properties: properties,
+        handler: listener
+      }))
+    );
   }
 
-  watch(key: any, fn: ObservableListener) {
-    this[$listeners].push({
-      prop: key,
-      fn: fn,
-    })
-
-    return this
+  constructor(state: T, parentObservable?: Observable, parentKey?: string) {
+    Observable.register(this, parentObservable, parentKey);
+    Observable.set(this, state, false);
   }
 
-  removeAllListeners () {
-    this[$listeners] = []
-    return this
-  }
-
-  static create<T>(state: T, parent?: Observable<any>, parentKey?: string): IObservable<T> {
-    return new Observable<T>(state, parent, parentKey) as IObservable<T>
+  static create<T extends object>(state: T) {
+    return new Observable(state) as T;
   }
 }

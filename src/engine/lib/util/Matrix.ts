@@ -23,6 +23,8 @@ const defaultSerializeOptions = {
 
 type SerializeOptions = typeof defaultSerializeOptions
 
+const HEIGHTS = 'x0123456789abcdefghijklmnopqrstuvwyz'
+
 export class Matrix<T = any> {
   constructor(
     public width: number = 3,
@@ -39,7 +41,7 @@ export class Matrix<T = any> {
     }
   }
 
-  *columnsEntries() {
+  *columnsEntries(): Generator<[number, T[]]> {
     for (let i = 0; i < this.width; i++) {
       yield [i, this.getCol(i)]
     }
@@ -368,5 +370,29 @@ export class Matrix<T = any> {
     return `[Matrix ${this.width}x${this.height}] {\n  ${this.mapRows(v => v.map(v => String(v || 0)).join(' ')).join(
       '\n  ',
     )}\n}`
+  }
+
+  static fromLegacyString<T extends number>(map: string) {
+    map = map.replace(new RegExp(`[^${HEIGHTS}\n]|^\n+|\n+$`, 'gm'), '');
+    const { data, cols, rows } = [...map].reduce((acc, char) => {
+      if (char === '\n') {
+        acc.rowCol = 0
+        acc.rows++
+      } else {
+        const i = HEIGHTS.indexOf(char) as T
+        
+        acc.data.push(i)
+        acc.cols = Math.max(acc.cols, ++acc.rowCol)
+        acc.rows = Math.max(1, acc.rows)
+      }
+      return acc
+    }, {
+      data: [] as T[],
+      cols: 0,
+      rowCol: 0,
+      rows: 0
+    })
+
+    return Matrix.from<T>(data, cols, rows)
   }
 }

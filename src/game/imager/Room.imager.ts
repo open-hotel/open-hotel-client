@@ -23,6 +23,8 @@ function createStairSteps(cb: Function, thickness: number = DEFAULT_THICKNESS) {
 }
 
 export class RoomImager {
+  wallsCache: Record<string, PIXI.Texture> = {}
+
   generateFloorTileTexture (thickness: number = DEFAULT_THICKNESS) {
     const floor = new Cube({
       depth: 32,
@@ -192,11 +194,24 @@ export class RoomImager {
     return Application.get().renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
-  generateWallTexture (height:number, direction: number, door = false, thickness = 8, conner = false) {
-    if (door) height -= 88
+  generateWallTexture (
+    direction: number,
+    width = 32,
+    height = 100,
+    door = false,
+    thickness = 8,
+    conner = false
+  ) {
+    const cacheName = [direction, width, height, door, thickness, conner].join('_')
+    if (cacheName in this.wallsCache) return this.wallsCache[cacheName]
+
+    if (door) {
+      height -= 80
+    }
 
     const cubeOptions: CubeOptions = {
       height: height,
+      position: new Vector3(0, 0, 0),
       colors: {
         top: 0x6f717a,
         front: 0x9597a3,
@@ -211,7 +226,7 @@ export class RoomImager {
       walls.addChild(
         new Cube({
           ...cubeOptions,
-          position: new Vector3(0, 0, 0),
+          position: new Vector3(0, -thickness, 0),
           width: thickness,
           depth: thickness,
         })
@@ -222,8 +237,7 @@ export class RoomImager {
       walls.addChild(
         new Cube({
           ...cubeOptions,
-          position: new Vector3(40, 0, 20),
-          width: 32,
+          width: width,
           depth: thickness,
         })
       )
@@ -233,17 +247,13 @@ export class RoomImager {
       walls.addChild(
         new Cube({
           ...cubeOptions,
-          position: new Vector3(0, 8, 0),
           width: thickness,
-          depth: 32,
+          depth: width,
         })
       )
     }
 
-    // if (direction < walls.children.length) walls.children[direction].alpha = 0
-    // if (!conner) walls.children[1].alpha = 0
-
-    return Application.get().renderer.generateTexture(walls, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    return this.wallsCache[cacheName] = Application.get().renderer.generateTexture(walls, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
   generateFloorSelectionTexture () {

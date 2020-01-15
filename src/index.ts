@@ -6,6 +6,7 @@ import { RoomModel, RoomFloorHeight } from './game/room/Room.model'
 import { Viewport } from 'pixi-viewport'
 import resources from '../todo/stages/preload'
 import { Human } from './game/users/human/Human'
+import { Figure, Action } from './game/imager/human/Human.imager'
 
 // import Vue from 'vue'
 // import App from './ui/App.vue'
@@ -32,33 +33,34 @@ function mapObject(obj: any, fn: Function, path: string[] = []) {
 }
 
 class RoomScene extends Scene {
-  map = Matrix.from<RoomFloorHeight>([
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-  ])
+  map = Matrix.fromLegacyString<RoomFloorHeight>(`
+  xxxxxxxxxxxxxxxxxxxxxxxxx
+  xxxxxxxxxxx33333333333333
+  xxxxxxxxxxx33333333333333
+  xxxxxxxxxxx33333333333333
+  xxxxxxxxxx333333333333333
+  xxxxxxxxxxx33333333333333
+  xxxxxxxxxxx33333333333333
+  xxxxxxx333333333333333333
+  xxxxxxx333333333333333333
+  xxxxxxx333333333333333333
+  xxxxxxx333333333333333333
+  xxxxxxx333333333333333333
+  xxxxxxx333333333333333333
+  x4444433333xxxxxxxxxxxxxx
+  x4444433333xxxxxxxxxxxxxx
+  x44444333333222xx000000xx
+  x44444333333222xx000000xx
+  xxx44xxxxxxxx22xx000000xx
+  xxx33xxxxxxxx11xx000000xx
+  xxx33322222211110000000xx
+  xxx33322222211110000000xx
+  xxxxxxxxxxxxxxxxx000000xx
+  xxxxxxxxxxxxxxxxx000000xx
+  xxxxxxxxxxxxxxxxx000000xx
+  xxxxxxxxxxxxxxxxx000000xx
+  xxxxxxxxxxxxxxxxxxxxxxxxx
+`)
 
   camera = new Viewport().drag({ wheelScroll: 0 }).wheel({
     reverse: false,
@@ -75,8 +77,9 @@ class RoomScene extends Scene {
       // })
       
       this.$app.loader
-        .add('figuremap', 'raw/figuremap.json')
-        .add('figuredata', 'raw/figuredata.json')
+        .add('figuremap', 'dist/figuremap.json')
+        .add('figuredata', 'dist/figuredata.json')
+        .add('partsets', 'dist/partsets.json')
         .add('draworder', 'raw/draworder.json')
         ;
       for (const lib of [
@@ -91,43 +94,15 @@ class RoomScene extends Scene {
   }
 
   ready() {
-    const figure = {
-      hd: {
-        id: '1',
-        color: '1'
-      },
-      // ea: {
-      //   id: '6',
-      //   color: '1'
-      // },
-      ey: {
-        id: '1',
-      },
-      hr: {
-        id: '1',
-        color: '1'
-      },
-      he: {
-        id: '2'
-      },
-      fc: {
-        id: '1',
-        color: '1'
-      },
-      ha: {
-        id: '6',
-        color: '1'
-      }
-    };
-
+    const d = 2;
     const human = new Human({
-      action: {
-        spk: false
+      action:{
+        'std': true
       },
-      figure: figure,
-      direction: 2,
-      head_direction: 2,
-      frame: 1,
+      figure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
+      direction: d,
+      head_direction: d,
+      frame: 0,
       is_ghost: false
     })
 
@@ -135,7 +110,7 @@ class RoomScene extends Scene {
     
     this.$app.scene.addChild(this.camera)
     
-    Game.current.setCurrentRoom(new RoomModel(this.map, 3, 0))
+    Game.current.setCurrentRoom(new RoomModel(this.map, 10, 4))
     
     this.camera.addChild(Game.current.currentRoom.engine.container)
     this.camera.addChild(human)

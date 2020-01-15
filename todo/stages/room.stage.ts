@@ -179,26 +179,3 @@ export class RoomStage extends Scene {
     this.setupFloor()
   }
 }
-
-interface ObjProps {
-  x: number
-  y: number
-  pessoa: {
-    nome: string
-    idade: number
-  }
-}
-const obj = Observable.create<ObjProps>({
-  x: 0,
-  y: 0,
-  pessoa: {
-    nome: null,
-    idade: null,
-  },
-})
-
-obj.addListener((_: any, __: any, path: any) => console.log('ALTEROU %s', path))
-obj.watch('x', (n: any, old: any) => console.log('O X Mudou de %s para %s!', old, n))
-
-//@ts-ignore
-window.obj = obj
