@@ -6,6 +6,7 @@ import Room from './room/Room'
 import { RoomModel } from './room/Room.model'
 import { SoundManager } from './sound/Sound.manager'
 import { GameSounds } from './sound/GameSounds'
+import { Log } from '../engine/lib/Logger'
 
 export class Game {
   static current: Game
@@ -14,7 +15,7 @@ export class Game {
   
   net = new NetworkManager({
     game: this,
-    url: 'http://localhost:3000',
+    url: 'http://localhost:3000/game?auth_ticket=da855ec8-4ad5-4a92-8b55-c6fcc6c1f0a5',
     gateways: [GenericGateway],
   })
 
@@ -34,6 +35,7 @@ export class Game {
       debug: true,
       resizeTo: canvas.parentElement,
       resolution: window.devicePixelRatio || 1,
+      logLevel: Log.WARN
     })
 
     Game.current = this

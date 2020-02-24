@@ -4,9 +4,11 @@ import { Scene } from './engine/lib/Scene'
 import { Matrix } from './engine/lib/util/Matrix'
 import { RoomModel, RoomFloorHeight } from './game/room/Room.model'
 import { Viewport } from 'pixi-viewport'
-import resources from '../todo/stages/preload'
 import { Human } from './game/users/human/Human'
-import { Figure, Action } from './game/imager/human/Human.imager'
+import { Action } from './game/imager/human/action.util'
+import { Figure } from './game/imager/human/figure.util'
+import { Sprite } from 'pixi.js'
+import { HumanFigureProps } from './game/imager/human/Human.imager'
 
 // import Vue from 'vue'
 // import App from './ui/App.vue'
@@ -69,53 +71,112 @@ class RoomScene extends Scene {
 
   setup() {
     this.$app.loader.baseUrl = process.env.RESOURCES_BASE
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       // mapObject(resources, (filename: string, path: string[]) => {
       //   const id = path.join('/')
       //   const url = ['resources', id, filename].join('/')
       //   this.$app.loader.add(id, url)
       // })
-      
+
       this.$app.loader
         .add('figuremap', 'dist/figuremap.json')
         .add('figuredata', 'dist/figuredata.json')
         .add('partsets', 'dist/partsets.json')
-        .add('draworder', 'raw/draworder.json')
-        ;
-      for (const lib of [
-        'hh_human_body',
-      ]) {
-        this.$app.loader.add(lib, `dist/${lib}/${lib}.json`)
-      }
-  
+        .add('draworder', 'dist/draworder.json')
+        .add('avatarActions', 'dist/HabboAvatarActions.json')
+        .add('geometry', 'dist/geometry.json')
+        .add('animations', 'dist/animations.json')
+
       this.$app.loader.once('complete', resolve)
       this.$app.loader.load()
     })
   }
 
-  ready() {
-    const d = 2;
-    const human = new Human({
-      action:{
-        'std': true
-      },
-      figure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
-      direction: d,
-      head_direction: d,
-      frame: 0,
+  async ready() {
+    const sleep = time => new Promise((resolve) => setTimeout(resolve, time));
+    const state: HumanFigureProps = {
+      actions: Action.decode('mv,wave'),
+      figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
+      // figure: Figure.decode('hd-180-1'),
+      direction: 2,
+      head_direction: 2,
       is_ghost: false
+    }
+
+    const sprite = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
+    sprite.animationSpeed = 0.2;
+    sprite.name = "mizerave"
+    
+    sprite.textures = await Game.current.imager.human.getAnimation(state);
+    this.addChild(sprite)
+
+    async function changeHead (v = 1) {
+      state.head_direction += v;
+      
+      if (state.head_direction > 7) {
+        state.head_direction = 0;
+      } else if (state.head_direction < 0) {
+        state.head_direction = 7;
+      }
+      
+      sprite.textures = await Game.current.imager.human.getAnimation(state);
+    }
+
+    async function changeBody (v = 1) {
+      state.direction += v;
+      
+      if (state.direction > 7) {
+        state.direction = 0;
+      } else if (state.direction < 0) {
+        state.direction = 7;
+      }
+
+      sprite.textures = await Game.current.imager.human.getAnimation(state);
+    }
+
+    async function change () {
+      await changeHead()
+      await changeBody()
+      sprite.play()
+
+    }
+
+    // await change()
+
+    // while (true) {
+    //   await change()
+    //   await sleep(100);
+    // }
+
+    window.addEventListener('keydown', e => {
+      // let dHead = e.key === 'a' ? 1 : e.key === 'd' ? -1 : 0
+      // let dBody = e.key === 'ArrowLeft' ? 1 : e.key === 'ArrowRight' ? -1 : 0
+      // if (dHead) changeHead(dHead)
+      // if (dBody) changeBody(dBody)
+
+      change()
     })
 
-    human.position.set(0, 80)
-    
-    this.$app.scene.addChild(this.camera)
-    
-    Game.current.setCurrentRoom(new RoomModel(this.map, 10, 4))
-    
-    this.camera.addChild(Game.current.currentRoom.engine.container)
-    this.camera.addChild(human)
+    // const human = new Human({
+    //   actions: Action.decode('std'),
+    //   gesture: 'std',
+    //   figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
+    //   direction: d,
+    //   head_direction: d,
+    //   frame: 0,
+    //   is_ghost: false
+    // })
 
-    this.camera.moveCenter(0, 100);
+    // human.position.set(0, 80)
+
+    // this.$app.scene.addChild(this.camera)
+
+    // Game.current.setCurrentRoom(new RoomModel(this.map, 10, 4))
+
+    // this.camera.addChild(Game.current.currentRoom.engine.container)
+    // this.camera.addChild(human)
+
+    // this.camera.moveCenter(0, 100);
   }
 
   init() {}

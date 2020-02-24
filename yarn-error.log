@@ -1,29 +1,29 @@
 Arguments: 
-  /usr/bin/node /usr/share/yarn/bin/yarn.js add -D @types/gstats
+  /usr/bin/node /usr/bin/yarn add promise-async @types/promise-async
 
 PATH: 
-  /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/snap/bin:/opt/flutter/bin:/home/sallon/.npm-global/bin:/home/sallon/Android/Sdk/platform-tools:/home/sallon/Android/Sdk/emulator:/home/sallon/Android/Sdk/tools/bin:/opt/flutter/bin:/home/sallon/.npm-global/bin:/home/sallon/Android/Sdk/platform-tools:/home/sallon/Android/Sdk/emulator:/home/sallon/Android/Sdk/tools/bin
+  /home/sallon/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin:/home/sallon/Android/Sdk/emulator:/home/sallon/Android/Sdk/platform-tools:/opt/flutter/bin
 
 Yarn version: 
-  1.19.2
+  1.21.1
 
 Node version: 
-  10.17.0
+  10.18.1
 
 Platform: 
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fgstats: Not found
-      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66927:18)
-      at Request.self.callback (/usr/share/yarn/lib/cli.js:140586:22)
+  Error: https://registry.yarnpkg.com/@types%2fpromise-async: Not found
+      at Request.params.callback [as _callback] (/usr/lib/node_modules/yarn/lib/cli.js:66947:18)
+      at Request.self.callback (/usr/lib/node_modules/yarn/lib/cli.js:140665:22)
       at Request.emit (events.js:198:13)
-      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:141558:10)
+      at Request.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:141637:10)
       at Request.emit (events.js:198:13)
-      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:141480:12)
+      at IncomingMessage.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:141559:12)
       at Object.onceWrapper (events.js:286:20)
       at IncomingMessage.emit (events.js:203:15)
-      at endReadableNT (_stream_readable.js:1143:12)
+      at endReadableNT (_stream_readable.js:1145:12)
       at process._tickCallback (internal/process/next_tick.js:63:19)
 
 npm manifest: 
@@ -32,7 +32,8 @@ npm manifest:
     "license": "MIT",
     "scripts": {
       "changelog": "conventional-changelog -p angular -r 2 -i CHANGELOG.md -s",
-      "dev": "webpack-dev-server"
+      "dev": "webpack-dev-server",
+      "start": "sh start.sh"
     },
     "config": {
       "commitizen": {

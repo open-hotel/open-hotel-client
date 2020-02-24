@@ -13,15 +13,10 @@ export class Logger {
     base: {
       color: '#333',
       background: '#E0E0E0',
-      padding: '.25em 1em',
+      padding: '0 .5em',
       'border-radius': '1em',
-      'font-size': '.8em',
+      'font-size': '1em',
       width: '64px',
-    },
-    tag: {
-      background: '#2b2b2b',
-      color: 'rgba(255, 255, 255, .82)',
-      margin: '0 .5em',
     },
     [Log.DEBUG]: {
       color: '#555',
@@ -92,10 +87,9 @@ export class Logger {
     if (this.level === Log.OFF || level < this.level) return this
 
     const levelName = this._logLevelsNames[level]
-    const tagStyle = getTagStyle(this._tagStyle, 'tag')
     const levelStyle = getTagStyle(this._tagStyle, level)
 
-    console.log(`%c${context}%c${levelName}`, tagStyle, levelStyle, ...messages)
+    console.log(`%c${context}: ${levelName}`, levelStyle, ...messages)
   }
 
   create(context: string) {

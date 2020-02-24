@@ -16,6 +16,7 @@ export class NetworkManager {
   constructor ({ game, gateways = [], url }) {
     this.game = game
     this.io = io(url)
+    this.io.on('error', e => console.error(e))
     gateways.forEach(g => this.addGateway(g))
   }
 

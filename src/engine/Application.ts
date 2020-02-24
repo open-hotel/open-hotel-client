@@ -33,6 +33,9 @@ interface ApplicationOptions {
   debug?: boolean
 }
 
+
+PIXI.settings.TARGET_FPMS = 20/1000;
+
 export class Application extends PIXI.Application {
   public game: Game
   public readonly $logger = new Logger('Application')
@@ -69,7 +72,7 @@ export class Application extends PIXI.Application {
     this.renderer.autoDensity = true
 
     this.ticker.add(() => Tween.update(this.ticker.lastTime))
-    
+
     if (options.debug) {
       // const pixiHooks = new GStats.PIXIHooks(this);
       // const stats = new GStats.StatsJSAdapter(pixiHooks);

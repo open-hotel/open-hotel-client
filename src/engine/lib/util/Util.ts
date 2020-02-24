@@ -34,3 +34,32 @@ export function mergeDeep(target, ...sources) {
 
   return mergeDeep(target, ...sources);
 }
+
+const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+
+export function mmc(...num:number[]): number {
+  num = Array.from(new Set(num));
+  let mmc = 1;
+
+  while (!num.every(n => n === 1)) {
+    for (let i = 0; i < PRIMES.length; i++) {
+      const p = PRIMES[i];
+      let divide = false;
+
+      num = num.map(n => {
+        if (n !== 1 && n % p === 0) {
+          divide = true;
+          return n / p;
+        }
+        return n;
+      });
+
+      if (divide) {
+        mmc *= p;
+        break
+      }
+    }
+  }
+
+  return mmc
+}
