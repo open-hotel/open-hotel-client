@@ -1,0 +1,86 @@
+{
+  "$comment": "Representa uma animação do avatar",
+  "definitions": {
+    "frame": {
+      "description": "Representa um frame da animação",
+      "additionalProperties": {
+        "description": "Lista de partes e suas propriedades para este frame",
+        "properties": {
+          "number": {
+            "description": "Número do frame da parte",
+            "type": "number"
+          },
+          "repeats": {
+            "description": "Por quantos frames esta parte deve repetir?",
+            "type": "number"
+          },
+          "action": {
+            "description": "Ação",
+            "examples": ["Move", "Laugh", "Respect"],
+            "type": "string"
+          },
+          "assetpartdefinition": {
+            "examples": ["wlk", "sit", "std"],
+            "type": "string"
+          },
+          "dx": {
+            "description": "Deslocamento X",
+            "type": "number"
+          },
+          "dy": {
+            "description": "Deslocamento Y",
+            "type": "number"
+          },
+          "dd": {
+            "description": "Deslocamento da direção",
+            "type": "number"
+          }
+        }
+      }
+    },
+    "animation": {
+      "description": "Representa uma animação",
+      "type": "object",
+      "additionalProperties": {
+        "properties": {
+          "frames": {
+            "type": "array",
+            "description": "Lista de frames da animação",
+            "items": {
+              "$ref": "#/definitions/frame"
+            }
+          },
+          "offsets": {
+            "description": "Representa alterações de posições para partsets de acordo com o frame",
+            "examples": [{ "0": { "lh": [0, 0] } }, [{ "lh": [0, 0] }]],
+            "additionalProperties": {
+              "description": "Representa alterações na posição de partsets neste frame",
+              "type": ["object", "array"],
+              "additionalProperties": {
+                "description": "Representa alterações na posição deste partset neste frame",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "default": 0
+                }
+              },
+              "items": {
+                "type": "object",
+                "additionalProperties": {
+                  "description": "Representa alterações na posição deste partset neste frame",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Representa uma lista de animações do avatar",
+  "$ref": "#/definitions/animation"
+}

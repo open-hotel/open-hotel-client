@@ -29,12 +29,11 @@ interface ApplicationOptions {
   resizeTo?: Window | HTMLElement
   logLevel?: Log | number
   logContext?: string[]
-  websocketServer?: string,
+  websocketServer?: string
   debug?: boolean
 }
 
-
-PIXI.settings.TARGET_FPMS = 20/1000;
+PIXI.settings.TARGET_FPMS = 24 / 1000
 
 export class Application extends PIXI.Application {
   public game: Game
@@ -46,7 +45,10 @@ export class Application extends PIXI.Application {
   public scene: Scene
 
   constructor(options: ApplicationOptions = {}) {
-    super(options)
+    super({
+      ...options,
+      backgroundColor: 0xFF0000
+    })
 
     options = Object.assign(
       {
@@ -77,13 +79,10 @@ export class Application extends PIXI.Application {
       // const pixiHooks = new GStats.PIXIHooks(this);
       // const stats = new GStats.StatsJSAdapter(pixiHooks);
       // const el = stats.stats.dom || stats.stats.domElement
-
       // el.style.position = 'fixed';
       // el.style.top = 0;
       // el.style.right = 0;
-
       // document.body.appendChild(el);
-      
       // this.ticker.add(() => stats.update())
     }
   }
@@ -114,13 +113,26 @@ export class Application extends PIXI.Application {
   }
 
   async getLibs(libs: string[]) {
-    if (!libs.length) return [];
+    if (!libs.length) return []
     return this.getResource(
       libs.reduce((items, l) => {
-        items[l] = `dist/${l}/${l}.json`
+        items[l] = `${l}/${l}.json`
         return items
       }, {}),
-    );
+    )
+  }
+
+  queueLoader(...args) {
+    return new Promise((resolve, reject) => {
+      if (this.loader.loading) {
+        this.loader.once('error', resolve)
+        this.loader.once('complete', () => {
+          resolve(this.loader.add(...args))
+        })
+      } else {
+        resolve(this.loader.add(...args))
+      }
+    })
   }
 
   /**
@@ -140,14 +152,14 @@ export class Application extends PIXI.Application {
   getResource(items: { [key: string]: string })
   getResource(idOrArrayOrObject: string | string[] | { [key: string]: string }) {
     const loader = this.loader
-    
+
     return new Promise((resolve, reject) => {
       // String
       if (typeof idOrArrayOrObject === 'string') {
         if (loader.resources[idOrArrayOrObject]) {
           return resolve(loader.resources[idOrArrayOrObject])
         }
-        loader.add(idOrArrayOrObject, idOrArrayOrObject, {}, res => {
+        this.queueLoader(idOrArrayOrObject, idOrArrayOrObject, {}, res => {
           if (res.name === idOrArrayOrObject) resolve(res[idOrArrayOrObject])
         })
       }
@@ -157,27 +169,26 @@ export class Application extends PIXI.Application {
         let count = idOrArrayOrObject.length
         const resources = idOrArrayOrObject.filter(k => !loader.resources[k])
         resources.forEach(res => {
-          loader.add(res, {}, (r) => {
+          this.queueLoader(res, {}, r => {
             if (r.name === res && --count === 0) {
               resolve(idOrArrayOrObject.map(r => loader.resources[r]))
             }
           })
         })
       }
-      
+
       // Objects
       else if (typeof idOrArrayOrObject === 'object') {
-        
         const entries = Object.entries(idOrArrayOrObject)
-        
+
         let count = entries.length
-        let hasResourcesToLoad = false;
-        
+        let hasResourcesToLoad = false
+
         for (const [key, url] of entries) {
           if (loader.resources[key]) continue
-          hasResourcesToLoad = true;
-          loader.add(key, url, {}, (r) => {
-            if (r.name === key) count--;
+          hasResourcesToLoad = true
+          this.queueLoader(key, url, {}, r => {
+            if (r.name === key) count--
             if (count <= 0) {
               const resources = entries.reduce((obj, [k]) => {
                 obj[k] = loader.resources[k]

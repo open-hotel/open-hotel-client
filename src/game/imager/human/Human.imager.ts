@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import async from 'promise-async'
-import merge from 'lodash.merge'
+import { mergeWith } from 'lodash'
 
 import { Game } from '../../Game'
 import { HumanPart, calcFlip } from './HumanPart'
@@ -29,14 +29,18 @@ interface FigureRenderOptions {
 }
 
 export interface FigureAnimationFrame {
-  number: number
+  frame: number
   repeats?: number
   action?: string
+  assetpartdefinition?: string
+  dx?: number
+  dy?: number
+  dd?: number
 }
 
 export interface FigureAnimation {
   frames: Record<string, FigureAnimationFrame>[]
-  offsets?: { dx: number; dy: number }
+  offsets?: Array<{ dx: number; dy: number }>
 }
 
 export class HumanImager {
@@ -70,6 +74,10 @@ export class HumanImager {
 
   get animations() {
     return this.getData('animations')
+  }
+
+  get effectmap() {
+    return this.getData('effectmap')
   }
 
   private get actionsTranslator() {
@@ -136,16 +144,13 @@ export class HumanImager {
     return Game.current.app.getLibs([...libs])
   }
 
-  createPartList(props: HumanFigureProps): FigureRenderOptions {
+  createPartList(props: HumanFigureProps): FigurePartList {
     props = Object.assign(props, {
       size: props.size || 'h',
     })
 
     const partList: FigurePartList = {}
     const head = new Set<string>(this.partsets.activePartSets.head)
-
-    let drawOrderName = 'std'
-    let drawOrderAction: string
 
     for (const [type, { id, colors }] of Object.entries(props.figure)) {
       const setType = this.getSetType(type, id)
@@ -175,107 +180,91 @@ export class HumanImager {
       }
     }
 
-    const state = new Set()
-
-    // Actions
-    for (const [action, value] of Object.entries(props.actions).sort(([a], [b]) => {
-      const actionA = this.avatarActions[this.actionsTranslator[a]]
-      const actionB = this.avatarActions[this.actionsTranslator[b]]
-      const precedenceA = actionA ? actionA.precedence : 0
-      const precedenceB = actionB ? actionB.precedence : 0
-      return precedenceB - precedenceA
-    })) {
-      const animationName = this.actionsTranslator[action]
-      const actionDef = this.avatarActions[animationName]
-      if (!actionDef) continue
-      const prevents: string[] = actionDef.prevents ? actionDef.prevents.split(',') : []
-
-      if (prevents.some(s => state.has(s))) continue
-
-      state.add(animationName)
-
-      if (actionDef.state) {
-        state.add(actionDef.state)
-        if (actionDef.state === 'fx') {
-          state.add(actionDef.state + '.' + value)
-        }
-      }
-
-      if (actionDef.state === 'sign' && typeof value == 'string') {
-        partList.li = [
-          new HumanPart({
-            lib: 'hh_human_item',
-            type: 'li',
-            id: value,
-            direction: head.has('li') ? props.head_direction : props.direction,
-          }),
-        ]
-      } else if ((actionDef.state === 'cri' || actionDef.state === 'usei') && typeof value == 'string') {
-        partList.ri = [
-          new HumanPart({
-            lib: 'hh_human_item',
-            type: 'ri',
-            id: actionDef.params[value],
-            direction: head.has('ri') ? props.head_direction : props.direction,
-          }),
-        ]
-      }
-
-      if (actionDef.state === 'lay') {
-        drawOrderName = 'lay'
-      } else if (actionDef.state === 'std') {
-        drawOrderName = 'std'
-      }
-
-      if (actionDef.activepartset) {
-        for (const part of this.getActivePartset(partList, actionDef.activepartset)) {
-          part.action = actionDef.assetpartdefinition
-        }
-
-        if (actionDef.activepartset === 'sit') {
-          drawOrderName = 'sit'
-        } else if (actionDef.activepartset === 'handRight' || actionDef.activepartset === 'handRightAndHead') {
-          drawOrderAction = 'lh-up'
-        } else if (actionDef.activepartset === 'handLeft' || actionDef.activepartset === 'handLeftAndHead') {
-          drawOrderAction = 'lh-up'
-        }
-      }
-    }
-
-    if (drawOrderAction) {
-      drawOrderName = drawOrderName === 'std' ? drawOrderAction : drawOrderName + '.' + drawOrderAction
-    }
-
-    return {
-      parts: partList,
-      geometry: this.getGeometry('vertical', 'h'),
-      drawOrder: {
-        type: drawOrderName,
-        direction: props.direction,
-      },
-    }
+    return partList
   }
 
   private getDrawOrder(name: string, direction: string | number): string[] {
     const order = this.draworder[name] && this.draworder[name][direction]
-    if (!order) {
-      console.warn(`Draworder ${name}[${direction}] not found!`)
-    }
 
     return order
   }
 
-  async render({ parts, drawOrder, geometry }: FigureRenderOptions) {
+  private getRenderOptions(actions: any[], props: HumanFigureProps) {
+    const lastAction = actions[actions.length - 1]
+    const isFlipDirection = calcFlip(props.direction) !== props.direction
+    let type = []
+
+    if (props.actions.sit) type.push('sit')
+    else if (props.actions.lay) type.push('lay')
+
+    if (new Set(['handLeft', 'handLeftAndHead']).has(lastAction.activepartset)) {
+      type.push(isFlipDirection ? 'rh-up' : 'lh-up')
+    }
+
+    if (new Set(['handRight', 'handRightAndHead']).has(lastAction.activepartset)) {
+      type.push(isFlipDirection ? 'lh-up' : 'rh-up')
+    }
+
+    if (type.length === 0) type = ['std']
+
+    return {
+      geometry: this.getGeometry(lastAction.geometrytype, props.size),
+      drawOrder: {
+        direction: props.direction,
+        type: type.join('.'),
+      },
+    }
+  }
+
+  private getActions(props: HumanFigureProps) {
+    let actions = Object.keys(props.actions)
+      .map(a => this.avatarActions[this.actionsTranslator[a]])
+      .filter(a => a)
+      .sort((a, b) => b.precedence - a.precedence)
+
+    actions.forEach(action => {
+      const prevents = new Set((action.prevents || '').split(','))
+      if (prevents.size > 0) {
+        actions = actions.filter(a => {
+          if (a.state === 'fx') {
+            return !prevents.has([a.state, props.actions.fx].join('.'))
+          }
+          return !prevents.has(a.state)
+        })
+      }
+    })
+
+    return actions
+  }
+
+  async render({ parts, drawOrder, geometry }: FigureRenderOptions): Promise<PIXI.Texture> {
     await this.downloadMissing(parts)
 
-    const container = new PIXI.Graphics()
+    const imageContainer = new PIXI.Graphics()
+    const body = new PIXI.Graphics()
+    const flipedDirection = calcFlip(drawOrder.direction)
 
+    imageContainer.addChild(body)
     // Geometry
 
-    let order =
-      this.getDrawOrder(drawOrder.type, drawOrder.direction) || this.getDrawOrder('std', calcFlip(drawOrder.direction))
-    order.forEach(type => {
-      if (!parts[type]) return
+    let order = this.getDrawOrder(drawOrder.type, drawOrder.direction)
+
+    if (!order && flipedDirection !== drawOrder.direction) {
+      order = this.getDrawOrder(drawOrder.type, flipedDirection)
+    } else {
+      console.log(drawOrder, this.draworder)
+      order = this.getDrawOrder('std', drawOrder.direction) || this.getDrawOrder('std', flipedDirection)
+    }
+
+    const fxParts = Object.keys(parts).filter(p => !order.includes(p)).map(p => {
+      parts[p].forEach(part => {
+        part.isFX = true
+      })
+      return p
+    })
+
+    order.concat(fxParts).forEach(type => {
+      if (!parts[type]) return false
       parts[type].forEach(figurePart => {
         let texture = figurePart.getTexureWith()
         let offset = figurePart.getOffset()
@@ -296,17 +285,25 @@ export class HumanImager {
           }
         }
 
+        if (!texture) {
+          if (figurePart.type === 'rs') {
+            if (figurePart.assetpartdefinition === 'blw') {
+              texture = figurePart.getTexureWith({ assetpartdefinition: 'drk' })
+            }
+          }
+        }
+
         texture =
           texture ||
           figurePart.getTexureWith({
-            action: 'std',
+            assetpartdefinition: 'std',
             frame: 0,
             direction: figurePart.flipedDirection,
           })
 
         offset = offset ||
           figurePart.getOffset({
-            action: 'std',
+            assetpartdefinition: 'std',
             frame: 0,
             direction: figurePart.flipedDirection,
           }) || { x: 0, y: 0 }
@@ -315,89 +312,224 @@ export class HumanImager {
 
         sprite.name = `${type}_${figurePart.id}`
 
-        if (figurePart.color) {
+        if (typeof figurePart.color == 'number') {
           sprite.tint = figurePart.color
+        }
+
+        if (typeof figurePart.ink == 'number') {
+          sprite.filters = (sprite.filters || []).concat([new PIXI.filters.AlphaFilter(figurePart.ink / 100)])
         }
 
         if (isTextureFlipped) {
           sprite.scale.x = -1
-          sprite.pivot.set(geometry.width + offset.x - 22, offset.y - geometry.height + 8)
+          sprite.pivot.set(geometry.width + offset.x - 24, offset.y - geometry.height + 8)
         } else {
           sprite.pivot.set(offset.x, offset.y - geometry.height + 8)
         }
 
-        container.addChild(sprite)
+        sprite.position.set(figurePart.dx, figurePart.dy)
+
+        if (figurePart.isFX) {
+          sprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+          imageContainer.addChild(sprite)
+        }
+        else body.addChild(sprite)
       })
     })
 
-    return Game.current.app.renderer.generateTexture(container, PIXI.SCALE_MODES.NEAREST, 1, geometry)
+    return Game.current.app.renderer.generateTexture(imageContainer, PIXI.SCALE_MODES.NEAREST, 1, geometry)
   }
 
-  getAnimations(props: HumanFigureProps): FigureAnimation[] {
-    return Object.keys(props.actions)
-      .map(a => this.actionsTranslator[a])
-      .filter(a => !!a)
-      .sort((a, b) => {
-        const actionA = this.avatarActions[a]
-        const actionB = this.avatarActions[b]
-        const precedenceA = actionA ? actionA.precedence : 0
-        const precedenceB = actionB ? actionB.precedence : 0
-        return precedenceB - precedenceA
-      })
-      .map(a => this.animations[a])
+  async getAnimations(actions: any[], props: HumanFigureProps): Promise<FigureAnimation[]> {
+    const animations: FigureAnimation[] = []
+    const effects = new Set(['dance', 'fx'])
+
+    for (const action of actions) {
+      if (!action.animation) continue
+
+      let animation: FigureAnimation
+      let animationName = this.actionsTranslator[action.state]
+
+      if (effects.has(action.state)) {
+        if (action.state === 'fx') {
+          const fx = action.types[props.actions.fx as string]
+          if (!fx || fx.animated) continue
+        }
+        const id = props.actions[action.state]
+        animationName = [action.state, id].join('.')
+        const lib = this.effectmap[action.state][animationName]
+        if (!lib) continue
+        const resourceId = `${lib}/animations`
+        const animations = await Game.current.app.getResource({
+          [resourceId]: `${lib}/animations.json`,
+        })
+
+        Object.assign(this.animations, animations[resourceId].data)
+      }
+
+      animation = this.animations[animationName]
+
+      if (animation) animations.push(animation)
+    }
+
+    return animations
   }
 
-  async getAnimation(props: HumanFigureProps): Promise<PIXI.Texture[]> {
-    const renderProps = this.createPartList(props)
-    const animations = this.getAnimations(props)
+  async createAnimation(props: HumanFigureProps): Promise<PIXI.Texture[]> {
+    const actions = this.getActions(props)
+    const animations = await this.getAnimations(actions, props)
+    const renderProps: FigureRenderOptions = {
+      parts: this.createPartList(props),
+      ...this.getRenderOptions(actions, props),
+    }
 
-    // Calcula o total de frames da animação
-    const qtFrames = mmc(
-      ...animations.map(({ frames }) => frames.reduce((sum, f) => {
-        const repeats = Object.values(f).reduce((sum, p) => Math.max(p.repeats || 0, sum), 0) || 1;
-        return sum + repeats;
-      }, 0))
-    )
+    const itemActions = new Set(['cri', 'usei', 'sign'])
 
-    const textures = [];
-    const texturesProps = new Array(qtFrames).fill(null).map(() => merge({}, renderProps));
-    const qtAnimations = animations.length
+    // Prepare Actions
+    for (const action of actions) {
+      if (action.activepartset) {
+        if (itemActions.has(action.state)) {
+          let type = 'ri'
+          let id = action.params
+            ? String(action.params[props.actions[action.state]])
+            : String(props.actions[action.state])
 
-    // Se não houverem animações, renderizar um frame
-    if (!qtAnimations) return [await this.render(renderProps)]
+          if (action.state === 'sign') type = 'li'
 
-    // Se não, criar frames
-    for (let i = 0; i < qtFrames; i++) {
-      // Copia as propriedades para gerar um novo frame
-      const frameRenderProps = texturesProps[i]
+          console.log(type)
+          renderProps.parts[type] = (renderProps.parts[type] || []).concat(
+            new HumanPart({
+              lib: 'hh_human_item',
+              type,
+              id,
+              direction: props.direction,
+            }),
+          )
+        }
 
-      // Percorre todas as animações
-      for (let a = 0; a < qtAnimations; a++) {
-        const animation = animations[a]
-        // Número do frame é cíclico
-        // com base na quantidade de frames da animação
-        const f = i % animation.frames.length
-        const frame = animation.frames[f]
+        for (const part of this.getActivePartset(renderProps.parts, action.activepartset)) {
+          part.assetpartdefinition = action.assetpartdefinition
+        }
+      }
 
-        // Aplica propriedades do frame em cada parte
-        for (let type in frame) {
-          const { action, repeats = 1 } = frame[type]
+      if (action.state === 'fx') {
+        const fxLib = this.effectmap.fx[props.actions.fx as string]
+        const animationId = ['fx', props.actions.fx].join('.')
+        const result = await Game.current.app.getResource({
+          [fxLib]: `${fxLib}/${fxLib}.json`,
+          [`${fxLib}/animations`]: `${fxLib}/animations.json`,
+        })
 
-          if (!(type in frameRenderProps.parts)) continue
+        const spritesheet = result[fxLib].spritesheet
+        const animation = result[`${fxLib}/animations`].data[animationId]
 
-          for (let fi = i; fi < i + repeats; fi++) {
-            const props = texturesProps[fi]
-            props.parts[type].forEach(part => {
-              console.log(type, action, f)
-              part.action = action
-              part.frame = f
+        if (animation.sprites) {
+          for (const p in animation.sprites) {
+            const part = animation.sprites[p]
+
+            const [assetpartdefinition, id] = part.member.split(new RegExp(`${p}|_`)).filter(f => f)
+
+            const fxPart = new HumanPart({
+              lib: fxLib,
+              type: p,
+              id,
+              direction: props.direction,
+              assetpartdefinition,
+              ink: part.ink,
             })
+
+            renderProps.parts[fxPart.type] = [fxPart]
           }
         }
       }
 
-      // Renderiza a textura e adiciona na lista de texturas
-      textures.push(await this.render(frameRenderProps))
+      console.log(action)
+    }
+
+    await this.downloadMissing(renderProps.parts)
+
+    // Animations
+    const animationsFrames = animations.map(animation => {
+      return animation.frames.reduce((sum, frame) => sum + mmc(Object.values(frame).map(p => p.repeats || 1)), 0)
+    })
+    const qtFrames = mmc(animationsFrames)
+
+    const textures = new Array(qtFrames)
+    const texturesProps = new Array(qtFrames)
+      .fill(null)
+      .map<FigureRenderOptions>(() => mergeWith({}, renderProps, HumanPart.merge))
+
+    for (const a in animations) {
+      const animation = animations[a]
+      const qtAnimationFrames = animationsFrames[a]
+      const lenFrames = animation.frames.length
+
+      console.groupCollapsed('Animation', a, qtAnimationFrames)
+
+      for (let animationFrameIndex = 0; animationFrameIndex < qtFrames; animationFrameIndex += qtAnimationFrames) {
+        for (let f = 0; f < qtAnimationFrames; f++) {
+          const fa = f % lenFrames
+          const fi = f % qtAnimationFrames
+          const frame = animation.frames[fa]
+
+          for (const p in frame) {
+            const part = frame[p]
+            const repeats = part.repeats || 1
+            const partTypes: string[] = this.partsets.activePartSets[p] || [p]
+
+            for (let r = 0; r < repeats; r++) {
+              const i = animationFrameIndex + fi * repeats + r
+
+              partTypes.forEach(type => {
+                if (texturesProps[i] && texturesProps[i].parts[type]) {
+                  texturesProps[i].parts[type].forEach(partItem => {
+                    const assetpartdefinition =
+                      part.action &&
+                      this.avatarActions[part.action] &&
+                      this.avatarActions[part.action].assetpartdefinition
+
+                    partItem.frame = part.frame
+                    partItem.assetpartdefinition = assetpartdefinition || part.assetpartdefinition
+                    partItem.dx = part.dx
+                    partItem.dy = part.dy
+
+                    console.log(partItem)
+
+                    if (part.dd) {
+                      partItem.direction += part.dd
+                      partItem.direction %= 8
+                      if (partItem.direction < 0) partItem.direction = 7 + partItem.direction
+                      if (partItem.direction > 7) partItem.direction = 7 - partItem.direction
+                    }
+
+                    if (!partItem.assetpartdefinition) {
+                      delete texturesProps[i].parts[type]
+                      return
+                    }
+
+                    const offsets =
+                      (animation.offsets && animation.offsets[fi] && animation.offsets[fi][partItem.direction]) || {}
+
+                    for (const partSet in offsets) {
+                      this.getActivePartset(texturesProps[i].parts, partSet).forEach(part => {
+                        part.dx = offsets[partSet].dx
+                        part.dy = offsets[partSet].dy
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          }
+        }
+      }
+
+      console.groupEnd()
+    }
+
+    console.log(animations)
+    for (let i = 0; i < qtFrames; i++) {
+      textures[i] = await this.render(texturesProps[i])
     }
 
     return textures

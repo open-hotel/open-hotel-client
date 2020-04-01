@@ -79,13 +79,14 @@ class RoomScene extends Scene {
       // })
 
       this.$app.loader
-        .add('figuremap', 'dist/figuremap.json')
-        .add('figuredata', 'dist/figuredata.json')
-        .add('partsets', 'dist/partsets.json')
-        .add('draworder', 'dist/draworder.json')
-        .add('avatarActions', 'dist/HabboAvatarActions.json')
-        .add('geometry', 'dist/geometry.json')
-        .add('animations', 'dist/animations.json')
+        .add('figuremap', 'figuremap.json')
+        .add('figuredata', 'figuredata.json')
+        .add('partsets', 'partsets.json')
+        .add('draworder', 'draworder.json')
+        .add('avatarActions', 'HabboAvatarActions.json')
+        .add('geometry', 'geometry.json')
+        .add('animations', 'animations.json')
+        .add('effectmap', 'effectmap.json')
 
       this.$app.loader.once('complete', resolve)
       this.$app.loader.load()
@@ -93,59 +94,79 @@ class RoomScene extends Scene {
   }
 
   async ready() {
-    const sleep = time => new Promise((resolve) => setTimeout(resolve, time));
+    const sleep = time => new Promise(resolve => setTimeout(resolve, time))
+    const qt = 2
     const state: HumanFigureProps = {
-      actions: Action.decode('mv,wave'),
-      figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
+      actions: Action.decode('std'),
       // figure: Figure.decode('hd-180-1'),
-      direction: 2,
-      head_direction: 2,
-      is_ghost: false
+      figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
+      direction: -1,
+      head_direction: 0,
+      is_ghost: false,
     }
 
-    const sprite = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-    sprite.animationSpeed = 0.2;
-    sprite.name = "mizerave"
-    
-    sprite.textures = await Game.current.imager.human.getAnimation(state);
-    this.addChild(sprite)
+    const sprites = new Array(qt).fill(null).map(() => {
+      const sprite = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY])
+      sprite.animationSpeed = 0.5
+      return sprite
+    })
+
+    // const sprite = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
+    // sprite.animationSpeed = 0.5;
+    // sprite.name = "mizerave"
+
+    // sprite.scale.set(3)
+
+    // sprite.textures = await Game.current.imager.human.createAnimation(state);
+    // this.addChild(sprite)
+    // sprite.play()
 
     async function changeHead (v = 1) {
       state.head_direction += v;
-      
+
       if (state.head_direction > 7) {
         state.head_direction = 0;
       } else if (state.head_direction < 0) {
         state.head_direction = 7;
       }
-      
-      sprite.textures = await Game.current.imager.human.getAnimation(state);
     }
 
     async function changeBody (v = 1) {
       state.direction += v;
-      
+
       if (state.direction > 7) {
         state.direction = 0;
       } else if (state.direction < 0) {
         state.direction = 7;
       }
 
-      sprite.textures = await Game.current.imager.human.getAnimation(state);
     }
 
-    async function change () {
-      await changeHead()
-      await changeBody()
-      sprite.play()
-
+    async function change() {
+      changeHead()
+      changeBody()
+      for (let i = 0; i < qt; i++) {
+        const sprite = sprites[i]
+        sprite.textures = await Game.current.imager.human.createAnimation({
+          ...state,
+          actions: {
+            ...state.actions,
+            ...(i == 1 ? { fx: '1' } : {}),
+            // dance: String((i % 4) + 1),
+          },
+        })
+        sprite.scale.set(1)
+        sprite.position.x = sprite.width * i
+        sprite.play()
+      }
     }
 
-    // await change()
+    this.addChild(...sprites)
+    await change()
 
     // while (true) {
     //   await change()
-    //   await sleep(100);
+    //   await sleep(3000)
     // }
 
     window.addEventListener('keydown', e => {
@@ -153,7 +174,6 @@ class RoomScene extends Scene {
       // let dBody = e.key === 'ArrowLeft' ? 1 : e.key === 'ArrowRight' ? -1 : 0
       // if (dHead) changeHead(dHead)
       // if (dBody) changeBody(dBody)
-
       change()
     })
 

@@ -5,13 +5,14 @@ import { Logger } from '../../../engine/lib/Logger'
 export interface HumanChunkProps {
   lib: string
   size: 'h' | 'sh'
-  action: string
+  assetpartdefinition: string
   type: string
   id: string
   direction: number
   frame: number
   color: number
-  flippedType: string;
+  ink: number
+  flippedType: string
 }
 
 export const calcFlip = (d: number) => (d > 3 && d < 7 ? 6 - d : d)
@@ -19,26 +20,27 @@ export const calcFlip = (d: number) => (d > 3 && d < 7 ? 6 - d : d)
 export class HumanPart implements HumanChunkProps {
   size: 'h' | 'sh' = 'h'
   lib = null
-  action = 'std'
+  assetpartdefinition = 'std'
   type = null
   id = '1'
   color = 0xffffff
   frame = 0
   direction = 0
   logger: Logger
-  flippedType = null;
+  flippedType = null
+  dx = 0
+  dy = 0
+  dd = 0
+  ink = null
+  isFX = false
 
   buildFilenameNameWith(options?: Partial<HumanChunkProps>) {
-    options = Object.assign(
-      {},
-      this,
-      options,
-    )
+    options = Object.assign({}, this, options)
 
     const parts = [
       options.lib,
       options.size,
-      options.action,
+      options.assetpartdefinition,
       options.type,
       options.id,
       options.direction,
@@ -88,21 +90,37 @@ export class HumanPart implements HumanChunkProps {
     return texture
   }
 
-  getTexureWith(options?: Partial<HumanChunkProps>) {
-    const filename = this.buildFilenameNameWith(options);
-    return this.getTexture(filename);
+  getTexureWith(options?: Partial<HumanChunkProps>) {  
+    const filename = this.buildFilenameNameWith(options)
+    return this.getTexture(filename)
   }
 
   getOffset({
     size = this.size,
-    action = this.action,
+    assetpartdefinition = this.assetpartdefinition,
     type = this.type,
     id = this.id,
     direction = this.direction,
     frame = this.frame,
   } = {}) {
-    const name = [size, action, type, id, direction, frame].join('_');
-    const { offset: offsets } = this.spritesheet.data.meta
-    return offsets[name];
+    const name = [size, assetpartdefinition, type, id, direction, frame].join('_')
+    const {
+      offset: offsets,
+    } = this.spritesheet.data.meta
+
+    if (!offsets[name]) return null;
+
+    const [x, y] = offsets[name];
+
+    return { x, y }
+  }
+
+  static merge(a: HumanPart, b: HumanPart) {
+    if (a instanceof HumanPart || b instanceof HumanPart) {
+      return new HumanPart({
+        ...(a || {}),
+        ...(b || {}),
+      })
+    }
   }
 }

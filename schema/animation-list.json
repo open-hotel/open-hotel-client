@@ -1,0 +1,105 @@
+{
+  "$schema": "./animation.schema.json",
+  "Move": {
+    "frames": [
+      {
+        "bd": { "number": 0, "assetpartdefinition": "wlk" },
+        "bds": { "number": 0, "assetpartdefinition": "wlk" },
+        "ss": { "number": 0, "assetpartdefinition": "wlk" },
+        "lg": { "number": 0, "assetpartdefinition": "wlk" },
+        "lh": { "number": 0, "assetpartdefinition": "wlk" },
+        "lhs": { "number": 0, "assetpartdefinition": "wlk" },
+        "rh": { "number": 0, "assetpartdefinition": "wlk" },
+        "rhs": { "number": 0, "assetpartdefinition": "wlk" },
+        "ls": { "number": 0, "assetpartdefinition": "wlk" },
+        "lc": { "number": 0, "assetpartdefinition": "wlk" },
+        "rs": { "number": 0, "assetpartdefinition": "wlk" },
+        "rc": { "number": 0, "assetpartdefinition": "wlk" },
+        "sh": { "number": 0, "assetpartdefinition": "wlk" }
+      },
+      {
+        "bd": { "number": 1, "assetpartdefinition": "wlk" },
+        "bds": { "number": 1, "assetpartdefinition": "wlk" },
+        "ss": { "number": 1, "assetpartdefinition": "wlk" },
+        "lg": { "number": 1, "assetpartdefinition": "wlk" },
+        "lh": { "number": 1, "assetpartdefinition": "wlk" },
+        "lhs": { "number": 1, "assetpartdefinition": "wlk" },
+        "rh": { "number": 1, "assetpartdefinition": "wlk" },
+        "rhs": { "number": 1, "assetpartdefinition": "wlk" },
+        "ls": { "number": 1, "assetpartdefinition": "wlk" },
+        "lc": { "number": 1, "assetpartdefinition": "wlk" },
+        "rs": { "number": 1, "assetpartdefinition": "wlk" },
+        "rc": { "number": 1, "assetpartdefinition": "wlk" },
+        "sh": { "number": 1, "assetpartdefinition": "wlk" }
+      },
+      {
+        "bd": { "number": 2, "assetpartdefinition": "wlk" },
+        "bds": { "number": 2, "assetpartdefinition": "wlk" },
+        "ss": { "number": 2, "assetpartdefinition": "wlk" },
+        "lg": { "number": 2, "assetpartdefinition": "wlk" },
+        "lh": { "number": 2, "assetpartdefinition": "wlk" },
+        "lhs": { "number": 2, "assetpartdefinition": "wlk" },
+        "rh": { "number": 2, "assetpartdefinition": "wlk" },
+        "rhs": { "number": 2, "assetpartdefinition": "wlk" },
+        "ls": { "number": 2, "assetpartdefinition": "wlk" },
+        "lc": { "number": 2, "assetpartdefinition": "wlk" },
+        "rs": { "number": 2, "assetpartdefinition": "wlk" },
+        "rc": { "number": 2, "assetpartdefinition": "wlk" },
+        "sh": { "number": 2, "assetpartdefinition": "wlk" }
+      },
+      {
+        "bd": { "number": 3, "assetpartdefinition": "wlk" },
+        "bds": { "number": 3, "assetpartdefinition": "wlk" },
+        "ss": { "number": 3, "assetpartdefinition": "wlk" },
+        "lg": { "number": 3, "assetpartdefinition": "wlk" },
+        "lh": { "number": 3, "assetpartdefinition": "wlk" },
+        "lhs": { "number": 3, "assetpartdefinition": "wlk" },
+        "rh": { "number": 3, "assetpartdefinition": "wlk" },
+        "rhs": { "number": 3, "assetpartdefinition": "wlk" },
+        "ls": { "number": 3, "assetpartdefinition": "wlk" },
+        "lc": { "number": 3, "assetpartdefinition": "wlk" },
+        "rs": { "number": 3, "assetpartdefinition": "wlk" },
+        "rc": { "number": 3, "assetpartdefinition": "wlk" },
+        "sh": { "number": 3, "assetpartdefinition": "wlk" }
+      }
+    ]
+  },
+  "Respect": {
+    "frames": [
+      {
+        "lh": {
+          "number": 0,
+          "repeats": 15,
+          "assetpartdefinition": "respect"
+        },
+        "ls": {
+          "number": 0,
+          "repeats": 15,
+          "assetpartdefinition": "wav"
+        },
+        "lc": {
+          "number": 0,
+          "repeats": 15,
+          "assetpartdefinition": "wav"
+        }
+      },
+      {
+        "lh": {
+          "number": 1,
+          "repeats": 15,
+          "assetpartdefinition": "respect"
+        },
+        "ls": {
+          "number": 1,
+          "repeats": 15,
+          "assetpartdefinition": "wav"
+        },
+        "lc": {
+          "number": 1,
+          "repeats": 15,
+          "assetpartdefinition": "wav"
+        }
+      }
+    ]
+  }
+}
