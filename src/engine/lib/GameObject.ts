@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 import { ObservableVector3 } from '../isometric'
 import { Application } from '../Application'
 import { Constructor } from '../types'

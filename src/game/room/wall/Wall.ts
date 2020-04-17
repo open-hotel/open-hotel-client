@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 import { Vector3 } from '../../../engine/isometric'
 import { IsoPoint } from '../../../engine/lib/IsoPoint'
 

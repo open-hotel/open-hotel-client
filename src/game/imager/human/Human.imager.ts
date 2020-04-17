@@ -1,5 +1,4 @@
-import * as PIXI from 'pixi.js'
-import async from 'promise-async'
+import * as PIXI from 'pixi.js-legacy'
 import { mergeWith } from 'lodash'
 
 import { Game } from '../../Game'
@@ -240,8 +239,8 @@ export class HumanImager {
   async render({ parts, drawOrder, geometry }: FigureRenderOptions): Promise<PIXI.Texture> {
     await this.downloadMissing(parts)
 
-    const imageContainer = new PIXI.Graphics()
-    const body = new PIXI.Graphics()
+    const imageContainer = new PIXI.Container()
+    const body = new PIXI.Container()
     const flipedDirection = calcFlip(drawOrder.direction)
 
     imageContainer.addChild(body)
@@ -317,7 +316,7 @@ export class HumanImager {
         }
 
         if (typeof figurePart.ink == 'number') {
-          sprite.filters = (sprite.filters || []).concat([new PIXI.filters.AlphaFilter(figurePart.ink / 100)])
+          sprite.alpha = figurePart.ink / 100;
         }
 
         if (isTextureFlipped) {
@@ -330,12 +329,14 @@ export class HumanImager {
         sprite.position.set(figurePart.dx, figurePart.dy)
 
         if (figurePart.isFX) {
-          sprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+          sprite.blendMode = PIXI.BLEND_MODES.ADD;
           imageContainer.addChild(sprite)
         }
         else body.addChild(sprite)
       })
     })
+
+    console.log(imageContainer)
 
     return Game.current.app.renderer.generateTexture(imageContainer, PIXI.SCALE_MODES.NEAREST, 1, geometry)
   }

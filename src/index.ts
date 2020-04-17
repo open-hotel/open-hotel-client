@@ -7,7 +7,7 @@ import { Viewport } from 'pixi-viewport'
 import { Human } from './game/users/human/Human'
 import { Action } from './game/imager/human/action.util'
 import { Figure } from './game/imager/human/figure.util'
-import { Sprite } from 'pixi.js'
+import { Sprite } from 'pixi.js-legacy'
 import { HumanFigureProps } from './game/imager/human/Human.imager'
 
 // import Vue from 'vue'
@@ -97,10 +97,10 @@ class RoomScene extends Scene {
     const sleep = time => new Promise(resolve => setTimeout(resolve, time))
     const qt = 2
     const state: HumanFigureProps = {
-      actions: Action.decode('std'),
+      actions: Action.decode('dance=3'),
       // figure: Figure.decode('hd-180-1'),
       figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
-      direction: -1,
+      direction: 7,
       head_direction: 0,
       is_ghost: false,
     }
@@ -157,7 +157,6 @@ class RoomScene extends Scene {
         })
         sprite.scale.set(1)
         sprite.position.x = sprite.width * i
-        sprite.play()
       }
     }
 

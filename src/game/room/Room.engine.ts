@@ -1,11 +1,11 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 
 import Room from './Room'
 import { Matrix } from '../../engine/lib/util/Matrix'
 import { createFloorTestFunction } from '../../engine/lib/util/FloorUtils'
 import { Game } from '../Game'
 import ladders from './floor/ladders'
-import { Texture } from 'pixi.js'
+import { Texture } from 'pixi.js-legacy'
 import { StairDirection } from '../imager/Room.imager'
 import { IsoPoint } from '../../engine/lib/IsoPoint'
 import { Floor } from './floor/Floor'

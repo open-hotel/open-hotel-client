@@ -1,6 +1,6 @@
 import TWEEN from '@tweenjs/tween.js'
 import { Constructor } from '../../../engine/types'
-import { IPoint } from 'pixi.js'
+import { IPoint } from 'pixi.js-legacy'
 
 export interface PointLike {
   x: number

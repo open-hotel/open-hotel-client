@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 import { Navigation } from './navigation/Navigation'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
@@ -47,7 +47,8 @@ export class Application extends PIXI.Application {
   constructor(options: ApplicationOptions = {}) {
     super({
       ...options,
-      backgroundColor: 0xFF0000
+      backgroundColor: 0x000000,
+      forceCanvas: true
     })
 
     options = Object.assign(

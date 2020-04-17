@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 import { Scene } from '../../src/engine/lib/Scene'
 import { Progress } from '../objects/Progress'
 import resources from './preload'

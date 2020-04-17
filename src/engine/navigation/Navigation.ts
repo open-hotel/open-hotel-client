@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 import { Constructor } from '../types'
 import { Scene } from '../lib/Scene'
 import { Logger } from '../lib/Logger'

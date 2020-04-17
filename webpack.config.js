@@ -70,7 +70,7 @@ const config = {
     contentBase: './public',
   },
   externals: {
-    'pixi.js': 'PIXI'
+    'pixi.js-legacy': 'PIXI'
   }
 }
 

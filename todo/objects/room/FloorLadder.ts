@@ -1,9 +1,9 @@
 import { Application } from '../../engine/Application'
 import { Vector3 } from '../../engine/isometric/Vector3'
 import { Cube } from '../../engine/geometry/Cube'
-import { SCALE_MODES, Polygon } from 'pixi.js'
+import { SCALE_MODES, Polygon } from 'pixi.js-legacy'
 import { GameObject } from '../../engine/lib/GameObject'
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 
 function createSteps(cb: Function) {
   return new Array(4).fill(null).map((_, index) => {

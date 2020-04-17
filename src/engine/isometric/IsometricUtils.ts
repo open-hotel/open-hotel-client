@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js-legacy'
 
 export class IsometricUtils {
   static cartToIso(x: number, y: number, z: number = 0) {
