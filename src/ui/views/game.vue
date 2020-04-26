@@ -4,11 +4,17 @@
   </keep-alive>
 </template>
 <script>
+
 export default {
   name: 'Game',
+  methods: {
+    async startGame () {
+      //const gameModule = await gameRef
+    }
+  },
   created() {
-    console.log('Created')
-    // this.$router.replace('/splash')
+    console.log('criou o jogo')
+    this.startGame()
   },
 }
 </script>

@@ -1,7 +1,7 @@
 import { Module, OnModuleInit, Inject } from 'injets'
 import { PixiModule } from './pixi/pixi.module'
 import { ImagerModule } from './imager/imager.module'
-import { Application } from '../engine/Application'
+import { JsonParser } from '../engine/loader'
 import { Loader } from '../engine/loader'
 
 @Module({
@@ -10,28 +10,25 @@ import { Loader } from '../engine/loader'
       view: document.getElementById('game') as HTMLCanvasElement,
     }),
     ImagerModule,
+    //Loader
+  ],
+  providers: [
+    {
+      provide: 'LOADER',
+      useValue: new Loader({
+        concurently: 1,
+        baseURL: process.env.RESOURCES_BASE,
+        parsers: {
+          json: new JsonParser()
+        }
+      }),
+    },
   ],
 })
 export class GameModule implements OnModuleInit {
-  @Inject() readonly app: Application
-  @Inject() readonly loader: Loader
+  // @Inject() readonly loader: Loader
 
   onModuleInit() {
-    // Download assets
-    this.loader.add(
-      [
-        { name: 'figuremap', url: 'figuremap.json', parsers: ['json'] },
-        { name: 'figuredata', url: 'figuredata.json', parsers: ['json'] },
-        { name: 'partsets', url: 'partsets.json', parsers: ['json'] },
-        { name: 'draworder', url: 'draworder.json', parsers: ['json'] },
-        { name: 'avatarActions', url: 'HabboAvatarActions.json', parsers: ['json'] },
-        { name: 'geometry', url: 'geometry.json', parsers: ['json'] },
-        { name: 'animations', url: 'animations.json', parsers: ['json'] },
-        { name: 'effectmap', url: 'effectmap.json', parsers: ['json'] },
-      ],
-      (loaded, total) => console.log('Progresso', ((loaded / total) * 100).toFixed(1)+'%'),
-    ).then(() => {
-      console.log('Tudo foi carregado!', this.loader)
-    })
+   
   }
 }

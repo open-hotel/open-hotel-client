@@ -2980,9 +2980,9 @@ ini@^1.3.4, ini@^1.3.5:
   integrity sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
 
 injets@^1.1.1:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/injets/-/injets-1.1.3.tgz#dfa3aa10cf0d6dbb33e7440104c93f1d1bc8a5e1"
-  integrity sha512-JApX1vF//oTyiPamPMhPkMdAFIAWmQuVpZ71bPYwgKoAr/iUeMID9ETXanfoV8ZrIC1GWxpaMIUqrp7ZK8dNpw==
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/injets/-/injets-1.1.5.tgz#31243e07c92f2fbdb6904c9143ce8e2fa488bcfc"
+  integrity sha512-DLdQmUq7VaY+cjROoYBzQL7Zi1c8Ov//yf2ehWEUJus7frfaaDK9glKMi3TpCir/Y4+CPWx+FtBu/xcUtrk4aQ==
   dependencies:
     reflect-metadata "^0.1.13"
 

@@ -10,11 +10,7 @@ export class PixiModule {
       global: true,
       providers: [
         {
-          provide: Application,
-          useValue: new Application(options),
-        },
-        {
-          provide: Loader,
+          provide: 'LOADER',
           useValue: new Loader({
             concurently: 1,
             baseURL: 'http://localhost:8888/dist',

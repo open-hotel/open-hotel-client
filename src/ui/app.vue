@@ -11,10 +11,8 @@
   </div>
 </template>
 <script>
-import OhGame from './views/game'
 export default {
   components: {
-    OhGame,
   },
 }
 </script>

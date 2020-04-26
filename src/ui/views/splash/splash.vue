@@ -7,18 +7,50 @@
         <img class="splash-frame" src="./images/splash_frame_2.png" />
       </div>
       <h2>Siga o pato amarelo</h2>
-      <oh-progress :value="75" />
-      <h4>75%</h4>
+      <oh-progress :value="progress" />
+      <h4>{{ progress.toFixed(0) }}%</h4>
     </div>
   </div>
 </template>
 
 <script>
+import { Loader } from '../../../engine/loader'
+import { getGameRef } from '../../../game/gameRef'
+
 export default {
   name: 'HotelSplash',
   data() {
-    return {}
+    return {
+      progress: 0
+    }
   },
+  methods: {
+    async loadAssets () {
+      const gameModule = await getGameRef()
+      const loader = await gameModule.get('LOADER')
+       // Download assets
+      await loader.add(
+        [
+          { name: 'figuremap', url: 'figuremap.json', parsers: ['json'] },
+          { name: 'figuredata', url: 'figuredata.json', parsers: ['json'] },
+          { name: 'partsets', url: 'partsets.json', parsers: ['json'] },
+          { name: 'draworder', url: 'draworder.json', parsers: ['json'] },
+          { name: 'avatarActions', url: 'HabboAvatarActions.json', parsers: ['json'] },
+          { name: 'geometry', url: 'geometry.json', parsers: ['json'] },
+          { name: 'animations', url: 'animations.json', parsers: ['json'] },
+          { name: 'effectmap', url: 'effectmap.json', parsers: ['json'] },
+        ],
+        (loaded, total) => {
+          this.progress = (loaded / total) * 100
+        },
+      )
+
+      this.$router.replace({ name: 'game' })
+    }
+  },
+  created () {
+    this.loadAssets()
+  } 
 }
 </script>
 
