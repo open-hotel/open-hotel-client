@@ -5,10 +5,8 @@ import Tween from '@tweenjs/tween.js'
 import { Viewport } from 'pixi-viewport'
 import { Game } from '../game/Game'
 import { Scene } from './lib/Scene'
-import { stat } from 'fs'
-const GStats = require('gstats')
 
-interface ApplicationOptions {
+export interface ApplicationOptions {
   game?: Game
   autoStart?: boolean
   width?: number
