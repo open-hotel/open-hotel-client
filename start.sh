@@ -1,6 +1,12 @@
 cd ../open-hotel-resources
-hs -p 8888 . --cors &
-cd ../sirius-emulator
+yarn dev &
+RESOURCES_PID=$!
+cd ../orion-emulator
+
 yarn docker:dev &
-cd ../client
+ORION_PID=$!
+
+cd ../open-hotel-client
 yarn dev
+kill -9 RESOURCES_PID
+kill -9 ORION_PID
