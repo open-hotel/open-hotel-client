@@ -1,12 +1,13 @@
 import { ModuleRef } from 'injets'
 import { GameModule } from './game.module'
 
-let gameRef = null
+let gameRef: ModuleRef<GameModule> = null
 
-export function getGameRef () {
+export async function getGameRef () {
     if (gameRef) {
         return gameRef
     }
-    gameRef = ModuleRef.create(GameModule)
+    // @ts-ignore
+    gameRef = await ModuleRef.create(GameModule)
     return gameRef
 }

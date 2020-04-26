@@ -1,12 +1,7 @@
 <template>
   <div id="app">
     <oh-notifications class="notifications" />
-    <transition name="fade">
-      <!-- <keep-alive>
-      <router-view v-if="$route.meta.keepAlive"/>
-      </keep-alive>-->
       <router-view />
-    </transition>
     <oh-toolbar />
   </div>
 </template>

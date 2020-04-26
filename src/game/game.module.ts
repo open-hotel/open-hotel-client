@@ -3,6 +3,7 @@ import { PixiModule } from './pixi/pixi.module'
 import { ImagerModule } from './imager/imager.module'
 import { JsonParser } from '../engine/loader'
 import { Loader } from '../engine/loader'
+import { ApplicationProvider } from './applicaiton.provider'
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Loader } from '../engine/loader'
         }
       }),
     },
+    ApplicationProvider
   ],
 })
 export class GameModule implements OnModuleInit {

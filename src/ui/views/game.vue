@@ -1,19 +1,24 @@
 <template>
-  <keep-alive>
-    <canvas id="game"></canvas>
-  </keep-alive>
+  <canvas ref="canvas" id="game"></canvas>
 </template>
 <script>
+import { getGameRef } from '../../game/gameRef'
+import { Application } from '../../engine/Application'
+import { ApplicationProvider } from '../../game/applicaiton.provider'
 
 export default {
   name: 'Game',
   methods: {
     async startGame () {
-      //const gameModule = await gameRef
+      const gameModule = await getGameRef()
+      const app = await gameModule.get(ApplicationProvider)
+      app.createApp({
+        view: this.$refs.canvas
+      })
     }
   },
-  created() {
-    console.log('criou o jogo')
+
+  mounted() {
     this.startGame()
   },
 }
