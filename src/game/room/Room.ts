@@ -7,7 +7,7 @@ export default class Room {
   constructor (
     public model: RoomModel
   ) {
-    this.engine = new RoomEngine(this)
+    //this.engine = new RoomEngine(this)
   }
 
   dispose () {

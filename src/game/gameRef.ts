@@ -1,4 +1,4 @@
-import { ModuleRef } from 'injets'
+import { createModule, ModuleRef } from 'injets'
 import { GameModule } from './game.module'
 
 let gameRef: ModuleRef<GameModule> = null
@@ -8,6 +8,6 @@ export async function getGameRef () {
         return gameRef
     }
     // @ts-ignore
-    gameRef = await ModuleRef.create(GameModule)
+    gameRef = await createModule(GameModule)
     return gameRef
 }

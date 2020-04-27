@@ -27,7 +27,7 @@ export default {
   methods: {
     async loadAssets () {
       const gameModule = await getGameRef()
-      const loader = await gameModule.get('LOADER')
+      const loader = await gameModule.get(Loader)
        // Download assets
       await loader.add(
         [

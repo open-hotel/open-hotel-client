@@ -1,26 +1,26 @@
 import { DynamicModule, Module } from 'injets'
-import { Application, ApplicationOptions } from '../../engine/Application'
 import { Loader, JsonParser } from '../../engine/loader'
+import { ApplicationProvider } from '../application.provider'
 
-@Module({})
-export class PixiModule {
-  static forRoot(options?: ApplicationOptions): DynamicModule {
-    return {
-      module: this,
-      global: true,
-      providers: [
-        {
-          provide: 'LOADER',
-          useValue: new Loader({
-            concurently: 1,
-            baseURL: 'http://localhost:8888/dist',
-            parsers: {
-              json: new JsonParser()
-            }
-          }),
-        },
-      ],
-      exports: [Application],
-    }
+@Module(
+  {
+    global: true,
+    providers: [
+      {
+        provide: Loader,
+        useValue: new Loader({
+          concurently: 1,
+          baseURL: process.env.RESOURCES_BASE,
+          parsers: {
+            json: new JsonParser()
+          }
+        }),
+      },
+      ApplicationProvider,
+    ],
+    exports: [ApplicationProvider, Loader],
   }
+)
+export class PixiModule {
+
 }

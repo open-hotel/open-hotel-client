@@ -4,7 +4,8 @@
 <script>
 import { getGameRef } from '../../game/gameRef'
 import { Application } from '../../engine/Application'
-import { ApplicationProvider } from '../../game/applicaiton.provider'
+import { ApplicationProvider } from '../../game/application.provider'
+import { RoomProvider } from '../../game/room/room.provider'
 
 export default {
   name: 'Game',
@@ -15,6 +16,8 @@ export default {
       app.createApp({
         view: this.$refs.canvas
       })
+
+      const engine = await gameModule.get(RoomProvider)
     }
   },
 

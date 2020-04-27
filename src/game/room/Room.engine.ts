@@ -13,6 +13,7 @@ import { FloorSelection } from './floor/FloorSelection'
 import { MessageRequestUserMovement } from '../network/outgoing/MessageRequestUserMovement'
 import { Wall } from './wall/Wall'
 import { Debug } from '../../engine/lib/util/Debug'
+import { Provider } from 'injets'
 
 function getStairType(blocks: Matrix<number>): number {
   const hasLadder = createFloorTestFunction(blocks)
@@ -20,6 +21,7 @@ function getStairType(blocks: Matrix<number>): number {
   return l && l.value
 }
 
+@Provider('TRANSIENT')
 export class RoomEngine {
   public floorSprites: Matrix<Floor>
   public wallSprites: Matrix<Wall> = new Matrix()
@@ -27,8 +29,9 @@ export class RoomEngine {
   public floorSelection: FloorSelection
   public game = Game.current
   public maxHeight = 1
+  public room: Room
 
-  constructor(public room: Room) {
+  constructor() {
     this.floorSelection = new FloorSelection()
     this.container.addChild(this.floorSelection)
     this.container.sortableChildren = true
