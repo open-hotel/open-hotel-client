@@ -6,8 +6,9 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["dom", "ES2019", "ES2019.Array"]
+    "lib": ["ES2020", "dom"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "exclude": ["node_modules"],
+  "files": ["src/vue-shims.d.ts"]
 }

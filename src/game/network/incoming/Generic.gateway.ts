@@ -2,7 +2,7 @@ import { ServerEvent } from '../protocol/events/server.enum'
 import { Subscribe } from '../decorators/subscribe.decorator'
 import { NetworkPacket } from '../protocol/NetworkPacket'
 import { Game } from '../../Game'
-import { RoomEngine } from '../../room/Room.engine'
+import { RoomEngine } from '../../room/Room.engine.old'
 import { RoomModel, RoomFloorHeight } from '../../room/Room.model'
 import { Matrix } from '../../../engine/lib/util/Matrix'
 

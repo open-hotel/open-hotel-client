@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js-legacy'
 import { mergeWith } from 'lodash'
 
-import { Game } from '../../Game'
-import { HumanPart, calcFlip } from './HumanPart'
-import { HumanActions } from './action.util'
-import { HumanFigure } from './figure.util'
-import { mmc } from '../../../engine/lib/util/Util'
+import { Game } from '../Game'
+import { HumanPart, calcFlip } from './human/HumanPart'
+import { HumanActions } from './human/action.util'
+import { HumanFigure } from './human/figure.util'
+import { mmc } from '../../engine/lib/util/Util'
 
 export type FigurePartList = Record<string, HumanPart[]>
 

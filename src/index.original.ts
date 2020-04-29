@@ -8,7 +8,7 @@ import { Human } from './game/users/human/Human'
 import { Action } from './game/imager/human/action.util'
 import { Figure } from './game/imager/human/figure.util'
 import { Sprite } from 'pixi.js-legacy'
-import { HumanFigureProps } from './game/imager/human/Human.imager'
+import { HumanFigureProps } from './game/imager/human.imager'
 
 // import Vue from 'vue'
 // import App from './ui/App.vue'

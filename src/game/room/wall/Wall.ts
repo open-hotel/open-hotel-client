@@ -5,7 +5,7 @@ import { IsoPoint } from '../../../engine/lib/IsoPoint'
 export class Wall extends PIXI.Sprite {
   constructor(
     texture: PIXI.Texture,
-    public positionInMap = new IsoPoint(),
+    public iso = new IsoPoint(),
     public direction = 0
   ) {
     super(texture)
@@ -15,5 +15,7 @@ export class Wall extends PIXI.Sprite {
 
     // this.width = 88
     // this.height = 200
+
+    iso.toPoint().copyTo(this.position)
   }
 }

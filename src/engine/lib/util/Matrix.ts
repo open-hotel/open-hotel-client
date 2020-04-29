@@ -35,13 +35,13 @@ export class Matrix<T = any> {
     this.data = data.slice(0, width * height)
   }
 
-  *rowsEntries(start = 0, end = this.height - 1): Generator<[number, T[]]> {
+  *rows(start = 0, end = this.height - 1): Generator<[number, T[]]> {
     for (let i = start; i <= end; i++) {
       yield [i, this.getRow(i)]
     }
   }
 
-  *columnsEntries(): Generator<[number, T[]]> {
+  *columns(): Generator<[number, T[]]> {
     for (let i = 0; i < this.width; i++) {
       yield [i, this.getCol(i)]
     }
@@ -119,9 +119,9 @@ export class Matrix<T = any> {
    * Preenche a matrix com um valor
    * @param value valor a ser preenchido
    */
-  fill(value = null) {
+  fill<T>(value: T = null): Matrix<T> {
     this.data = new Array(this.width * this.height).fill(value)
-    return this
+    return this as unknown as Matrix<T>
   }
 
   /**

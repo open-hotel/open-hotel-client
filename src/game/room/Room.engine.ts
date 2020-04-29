@@ -1,216 +1,170 @@
-import * as PIXI from 'pixi.js-legacy'
-
-import Room from './Room'
-import { Matrix } from '../../engine/lib/util/Matrix'
-import { createFloorTestFunction } from '../../engine/lib/util/FloorUtils'
-import { Game } from '../Game'
-import ladders from './floor/ladders'
-import { Texture } from 'pixi.js-legacy'
-import { StairDirection } from '../imager/Room.imager'
-import { IsoPoint } from '../../engine/lib/IsoPoint'
-import { Floor } from './floor/Floor'
-import { FloorSelection } from './floor/FloorSelection'
-import { MessageRequestUserMovement } from '../network/outgoing/MessageRequestUserMovement'
-import { Wall } from './wall/Wall'
-import { Debug } from '../../engine/lib/util/Debug'
+import { Container } from 'pixi.js-legacy'
 import { Provider } from 'injets'
+import { ApplicationProvider } from '../application.provider'
+import { Matrix } from '../../engine/lib/util/Matrix'
+import { Floor } from './floor/Floor'
+import { RoomImager, StairDirection } from '../imager/room.imager'
+import { IsoPoint, IsoPointObject } from '../../engine/lib/IsoPoint'
+import { RoomModel } from './types/room.model'
+import { createFloorTestFunction } from '../../engine/lib/util/FloorUtils'
+import ladders from './floor/ladders'
+import { Wall } from './wall/Wall'
+import { PointLike } from '../../engine/lib/util/Walk'
 
-function getStairType(blocks: Matrix<number>): number {
-  const hasLadder = createFloorTestFunction(blocks)
-  const l = ladders.find(l => hasLadder(l.test))
-  return l && l.value
+const PRIORITY = {
+  WALL_H: 2,
+  WALL_V: 1,
+  FLOOR: 3,
+  FLOOR_DOOR: 1
 }
 
 @Provider('TRANSIENT')
 export class RoomEngine {
-  public floorSprites: Matrix<Floor>
-  public wallSprites: Matrix<Wall> = new Matrix()
-  public container = new PIXI.Container()
-  public floorSelection: FloorSelection
-  public game = Game.current
-  public maxHeight = 1
-  public room: Room
+  public readonly container = new Container()
+  private heightmap: Matrix<number>
+  private tiles: Matrix<Floor | null>
+  private walls: Matrix<Wall | null>
+  private door: PointLike
 
-  constructor() {
-    this.floorSelection = new FloorSelection()
-    this.container.addChild(this.floorSelection)
+  constructor(private readonly app: ApplicationProvider, private readonly roomImager: RoomImager) {}
+
+  private getStairType(blocks: Matrix<number>): StairDirection | undefined {
+    const hasLadder = createFloorTestFunction(blocks)
+    const l = ladders.find(l => hasLadder(l.test))
+    return l && (l.value as StairDirection)
+  }
+
+  renderFloor() {
+    this.tiles = this.heightmap.map((z, x, y) => {
+      if (z <= 0) return null
+
+      const neighbors = this.heightmap.neighborsOf(x, y)
+      const stairType = this.getStairType(neighbors)
+      const isStair = stairType === undefined
+      const texture = isStair
+        ? this.roomImager.generateFloorTileTexture()
+        : this.roomImager.generateStairTexture(stairType)
+      const zPos = isStair ? (z - 1) * 32 + 8 : z * 32
+      const position = new IsoPoint(x * 32, y * 32, zPos)
+      const tile = new Floor(texture, position)
+      const isDoor = x === this.door.x && y === this.door.y
+      const inBound = x === 0 || y === 0
+      const priority = isDoor && inBound ? PRIORITY.FLOOR_DOOR : PRIORITY.FLOOR
+
+      if(inBound && isDoor) tile.tint = 0xff0000
+
+      tile.zIndex = this.calcZIndex(position, priority)
+
+      this.container.addChild(tile)
+
+      return tile
+    })
+  }
+
+  calcZIndex({ x, y, z }: IsoPointObject, priority = 1) {
+    return (x + y + z) * priority
+  }
+
+  renderWalls() {
+    const WALL_HEIGHT = 128
+    const MAX_HEIGHT = this.heightmap.reduce((max, z) => Math.max(max, z * 32), -Infinity)
+
+    this.walls = new Matrix(this.heightmap.width, this.heightmap.height)
+
+    let maxVX = Infinity
+
+    // Paredes Horizontais
+    wallsH: for (let y = 0; y < this.heightmap.height; y++) {
+      if (y === this.door.y) continue
+      // Percorre as colunas até o primeiro bloco vertical
+      for (let x = 0; x < this.heightmap.width; x++) {
+        const z = this.heightmap.get(x, y)
+        // Se for 0, não inserir paredes
+        if (!z) continue
+
+        // Não enfileirar paredes horizontais verticalmente
+        for (let wy = y; wy >= 0; wy--) {
+          const block = this.walls.get(x, wy)
+          if (block) continue wallsH
+        }
+
+        const elevation = (z - 1) * 32
+        const height = MAX_HEIGHT - elevation + WALL_HEIGHT
+        const isDoor = x === this.door.x && y - 1 === this.door.y
+
+        // Renderiza
+        const texture = this.roomImager.generateWallTexture(1, 32, height, isDoor)
+        const position = new IsoPoint((x + 1) * 32, y * 32, elevation + height + 20)
+        const wall = new Wall(texture, position)
+
+        wall.zIndex = this.calcZIndex(
+          {
+            ...position,
+            z: elevation,
+          },
+          PRIORITY.WALL_H,
+        )
+
+        this.walls.set(x, y, wall)
+
+        this.container.addChild(wall)
+      }
+    }
+
+    // Paredes Verticais
+    for (let y = 0; y < this.heightmap.height; y++) {
+      for (let x = 0; x < this.heightmap.width; x++) {
+        if (x === this.door.x) continue
+        const z = this.heightmap.get(x, y)
+        // Não testar blocos com 0
+        if (!z) continue
+
+        // Não enfileirar paredes verticais
+        // horizontalmente
+        if (x > maxVX) break
+
+        // Define a posição X máxima para o bloco atual
+        maxVX = x
+
+        // Bloco com canto se já existir
+        // um bloco horizontal nesta posição
+        // let conner = walls[y][x] === WH
+
+        let elevation = (z - 1) * 32
+        const height = MAX_HEIGHT - elevation + WALL_HEIGHT
+        const isConner = !!this.walls.get(x, y)
+        const isDoor = (x - 1) === this.door.x && y === this.door.y
+
+        if (isConner) elevation += 4
+
+        // Renderiza
+        const texture = this.roomImager.generateWallTexture(0, 32, height, isDoor, 8, isConner)
+        const position = new IsoPoint(x * 32 - 8, y * 32, elevation + height)
+        const wall = new Wall(texture, position)
+
+        wall.zIndex = this.calcZIndex(
+          {
+            ...position,
+            z: elevation,
+          },
+          PRIORITY.WALL_V,
+        )
+
+        this.walls.set(x, y, wall)
+
+        this.container.addChild(wall)
+      }
+    }
+  }
+
+  init(room: RoomModel) {
+    this.door = {
+      ...room.door,
+    }
+    this.heightmap = room.heightmap
     this.container.sortableChildren = true
-    this.setWalls()
-    this.setFloor()
+    this.renderWalls()
+    this.renderFloor()
+    this.container.sortChildren()
   }
-
-  tintFloor(blocks: number[][], color: number) {
-    for (const [x, y] of blocks) {
-      const sprite = this.floorSprites.get(x, y)
-      sprite.tint = color
-    }
-
-    return this
-  }
-
-  setFloor() {
-    const { model } = this.room
-    const { map } = model
-    const { generateFloorTileTexture, generateStairTexture } = Game.current.imager.room
-    let textureCache: Texture = null
-    const stairCache: Record<number, Texture> = {}
-
-    this.floorSprites = this.floorSprites || new Matrix<Floor>(map.width, map.height)
-
-    for (const [[x, y], tile] of map.entries()) {
-      if (tile === 0) continue
-
-      let sprite: Floor
-      const neighbors = map.neighborsOf(x, y)
-      const stairType = getStairType(neighbors) as StairDirection
-
-      if (typeof stairType === 'number') {
-        const texture = stairCache[stairType] || (stairCache[stairType] = generateStairTexture(stairType))
-        sprite = new Floor(texture, new IsoPoint(x, y, tile))
-      } else {
-        const texture = textureCache || (textureCache = generateFloorTileTexture())
-        sprite = new Floor(texture, new IsoPoint(x, y, tile - 1))
-      }
-
-      if (!sprite) continue
-
-      sprite.positionInMap
-        .scale(32)
-        .toPoint()
-        .copyTo(sprite.position)
-
-      const isDoor = x === this.room.model.doorX && y === this.room.model.doorY
-
-      if (isDoor) {
-        sprite.tint = 0xff0000
-        sprite.zIndex = PRIORITY_DOOR_FLOOR
-      }
-
-      sprite.zIndex = calculateZIndex(x, y, tile, isDoor ? PRIORITY_DOOR_FLOOR : PRIORITY_FLOOR)
-
-      this.floorSprites.set(x, y, sprite)
-      this.container.addChild(sprite)
-
-      sprite
-        .addListener('pointerover', () => this.hoverFloor(sprite))
-        .addListener('pointertap', () => this.selectFloor(sprite))
-    }
-  }
-
-  setWalls() {
-    this.wallSprites = new Matrix()
-    const { model } = this.room
-    const { map } = model
-
-    // Obtém a altura do quarto
-    const roomHeight = map.reduce((max, f) => Math.max(max, f), 1)
-    // Altura mínima da parede
-    const wallHeight = 120
-
-    // Percorre as Linhas do mapa
-    for (const [y, col] of map.rowsEntries()) {
-      for (const [x, z] of col.entries()) {
-        // z === 0 Não tem piso
-        // z é a altura do piso
-
-        // Calcula a altura da parede atual
-        const currentWallHeight = wallHeight + (roomHeight - z) * 32
-
-
-        // this.addWall(
-        //   x, // Posição x da parede
-        //   y, // Posição y da parede
-        //   1, // tipo da parede 0 ou 1
-        //   new IsoPoint(x, y, z), // Posição da parede na tela
-        //   currentWallHeight, // Altura da parede
-        //   largura, // Largura da parede
-        //   porta, // A parede é uma porta?
-        //   canto // A parede é um canto?
-        // )
-      }
-    }
-
-    
-  }
-
-  addWall(
-    x: number,
-    y: number,
-    direction: number,
-    position: IsoPoint,
-    height: number,
-    width: number,
-    door: boolean = false,
-    conner = false,
-  ) {
-    const wall = new Wall(this.game.imager.room.generateWallTexture(direction, width, height, door, 8, conner))
-
-    wall.zIndex = direction === 1 ? PRIORITY_WALL_H : PRIORITY_WALL_V
-
-    const spritePosition = position.copy().scale(32)
-
-    if (direction === 0) {
-      if (door) {
-        spritePosition.add(0, 0, 80)
-      }
-      spritePosition.add(0, 8, wall.height - 52)
-    } else if (direction === 1) {
-      spritePosition.add(32, 0, height - 20)
-    }
-
-    spritePosition.toPoint().copyTo(wall.position)
-
-    this.wallSprites.set(x, y, wall)
-    this.container.addChild(wall)
-  }
-
-  hoverFloor(x: number, y: number)
-  hoverFloor(floor: Floor)
-  hoverFloor(xOrFloor: number | Floor, y?: number) {
-    const sprite = xOrFloor instanceof Floor ? xOrFloor : this.floorSprites.get(xOrFloor, y)
-    this.floorSelection.position.copyFrom(sprite.position)
-    this.floorSelection.zIndex = sprite.zIndex + 1
-    this.floorSelection.visible = true
-  }
-
-  selectFloor(x: number, y: number)
-  selectFloor(floor: Floor)
-  selectFloor(xOrFloor: number | Floor, y?: number) {
-    const sprite = xOrFloor instanceof Floor ? xOrFloor : this.floorSprites.get(xOrFloor, y)
-    const { x: posX, y: posY } = sprite.positionInMap
-
-    this.game.net.send(new MessageRequestUserMovement(posX, posY))
-  }
-
-  dispose() {}
 }
-
-export const calculateZIndex = (x: number, y: number, z: number, priority: number): number => {
-  return (x + y) * COMPARABLE_X_Y + z * COMPARABLE_Z + PRIORITY_MULTIPLIER * priority
-}
-
-const _calculateZIndexUser = (x: number, y: number, z: number, priority: number): number => {
-  return calculateZIndex(Math.floor(x), Math.floor(y), z + 0.001, priority)
-}
-
-export function calculateZIndexUser(x: number, y: number, z: number): number {
-  const model = this.room.model
-  return _calculateZIndexUser(
-    x,
-    y,
-    z,
-    model.doorX === x && model.doorY === y ? PRIORITY_DOOR_FLOOR_PLAYER : PRIORITY_PLAYER,
-  )
-}
-
-const PRIORITY_WALL_H = 1
-const PRIORITY_DOOR_FLOOR = 0
-const PRIORITY_DOOR_FLOOR_PLAYER = 1
-const PRIORITY_WALL_DOOR_H = 1
-const PRIORITY_WALL_V = 0
-const PRIORITY_FLOOR = 3
-const PRIORITY_PLAYER = 11
-
-const PRIORITY_MULTIPLIER = 10000000
-const COMPARABLE_X_Y = 1000000
-const COMPARABLE_Z = 10000

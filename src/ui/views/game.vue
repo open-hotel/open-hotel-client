@@ -1,30 +1,111 @@
 <template>
   <canvas ref="canvas" id="game"></canvas>
 </template>
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { getGameRef } from '../../game/gameRef'
 import { Application } from '../../engine/Application'
 import { ApplicationProvider } from '../../game/application.provider'
 import { RoomProvider } from '../../game/room/room.provider'
+import Room from '../../game/room/Room'
+import { Matrix } from '../../engine/lib/util/Matrix'
 
-export default {
+export default Vue.extend({
   name: 'Game',
   methods: {
-    async startGame () {
+    async startGame() {
       const gameModule = await getGameRef()
-      const app = await gameModule.get(ApplicationProvider)
+      const app = await gameModule.get<ApplicationProvider>(ApplicationProvider)
+      
       app.createApp({
-        view: this.$refs.canvas
+        view: this.$refs.canvas,
       })
 
-      const engine = await gameModule.get(RoomProvider)
-    }
+      const engine = await gameModule.get<RoomProvider>(RoomProvider)
+      await engine.create({
+        users: {},
+        door: {
+          x: 0,
+          y: 15
+        },
+        heightmap: Matrix.fromLegacyString(`
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xjjjjjjjjjjjjjx0000xxxxxxxxxx
+xxxxxxxxxxxxiix0000xxxxxxxxxx
+xxxxxxxxxxxxhhx0000xxxxxxxxxx
+xxxxxxxxxxxxggx0000xxxxxxxxxx
+xxxxxxxxxxxxffx0000xxxxxxxxxx
+xxxxxxxxxxxxeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+eeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xeeeeeeeeeeeeex0000xxxxxxxxxx
+xxxxxxxxxxxxddx00000000000000
+xxxxxxxxxxxxccx00000000000000
+xxxxxxxxxxxxbbx00000000000000
+xxxxxxxxxxxxaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xaaaaaaaaaaaaax00000000000000
+xxxxxxxxxxxx99x0000xxxxxxxxxx
+xxxxxxxxxxxx88x0000xxxxxxxxxx
+xxxxxxxxxxxx77x0000xxxxxxxxxx
+xxxxxxxxxxxx66x0000xxxxxxxxxx
+xxxxxxxxxxxx55x0000xxxxxxxxxx
+xxxxxxxxxxxx44x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+x4444444444444x0000xxxxxxxxxx
+xxxxxxxxxxxx33x0000xxxxxxxxxx
+xxxxxxxxxxxx22x0000xxxxxxxxxx
+xxxxxxxxxxxx11x0000xxxxxxxxxx
+xxxxxxxxxxxx00x0000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+x000000000000000000xxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        `),
+      })
+    },
   },
 
   mounted() {
     this.startGame()
   },
-}
+})
 </script>
 <style lang="stylus">
 #game {

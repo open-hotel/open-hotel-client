@@ -1,5 +1,5 @@
-import { RoomImager } from "./Room.imager";
-import { HumanImager } from "./human/Human.imager";
+import { RoomImager } from "./room.imager";
+import { HumanImager } from "./human.imager";
 
 export class Imager {
   public room = new RoomImager()

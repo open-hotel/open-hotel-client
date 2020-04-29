@@ -4,6 +4,7 @@ import { Vector3 } from "../../engine/isometric";
 import { Application } from "../../engine/Application";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
 import { Game } from "../Game";
+import { Provider } from "injets";
 
 export type StairDirection = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
@@ -22,6 +23,7 @@ function createStairSteps(cb: Function, thickness: number = DEFAULT_THICKNESS) {
   })
 }
 
+@Provider()
 export class RoomImager {
   wallsCache: Record<string, PIXI.Texture> = {}
 

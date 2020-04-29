@@ -1,42 +1,31 @@
-import { Provider, Inject, CURRENT_MODULE } from "injets";
-import { Matrix } from "../../engine/lib/util/Matrix";
-import { RoomFloorHeight } from "./Room.model";
-import { Container } from "pixi.js-legacy";
-import { Viewport } from "pixi-viewport";
-import { ApplicationProvider } from "../application.provider";
-import { GameModule } from "../game.module";
-
-interface RoomOptions {
-    map: Matrix<RoomFloorHeight>
-}
+import { Provider, Inject, CURRENT_MODULE, ModuleRef } from 'injets'
+import { Viewport } from 'pixi-viewport'
+import { ApplicationProvider } from '../application.provider'
+import { GameModule } from '../game.module'
+import { RoomEngine } from './Room.engine'
+import { RoomModel } from './types/room.model'
 
 @Provider()
 export class RoomProvider {
-    constructor (
-        private readonly appProvider: ApplicationProvider,
-        @Inject(CURRENT_MODULE)
-        private readonly gameModule: GameModule
-    ) {
-        console.log('modulooo', gameModule)
-    }
+  constructor(
+    @Inject(CURRENT_MODULE)
+    private readonly gameModule: ModuleRef<GameModule>,
+    private readonly appProvider: ApplicationProvider,
+  ) {}
 
-    private setupRoomEngine () {
+  async create(options: RoomModel) {
+    const room = await this.gameModule.get<RoomEngine>(RoomEngine)
+    const camera = new Viewport().drag({ wheelScroll: 0 }).wheel({
+      reverse: false,
+      smooth: 10,
+    })
 
-    }
+    this.appProvider.app.stage.addChild(camera)
 
-    create (options: RoomOptions) {
-        const camera = new Viewport().drag({ wheelScroll: 0 }).wheel({
-            reverse: false,
-            smooth: 10,
-        })
-        const roomContainer = new Container()
-        camera.addChild(roomContainer)
+    room.init(options)
 
-        this.appProvider.app.stage.addChild(camera)
-        this.setupRoomEngine()
-    }
+    camera.addChild(room.container)
+  }
 
-    dispose () {
-
-    }
+  dispose() {}
 }

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js-legacy'
 import { GameObject } from '../../../engine/lib/GameObject'
 import { Game } from '../../Game'
-import { HumanFigureProps } from '../../imager/human/Human.imager'
+import { HumanFigureProps } from '../../imager/human.imager'
 import { Observable, IObservable } from '../../../engine/lib/Observable'
 import { mergeDeep, random } from '../../../engine/lib/util/Util'
 

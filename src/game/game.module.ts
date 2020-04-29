@@ -1,24 +1,13 @@
-import { Module, OnModuleInit, Inject } from 'injets'
+import { Module } from 'injets'
 import { PixiModule } from './pixi/pixi.module'
 import { ImagerModule } from './imager/imager.module'
-import { JsonParser } from '../engine/loader'
-import { Loader } from '../engine/loader'
-import { RoomProvider } from './room/room.provider'
+import { RoomModule } from './room/room.module'
 
 @Module({
   imports: [
     PixiModule,
     ImagerModule,
-    //Loader
-  ],
-  providers: [
-    RoomProvider
+    RoomModule
   ],
 })
-export class GameModule implements OnModuleInit {
-  // @Inject() readonly loader: Loader
-
-  onModuleInit() {
-   
-  }
-}
+export class GameModule {}
