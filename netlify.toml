@@ -1,6 +1,4 @@
 [build]
     base = "."
-
-    publish = "packages/client/dist"
-
-    command = "lerna bootstrap && cd packages/client && yarn build --mode=demo"
+    publish = "dist"
+    command = "yarn build"
