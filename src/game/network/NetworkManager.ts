@@ -2,7 +2,6 @@ import io, { Socket as Client } from 'socket.io-client'
 import { ServerEvent } from './protocol/events/server.enum'
 import { ClientEvent } from './protocol/events/client.enum'
 import { NetworkPacket } from './protocol/NetworkPacket'
-import { Game } from '../Game'
 
 export interface MessageHandler {
   event: ServerEvent
@@ -11,10 +10,8 @@ export interface MessageHandler {
 
 export class NetworkManager {
   public io: typeof Client
-  public game: Game
 
   constructor ({ game, gateways = [], url }) {
-    this.game = game
     this.io = io(url)
     this.io.on('error', e => console.error(e))
     gateways.forEach(g => this.addGateway(g))

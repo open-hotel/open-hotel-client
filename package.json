@@ -4,7 +4,8 @@
   "scripts": {
     "changelog": "conventional-changelog -p angular -r 2 -i CHANGELOG.md -s",
     "dev": "webpack-dev-server",
-    "start": "sh start.sh"
+    "start": "sh start.sh",
+    "build": "webpack -p"
   },
   "config": {
     "commitizen": {

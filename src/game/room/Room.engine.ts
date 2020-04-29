@@ -1,6 +1,6 @@
 import { Container } from 'pixi.js-legacy'
 import { Provider } from 'injets'
-import { ApplicationProvider } from '../application.provider'
+import { ApplicationProvider } from '../pixi/application.provider'
 import { Matrix } from '../../engine/lib/util/Matrix'
 import { Floor } from './floor/Floor'
 import { RoomImager, StairDirection } from '../imager/room.imager'

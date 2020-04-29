@@ -3,8 +3,8 @@ import { Cube, CubeOptions } from "../../engine/geometry/Cube";
 import { Vector3 } from "../../engine/isometric";
 import { Application } from "../../engine/Application";
 import { IsoPoint } from "../../engine/lib/IsoPoint";
-import { Game } from "../Game";
-import { Provider } from "injets";
+import { Provider, Inject } from "injets";
+import { ApplicationProvider } from "../pixi/application.provider";
 
 export type StairDirection = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
@@ -25,6 +25,8 @@ function createStairSteps(cb: Function, thickness: number = DEFAULT_THICKNESS) {
 
 @Provider()
 export class RoomImager {
+  private readonly appProvider: ApplicationProvider
+
   wallsCache: Record<string, PIXI.Texture> = {}
 
   generateFloorTileTexture (thickness: number = DEFAULT_THICKNESS) {
@@ -271,6 +273,6 @@ export class RoomImager {
     g.lineStyle(2, 0xff73ba, 1, 0)
     g.drawPolygon(polygon)
 
-    return Game.current.app.renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    return this.appProvider.app.renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 }

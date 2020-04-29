@@ -1,5 +1,3 @@
-import { Game } from '../../Game'
-import { PointLike } from '../../../engine/lib/util/Walk'
 import { Logger } from '../../../engine/lib/Logger'
 
 export interface HumanChunkProps {
@@ -62,13 +60,12 @@ export class HumanPart implements HumanChunkProps {
       ...props,
       size: props.size || 'h',
     })
-
-    this.logger = Game.current.app.$logger.create(this.type)
   }
 
   get libLoaded() {
-    const { resources } = Game.current.app.loader
-    return this.lib in resources
+    return false; // TODO
+    // const { resources } = Game.current.app.loader
+    // return this.lib in resources
   }
 
   get spritesheet() {
@@ -77,7 +74,7 @@ export class HumanPart implements HumanChunkProps {
       return null
     }
 
-    const lib = Game.current.app.loader.resources[this.lib]
+    const lib = undefined; // TODO
     const spritesheet = lib && lib.spritesheet
     if (!spritesheet) this.logger.warn(lib, `No Spritesheet defined for ${this.lib}!`)
 

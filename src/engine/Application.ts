@@ -3,11 +3,9 @@ import { Navigation } from './navigation/Navigation'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
 import { Viewport } from 'pixi-viewport'
-import { Game } from '../game/Game'
 import { Scene } from './lib/Scene'
 
 export interface ApplicationOptions {
-  game?: Game
   autoStart?: boolean
   width?: number
   height?: number
@@ -34,7 +32,6 @@ export interface ApplicationOptions {
 PIXI.settings.TARGET_FPMS = 24 / 1000
 
 export class Application extends PIXI.Application {
-  public game: Game
   public readonly $logger = new Logger('Application')
   public $router: Navigation
   public $camera: Viewport
@@ -57,8 +54,6 @@ export class Application extends PIXI.Application {
       },
       options,
     )
-
-    this.game = options.game
 
     this.$logger.context = options.logContext
     this.$logger.level = options.logLevel

@@ -1,5 +1,5 @@
-import { Application, ApplicationOptions } from "../engine/Application";
 import { Provider } from "injets";
+import { Application, ApplicationOptions } from "../../engine/Application";
 
 @Provider()
 export class ApplicationProvider {

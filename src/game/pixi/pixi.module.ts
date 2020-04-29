@@ -1,6 +1,6 @@
 import { Module } from 'injets'
 import { Loader, JsonParser } from '../../engine/loader'
-import { ApplicationProvider } from '../application.provider'
+import { ApplicationProvider } from './application.provider'
 
 @Module(
   {
@@ -21,6 +21,4 @@ import { ApplicationProvider } from '../application.provider'
     exports: [ApplicationProvider, Loader],
   }
 )
-export class PixiModule {
-
-}
+export class PixiModule {}

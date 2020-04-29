@@ -5,9 +5,8 @@
 import Vue from 'vue'
 import { getGameRef } from '../../game/gameRef'
 import { Application } from '../../engine/Application'
-import { ApplicationProvider } from '../../game/application.provider'
+import { ApplicationProvider } from '../../game/pixi/application.provider'
 import { RoomProvider } from '../../game/room/room.provider'
-import Room from '../../game/room/Room'
 import { Matrix } from '../../engine/lib/util/Matrix'
 
 export default Vue.extend({

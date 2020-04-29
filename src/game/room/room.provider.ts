@@ -1,6 +1,6 @@
 import { Provider, Inject, CURRENT_MODULE, ModuleRef } from 'injets'
 import { Viewport } from 'pixi-viewport'
-import { ApplicationProvider } from '../application.provider'
+import { ApplicationProvider } from '../pixi/application.provider'
 import { GameModule } from '../game.module'
 import { RoomEngine } from './Room.engine'
 import { RoomModel } from './types/room.model'
