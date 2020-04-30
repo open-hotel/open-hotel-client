@@ -27,4 +27,4 @@ export const router = new VueRouter({
   ],
 })
 
-router.replace('/splash');
+router.replace('/game');

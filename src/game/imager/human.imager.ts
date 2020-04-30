@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { mergeWith } from 'lodash'
 
 import { HumanPart, calcFlip } from './human/HumanPart'

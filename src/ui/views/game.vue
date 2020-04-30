@@ -1,7 +1,7 @@
 <template>
   <canvas ref="canvas" id="game"></canvas>
 </template>
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import { getGameRef } from '../../game/gameRef'
 import { Application } from '../../engine/Application'
@@ -9,18 +9,20 @@ import { ApplicationProvider } from '../../game/pixi/application.provider'
 import { RoomProvider } from '../../game/room/room.provider'
 import { Matrix } from '../../engine/lib/util/Matrix'
 
-export default Vue.extend({
+export default {
   name: 'Game',
+  created () {
+    this.$router.replace('/splash')
+  },
   methods: {
     async startGame() {
-      const gameModule = await getGameRef()
-      const app = await gameModule.get<ApplicationProvider>(ApplicationProvider)
+      const app = await this.$injets.get(ApplicationProvider)
       
       app.createApp({
         view: this.$refs.canvas,
       })
 
-      const engine = await gameModule.get<RoomProvider>(RoomProvider)
+      const engine = await this.$injets.get(RoomProvider)
       await engine.create({
         users: {},
         door: {
@@ -104,7 +106,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   mounted() {
     this.startGame()
   },
-})
+}
 </script>
 <style lang="stylus">
 #game {

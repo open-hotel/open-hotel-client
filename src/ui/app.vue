@@ -1,14 +1,17 @@
 <template>
   <div id="app">
+    <transition name="fade">
+      <keep-alive include="Game">
+        <router-view />
+      </keep-alive>
+    </transition>
     <oh-notifications class="notifications" />
-      <router-view />
     <oh-toolbar />
   </div>
 </template>
 <script>
 export default {
-  components: {
-  },
+  components: {},
 }
 </script>
 <style lang="stylus">
@@ -20,12 +23,8 @@ export default {
     top: 100px;
     right: 8px;
     z-index: 1000;
-    max-width: 240px;
+    width: 200px;
   }
-}
-
-.fade-move {
-  transition: transform .4s;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -39,5 +38,24 @@ export default {
 /* set opacity to 0 at element's entrance and exit */
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+.fade-x {
+  &-move {
+    transition: all 1s;
+  }
+
+  &-leave-active {
+    position: absolute;
+  }
+
+  &-enter-active, &-leave-active {
+    transition: all 1s;
+  }
+
+  &-enter, &-leave-to {
+    opacity: 0;
+    transform: translate(100%, 0);
+  }
 }
 </style>

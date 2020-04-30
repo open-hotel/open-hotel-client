@@ -1,6 +1,6 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { Application } from '../../engine/Application'
-import { Polygon, SCALE_MODES } from 'pixi.js-legacy'
+import { Polygon, SCALE_MODES } from 'pixi.js'
 import { Vector3 } from '../../engine/isometric/Vector3'
 import { Cube } from '../../engine/geometry/Cube'
 import { GameObject } from '../../engine/lib/GameObject'

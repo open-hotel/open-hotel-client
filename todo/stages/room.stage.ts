@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { Scene } from '../engine/lib/Scene'
 import { Viewport } from 'pixi-viewport'
 import { GameObject } from '../engine/lib/GameObject'

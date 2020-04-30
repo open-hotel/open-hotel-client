@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { IsometricUtils } from './IsometricUtils'
 import { Vector3Interface } from './IVector3'
 

@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { Vector3 } from '../isometric/Vector3'
 import { Observable } from '../lib/Observable'
 

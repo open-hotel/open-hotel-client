@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { GameObject } from '../../../engine/lib/GameObject'
 import { HumanFigureProps } from '../../imager/human.imager'
 import { Observable, IObservable } from '../../../engine/lib/Observable'

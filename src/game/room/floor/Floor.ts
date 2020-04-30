@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { IsoPoint } from '../../../engine/lib/IsoPoint'
 
 export class Floor extends PIXI.Sprite {

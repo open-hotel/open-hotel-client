@@ -1,11 +1,24 @@
 import Vue from 'vue'
-import { router } from './router'
-import App from './app.vue'
+import { createModule, ModuleRef } from 'injets'
 
 import './components'
+import App from './app.vue'
+import { router } from './router'
+import { GameModule } from '../game'
+import { VueInjets } from '../vue-injets'
 
-new Vue({
-  el: '#app',
-  router,
-  render: h => h(App),
-})
+Vue.use(VueInjets)
+
+async function main () {
+  const injets = await createModule(GameModule)
+
+  return new Vue({
+    el: '#app',
+    router,
+    injets,
+    render: h => h(App),
+  })
+}
+
+main()
+

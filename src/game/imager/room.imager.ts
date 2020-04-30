@@ -24,12 +24,18 @@ function createStairSteps(cb: Function, thickness: number = DEFAULT_THICKNESS) {
 }
 
 @Provider()
-export class RoomImager {
-  private readonly appProvider: ApplicationProvider
+export class RoomImager {  
+  private readonly tileCache = {}
 
   wallsCache: Record<string, PIXI.Texture> = {}
 
+  constructor (private readonly appProvider: ApplicationProvider) {}
+
   generateFloorTileTexture (thickness: number = DEFAULT_THICKNESS) {
+    const cacheName = `floor_${thickness}`
+
+    if (cacheName in this.tileCache) return this.tileCache[cacheName]
+
     const floor = new Cube({
       depth: 32,
       height: thickness,
@@ -47,7 +53,7 @@ export class RoomImager {
     floor.lineStyle(2, 0x000000, 0.05)
     floor.drawShape(borderStroke)
 
-    return Application.get().renderer.generateTexture(floor, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    return this.tileCache[cacheName] = this.appProvider.app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
   generateStairTexture (direction: StairDirection, thickness: number = DEFAULT_THICKNESS) {
@@ -195,7 +201,7 @@ export class RoomImager {
 
     g.addChild(border)
 
-    return Application.get().renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    return this.appProvider.app.renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
   generateWallTexture (
@@ -207,6 +213,7 @@ export class RoomImager {
     conner = false
   ) {
     const cacheName = [direction, width, height, door, thickness, conner].join('_')
+
     if (cacheName in this.wallsCache) return this.wallsCache[cacheName]
 
     if (door) {
@@ -257,7 +264,7 @@ export class RoomImager {
       )
     }
 
-    return this.wallsCache[cacheName] = Application.get().renderer.generateTexture(walls, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    return this.wallsCache[cacheName] = this.appProvider.app.renderer.generateTexture(walls, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
   generateFloorSelectionTexture () {

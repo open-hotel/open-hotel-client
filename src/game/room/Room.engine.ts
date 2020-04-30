@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js-legacy'
+import { Container, Graphics } from 'pixi.js'
 import { Provider } from 'injets'
 import { ApplicationProvider } from '../pixi/application.provider'
 import { Matrix } from '../../engine/lib/util/Matrix'
@@ -56,7 +56,6 @@ export class RoomEngine {
       tile.zIndex = this.calcZIndex(position, priority)
 
       this.container.addChild(tile)
-
       return tile
     })
   }

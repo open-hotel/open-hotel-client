@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js'
 import { IsometricUtils } from '../isometric/IsometricUtils'
 
 export interface IsoPointObject {

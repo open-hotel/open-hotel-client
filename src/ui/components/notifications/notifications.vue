@@ -1,6 +1,6 @@
 <template>
   <div class="oh-notifications">
-    <transition-group name="fade" mode="out-in">
+    <transition-group name="fade-x" mode="out-in">
       <div
         v-for="notification in items"
         :key="notification.id"
@@ -20,7 +20,12 @@
             v-if="notification.actions && notification.actions.length"
             class="oh-notification-actions"
           >
-            <a v-for="action in notification.actions" :key="action.id" href="#" @click.prevent.stop="notification.onAction && notification.onAction(action)">{{ action.text }}</a>
+            <a
+              v-for="action in notification.actions"
+              :key="action.id"
+              href="#"
+              @click.prevent.stop="notification.onAction && notification.onAction(action)"
+            >{{ action.text }}</a>
           </div>
         </div>
       </div>
@@ -79,18 +84,21 @@ export default {
       if (!notification) return
 
       this.startTimer(notification)
-      this.items.push(notification)
+      this.items.unshift(notification)
     },
     dispose(notification) {
       if (!notification) return
       const indexDisplay = this.items.findIndex(item => item === notification || item.id === notification.id)
 
       if (indexDisplay >= 0) {
+        this.items.splice(indexDisplay, 1)
+
         const notification = this.pending.shift()
+        
         if (notification) {
           this.startTimer(notification)
-          this.items.splice(indexDisplay, 1, notification)
-        } else this.items.splice(indexDisplay, 1)
+          this.display(notification)
+        }
       } else {
         this.pending = this.pending.filter(item => item.id !== notification.id)
       }
@@ -120,8 +128,8 @@ export default {
         body: `Bar "${this.lastId}".`,
         duration: 10000,
         actions: [
-          {id: 'Y', text: 'Yes'},
-          {id: 'N', text: 'No'},
+          { id: 'Y', text: 'Yes' },
+          { id: 'N', text: 'No' },
         ],
         onAction(action) {
           console.log('Resposta do usuário!', action)
@@ -146,6 +154,9 @@ export default {
     align-items: flex-start;
     cursor: default;
     user-select: none;
+    width: 100%;
+    position relative
+    z-index 1
 
     &-icon {
       flex: 0 auto;

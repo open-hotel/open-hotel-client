@@ -1,3 +1,3 @@
-import PIXI from 'pixi.js'
-
+import 'pixi.js-legacy'
 import './ui'
+
