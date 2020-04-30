@@ -1,9 +1,6 @@
 import * as PIXI from 'pixi.js'
-import { Navigation } from './navigation/Navigation'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
-import { Viewport } from 'pixi-viewport'
-import { Scene } from './lib/Scene'
 
 export interface ApplicationOptions {
   autoStart?: boolean
@@ -52,8 +49,6 @@ export class Application extends PIXI.Application {
 
     this.$logger.context = options.logContext
     this.$logger.level = options.logLevel
-
-    this.$router = new Navigation(this)
 
     window.addEventListener('resize', this.onResize.bind(this))
     this.tickerFallback()

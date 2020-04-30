@@ -22,7 +22,6 @@ export function GameObject<TBase extends Constructor<PIXI.DisplayObject>, Attrs 
 
     constructor(...args: any[]) {
       super(...args)
-      this.app = Application.get()
     }
 
     get mapPosition() {
