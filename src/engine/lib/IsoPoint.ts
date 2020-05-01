@@ -16,10 +16,14 @@ export class IsoPoint {
     if (Array.isArray(point)) return new IsoPoint(point[0], point[1], point[2])
   }
 
-  add(point: IsoPoint): this;
+  static isIsoPoint(value:any): value is IsoPointObject {
+    return typeof value === 'object' && 'x' in value && 'y' in value && 'z' in value
+  }
+
+  add(point: IsoPointObject): this;
   add(x?: number, y?: number, z?: number): this;
-  add(xOrPoint: number | IsoPoint = 0, y?: number, z?: number): this {
-    if (xOrPoint instanceof IsoPoint) {
+  add(xOrPoint: number | IsoPointObject = 0, y?: number, z?: number): this {
+    if (IsoPoint.isIsoPoint(xOrPoint)) {
       this.x += xOrPoint.x
       this.y += xOrPoint.y
       this.z += xOrPoint.z

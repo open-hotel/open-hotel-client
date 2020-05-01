@@ -1,37 +1,31 @@
-import { SCALE_MODES, Polygon, Graphics } from "pixi.js";
-import { Cube, CubeOptions } from "../../engine/geometry/Cube";
-import { Vector3 } from "../../engine/isometric";
-import { Application } from "../../engine/Application";
-import { IsoPoint } from "../../engine/lib/IsoPoint";
-import { Provider, Inject } from "injets";
-import { ApplicationProvider } from "../pixi/application.provider";
+import { SCALE_MODES, Polygon, Graphics } from 'pixi.js'
+import { Cube, CubeOptions } from '../../engine/geometry/Cube'
+import { Vector3 } from '../../engine/isometric'
+import { IsoPoint } from '../../engine/lib/IsoPoint'
+import { Provider } from 'injets'
+import { ApplicationProvider } from '../pixi/application.provider'
 
 export type StairDirection = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
 const DEFAULT_THICKNESS = 8
-const TEXTURE_RESOLUTION = window.devicePixelRatio * 3;
+const TEXTURE_RESOLUTION = window.devicePixelRatio * 3
 
 function createStairSteps(cb: Function, thickness: number = DEFAULT_THICKNESS) {
   return new Array(4).fill(null).map((_, index) => {
-    const {
-      height = thickness,
-      depth = thickness,
-      width = thickness,
-      position = new Vector3()
-    } = cb(index)
+    const { height = thickness, depth = thickness, width = thickness, position = new Vector3() } = cb(index)
     return new Cube({ depth, height, width, position })
   })
 }
 
 @Provider()
-export class RoomImager {  
+export class RoomImager {
   private readonly tileCache = {}
 
   wallsCache: Record<string, PIXI.Texture> = {}
 
-  constructor (private readonly appProvider: ApplicationProvider) {}
+  constructor(private readonly appProvider: ApplicationProvider) {}
 
-  generateFloorTileTexture (thickness: number = DEFAULT_THICKNESS) {
+  generateFloorTileTexture(thickness: number = DEFAULT_THICKNESS) {
     const cacheName = `floor_${thickness}`
 
     if (cacheName in this.tileCache) return this.tileCache[cacheName]
@@ -53,10 +47,14 @@ export class RoomImager {
     floor.lineStyle(2, 0x000000, 0.05)
     floor.drawShape(borderStroke)
 
-    return this.tileCache[cacheName] = this.appProvider.app.renderer.generateTexture(floor, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    return (this.tileCache[cacheName] = this.appProvider.app.renderer.generateTexture(
+      floor,
+      SCALE_MODES.NEAREST,
+      TEXTURE_RESOLUTION,
+    ))
   }
 
-  generateStairTexture (direction: StairDirection, thickness: number = DEFAULT_THICKNESS) {
+  generateStairTexture(direction: StairDirection, thickness: number = DEFAULT_THICKNESS) {
     const g = new Graphics()
 
     const border = new Graphics()
@@ -204,20 +202,14 @@ export class RoomImager {
     return this.appProvider.app.renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
-  generateWallTexture (
-    direction: number,
-    width = 32,
-    height = 100,
-    door = false,
-    thickness = 8,
-    conner = false
-  ) {
+  generateWallTexture(direction: number, width = 32, height = 100, door = false, thickness = 8, conner = false, z = 0) {
+    const walls = new Graphics()
     const cacheName = [direction, width, height, door, thickness, conner].join('_')
 
     if (cacheName in this.wallsCache) return this.wallsCache[cacheName]
 
     if (door) {
-      height -= 80
+      height -= 80 + z
     }
 
     const cubeOptions: CubeOptions = {
@@ -230,44 +222,76 @@ export class RoomImager {
       },
     }
 
-    const walls = new Graphics()
-
-    
     if (conner) {
       walls.addChild(
         new Cube({
           ...cubeOptions,
+          height,
           position: new Vector3(0, -thickness, 0),
           width: thickness,
           depth: thickness,
-        })
-      )
-    }
-    
-    if (direction === 1) {
-      walls.addChild(
-        new Cube({
-          ...cubeOptions,
-          width: width,
-          depth: thickness,
-        })
+        }),
       )
     }
 
+    // Vertical
     if (direction === 0) {
       walls.addChild(
         new Cube({
           ...cubeOptions,
           width: thickness,
           depth: width,
-        })
+        }),
       )
     }
 
-    return this.wallsCache[cacheName] = this.appProvider.app.renderer.generateTexture(walls, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
+    // Horizontal
+    if (direction === 1) {
+      walls.addChild(
+        new Cube({
+          ...cubeOptions,
+          width: width,
+          depth: thickness,
+        }),
+      )
+    }
+
+    
+    if (door) {
+      cubeOptions.position.z -= 80 + 44
+      // Vertical
+      if (direction === 0) {
+        walls.addChild(
+          new Cube({
+            ...cubeOptions,
+            height: z,
+            width: thickness,
+            depth: width,
+          }),
+        )
+      }
+
+      // Horizontal
+      if (direction === 1) {
+        walls.addChild(
+          new Cube({
+            ...cubeOptions,
+            height: z,
+            width: width,
+            depth: thickness,
+          }),
+        )
+      }
+    }
+
+    return (this.wallsCache[cacheName] = this.appProvider.app.renderer.generateTexture(
+      walls,
+      SCALE_MODES.NEAREST,
+      TEXTURE_RESOLUTION,
+    ))
   }
 
-  generateFloorSelectionTexture () {
+  generateFloorSelectionTexture() {
     const g = new Graphics()
 
     const polygon = new Polygon([
@@ -276,7 +300,7 @@ export class RoomImager {
       new IsoPoint(32, 32).toPoint(),
       new IsoPoint(0, 32).toPoint(),
     ])
-    
+
     g.lineStyle(2, 0xff73ba, 1, 0)
     g.drawPolygon(polygon)
 

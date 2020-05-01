@@ -5,20 +5,35 @@ type MatrixMapFunction<V, M = any, R = any> = (value: V, x: number, y: number, m
 type MatrixReduceFunction<A, T = any> = (acc: A, el: T, x: number, y: number, matrix?: Matrix<T>) => A
 
 export const MatrixDeserializers = {
+  json: v => {
+    try {
+      return JSON.parse(v)
+    } catch (e) {
+      return v
+    }
+  },
   number: v => Number(v),
   string: v => v,
 }
 export const MatrixSerializer = {
   number: (v: number) => String(v),
   string: (v: string) => v,
+  json: v => {
+    if (typeof v === 'number' || typeof v === 'string') return v
+    try {
+      return JSON.parse(v)
+    } catch (e) {
+      return v
+    }
+  },
 }
 
 const defaultSerializeOptions = {
-  headerDelimiter: ';',
-  metaDelimiter: ':',
-  delimiter: ',',
-  deserializer: MatrixDeserializers.string,
-  serializer: MatrixSerializer.string,
+  headerDelimiter: ',',
+  metaDelimiter: ';',
+  delimiter: '',
+  deserializer: MatrixDeserializers.json,
+  serializer: MatrixSerializer.json,
 }
 
 type SerializeOptions = typeof defaultSerializeOptions
@@ -26,6 +41,40 @@ type SerializeOptions = typeof defaultSerializeOptions
 const HEIGHTS = 'x0123456789abcdefghijklmnopqrstuvwyz'
 
 export class Matrix<T = any> {
+  static NEIGHBORS = {
+    TOP_LEFT: { x: -1, y: -1 },
+    TOP: { x: 0, y: -1 },
+    TOP_RIGHT: { x: 1, y: -1 },
+    RIGHT: { x: 1, y: 0 },
+    BOTTOM_RIGHT: { x: 1, y: 1 },
+    BOTTOM: { x: 0, y: 1 },
+    BOTTOM_LEFT: { x: -1, y: 1 },
+    LEFT: { x: -1, y: 0 },
+    CENTER: { x: 0, y: 0 },
+  }
+  static NEIGHBORS_ALL = [
+    Matrix.NEIGHBORS.TOP_LEFT,
+    Matrix.NEIGHBORS.TOP,
+    Matrix.NEIGHBORS.TOP_RIGHT,
+    Matrix.NEIGHBORS.RIGHT,
+    Matrix.NEIGHBORS.BOTTOM_RIGHT,
+    Matrix.NEIGHBORS.BOTTOM,
+    Matrix.NEIGHBORS.BOTTOM_LEFT,
+    Matrix.NEIGHBORS.LEFT,
+  ]
+  static NEIGHBORS_ADJACENT = [
+    Matrix.NEIGHBORS.TOP,
+    Matrix.NEIGHBORS.RIGHT,
+    Matrix.NEIGHBORS.BOTTOM,
+    Matrix.NEIGHBORS.LEFT,
+  ]
+  static NEIGHBORS_DIAGONAL = [
+    Matrix.NEIGHBORS.TOP_LEFT,
+    Matrix.NEIGHBORS.TOP_RIGHT,
+    Matrix.NEIGHBORS.BOTTOM_RIGHT,
+    Matrix.NEIGHBORS.BOTTOM_LEFT,
+  ]
+
   constructor(
     public width: number = 3,
     public height: number = width,
@@ -35,13 +84,13 @@ export class Matrix<T = any> {
     this.data = data.slice(0, width * height)
   }
 
-  *rows(start = 0, end = this.height - 1): Generator<[number, T[]]> {
+  *rowsEntries(start = 0, end = this.height - 1): Generator<[number, T[]]> {
     for (let i = start; i <= end; i++) {
       yield [i, this.getRow(i)]
     }
   }
 
-  *columns(): Generator<[number, T[]]> {
+  *columnsEntries(): Generator<[number, T[]]> {
     for (let i = 0; i < this.width; i++) {
       yield [i, this.getCol(i)]
     }
@@ -74,7 +123,7 @@ export class Matrix<T = any> {
    * @param defaultValue Valor padrão caso não seja definido
    */
   get(x: number, y: number, defaultValue: any = null): T {
-    if (x < 0 || (y < 0 && x >= this.width) || y >= this.height) return defaultValue
+    if (x < 0 || y < 0 || x >= this.width || y >= this.height) return defaultValue
     const index = this.getIndexOf(x, y)
     return index >= this.data.length ? defaultValue : this.data[index]
   }
@@ -119,9 +168,13 @@ export class Matrix<T = any> {
    * Preenche a matrix com um valor
    * @param value valor a ser preenchido
    */
-  fill<T>(value: T = null): Matrix<T> {
-    this.data = new Array(this.width * this.height).fill(value)
-    return this as unknown as Matrix<T>
+  fill(value: T | MatrixMapFunction<T>): this {
+    if (typeof value === 'function') {
+      this.data = this.map(value as MatrixMapFunction<T>).data
+    } else {
+      this.data = new Array(this.width * this.height).fill(value)
+    }
+    return this
   }
 
   /**
@@ -266,18 +319,8 @@ export class Matrix<T = any> {
    * @param x Coluna
    * @param y Linha
    */
-  neighborsOf(x: number, y: number): Matrix<T> {
-    return new Matrix<T>(3, 3, [
-      this.get(x - 1, y - 1),
-      this.get(x, y - 1),
-      this.get(x + 1, y - 1),
-      this.get(x - 1, y + 0),
-      this.get(x, y + 0),
-      this.get(x + 1, y + 0),
-      this.get(x - 1, y + 1),
-      this.get(x, y + 1),
-      this.get(x + 1, y + 1),
-    ])
+  neighborsOf(x: number, y: number, items = Matrix.NEIGHBORS_ALL): T[] {
+    return items.map(r => this.get(x + r.x, y + r.y))
   }
 
   /**
@@ -287,13 +330,18 @@ export class Matrix<T = any> {
    */
   static parse<T>(
     encodedMatrix: string,
-    { metaDelimiter, headerDelimiter, deserializer, delimiter }: SerializeOptions = defaultSerializeOptions,
+    {
+      metaDelimiter = defaultSerializeOptions.metaDelimiter,
+      headerDelimiter = defaultSerializeOptions.headerDelimiter,
+      deserializer = defaultSerializeOptions.deserializer,
+      delimiter = defaultSerializeOptions.delimiter,
+    } = {},
   ): Matrix<T> {
     const [encodedHeader, encodedData] = encodedMatrix.split(metaDelimiter)
     const [cols, rows, ...meta] = encodedHeader.split(headerDelimiter)
     deserializer = deserializer || MatrixDeserializers.string
     const data = encodedData.split(delimiter).map<T>(deserializer)
-    return this.fromArray<T>(data, +cols, +rows, meta)
+    return this.fromArray<T>(data, +cols, +rows, meta.map(MatrixDeserializers.json))
   }
 
   /**
@@ -360,10 +408,11 @@ export class Matrix<T = any> {
    * Codifica a matriz em uma string
    * @param param0 Opções de codificação
    */
-  stringify({ headerDelimiter = ';', metaDelimiter = ':', delimiter = ',' } = {}) {
-    return [[this.width, this.height, ...this.meta].join(headerDelimiter), this.data.join(delimiter)].join(
-      metaDelimiter,
-    )
+  stringify({ headerDelimiter = ',', metaDelimiter = ':', delimiter = ',', serializer = v => v } = {}) {
+    return [
+      [this.width, this.height, ...this.meta.map(MatrixSerializer.json)].join(headerDelimiter),
+      this.data.map(serializer).join(delimiter),
+    ].join(metaDelimiter)
   }
 
   toString() {
@@ -373,25 +422,30 @@ export class Matrix<T = any> {
   }
 
   static fromLegacyString<T extends number>(map: string) {
-    map = map.replace(new RegExp(`[^${HEIGHTS}\n]|^\n+|\n+$`, 'gm'), '');
-    const { data, cols, rows } = [...map].reduce((acc, char) => {
-      if (char === '\n') {
-        acc.rowCol = 0
-        acc.rows++
-      } else {
-        const i = HEIGHTS.indexOf(char) as T
-        
-        acc.data.push(i)
-        acc.cols = Math.max(acc.cols, ++acc.rowCol)
-        acc.rows = Math.max(1, acc.rows)
-      }
-      return acc
-    }, {
-      data: [] as T[],
-      cols: 0,
-      rowCol: 0,
-      rows: 0
-    })
+    console.log(map)
+    map = map.replace(new RegExp(`[^${HEIGHTS}\n]|^\n+|\n+$`, 'gm'), '')
+    console.log(map)
+    const { data, cols, rows } = map.split('').reduce(
+      (acc, char) => {
+        if (char === '\n') {
+          acc.rowCol = 0
+          acc.rows++
+        } else {
+          const i = HEIGHTS.indexOf(char) as T
+
+          acc.data.push(i)
+          acc.cols = Math.max(acc.cols, ++acc.rowCol)
+          acc.rows = Math.max(1, acc.rows)
+        }
+        return acc
+      },
+      {
+        data: [] as T[],
+        cols: 0,
+        rowCol: 0,
+        rows: 0,
+      },
+    )
 
     return Matrix.from<T>(data, cols, rows)
   }

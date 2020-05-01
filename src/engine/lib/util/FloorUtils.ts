@@ -2,6 +2,7 @@ import { Matrix } from "./Matrix"
 
 export const createFloorTestFunction = (map: Matrix<number>) => (test: Matrix<string>) => {
   const current = map.get(1, 1)
+
   return map.every((mapCol, x, y) => {
     const blockTest: string = test.get(x, y)
     const splitblockTest = blockTest.split('|')
