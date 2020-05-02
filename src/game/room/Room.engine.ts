@@ -1,5 +1,5 @@
-import { Container, Graphics } from 'pixi.js'
-import { Provider, Inject } from 'injets'
+import { Container } from 'pixi.js'
+import { Provider } from 'injets'
 import { ApplicationProvider } from '../pixi/application.provider'
 import { Matrix } from '../../engine/lib/util/Matrix'
 import { Floor } from './floor/Floor'
@@ -15,7 +15,7 @@ const PRIORITY = {
   FLOOR_DOOR: 1,
   WALL_V: 1,
   WALL_H: 3,
-  FLOOR: 4,
+  FLOOR: 5,
 }
 
 @Provider('TRANSIENT')
@@ -61,13 +61,13 @@ export class RoomEngine {
       position.add(offset)
 
       const tile = new Floor(texture, position)
-      const isDoor = x === this.door.x && y === this.door.y
+      const isDoor = x === this.door?.x && y === this.door?.y
       const inBound = this.walls.get(x + 1, y) || this.walls.get(x, y + 1)
       const priority = isDoor && inBound ? PRIORITY.FLOOR_DOOR : PRIORITY.FLOOR
 
       if (this.spawn.x === x && this.spawn.y === y) tile.tint = 0xff0000
 
-      tile.zIndex = this.calcZIndex(position, priority)
+      tile.zIndex = (isDoor ? this.walls.get(x + 1, y)?.zIndex : null) ?? this.calcZIndex(position, priority)
 
       this.container.addChild(tile)
       return tile
@@ -84,77 +84,132 @@ export class RoomEngine {
 
     this.walls = new Matrix(this.heightmap.width, this.heightmap.height)
 
-    let maxVX = Infinity
-
+    // Verifica se há um local de porta definido, e se este local
+    // é uma porta válida para ser renderizada
     if (this.spawn) {
-      const spawnIsDoor = this.heightmap
-        .neighborsOf(this.spawn.x, this.spawn.y, [Matrix.NEIGHBORS.TOP, Matrix.NEIGHBORS.BOTTOM, Matrix.NEIGHBORS.LEFT])
-        .every(b => !b)
+      const spawnBlock = this.heightmap.get(this.spawn.x, this.spawn.y)
 
-      if (spawnIsDoor) {
-        this.door = this.spawn
-      }
-    }
-    // Procurando porta na parede vertical
-    loopDoor: for (let y = 0; !this.door && y < this.heightmap.height; y++) {
-      for (let x = 0; x < this.heightmap.width; x++) {
-        const z = this.heightmap.get(x, y)
-
-        // Não testar blocos com 0
-        if (!z) continue
-
-        // Não enfileirar paredes verticais
-        // horizontalmente
-        if (x > maxVX) break
-
-        // Define a posição X máxima para o bloco atual
-        maxVX = x
-
-        const notHasX = this.heightmap
-          .neighborsOf(x, y, [Matrix.NEIGHBORS.TOP, Matrix.NEIGHBORS.BOTTOM, Matrix.NEIGHBORS.LEFT])
+      // Descartar a localização do spawn se não houver bloco no local
+      if (!spawnBlock) this.spawn = null
+      else {
+        // Verifica se é um local válido para a renderização de uma porta
+        const spawnIsDoor = this.heightmap
+          .neighborsOf(this.spawn.x, this.spawn.y, [
+            Matrix.NEIGHBORS.TOP,
+            Matrix.NEIGHBORS.BOTTOM,
+            Matrix.NEIGHBORS.LEFT,
+          ])
           .every(b => !b)
 
-        if (notHasX) {
-          this.door = {
-            x,
-            y,
-          }
-          if (!this.spawn) this.spawn = this.door
-          break loopDoor
+        if (spawnIsDoor) {
+          this.door = this.spawn
         }
       }
     }
 
-    maxVX = Infinity
+    // Procura um local válido para a porta caso não tenha sido definida
+    if (!this.door) {
+      // X máximo onde a porta poderá ser encontrada
+      let maxDoorX = this.heightmap.width
+
+      // Procurando porta apenas na parede vertical
+      loopDoor: for (let y = 0; y < this.heightmap.height; y++) {
+        for (let x = 0; x <= maxDoorX; x++) {
+          const z = this.heightmap.get(x, y)
+
+          // Não testar blocos com 0
+          if (!z) continue
+
+          // Define a posição X máxima para o bloco atual
+          maxDoorX = x
+
+          const validDoorBlock = this.heightmap
+            .neighborsOf(x, y, [Matrix.NEIGHBORS.TOP, Matrix.NEIGHBORS.BOTTOM, Matrix.NEIGHBORS.LEFT])
+            .every(b => !b)
+
+          if (validDoorBlock) {
+            this.door = { x, y }
+            if (!this.spawn) this.spawn = this.door
+            break loopDoor
+          }
+          break
+        }
+      }
+    }
+
+    // Y máximo onde pode haver paredes
+    let maxWallY = this.heightmap.height
 
     // Paredes Horizontais
-    wallsH: for (let y = 0; y < this.heightmap.height; y++) {
+    for (let x = 0; x < this.heightmap.width; x++) {
       // Percorre as colunas até o primeiro bloco vertical
-      for (let x = 0; x < this.heightmap.width; x++) {
-        if (x === this.door.x && y === this.door.y) continue
+      for (let y = 0; y <= maxWallY; y++) {
+        if (x === this.door?.x && y === this.door?.y) continue
         const z = this.heightmap.get(x, y)
         // Se for 0, não inserir paredes
         if (!z) continue
 
         // Não enfileirar paredes horizontais verticalmente
-        for (let wy = y; wy >= 0; wy--) {
-          const block = this.walls.get(x, wy)
-          if (block) continue wallsH
-        }
+        maxWallY = y
 
         const elevation = (z - 1) * 32
-        const height = MAX_HEIGHT + WALL_HEIGHT
-        const isDoor = x === this.door.x && y - 1 === this.door.y
+
+        // Encontra os vizinhos de cima e de baixo sucessivamente para encontrar
+        // o menor Z ligado ao bloco atual
+        let minNeighborZ = z
+        Array.from([Matrix.NEIGHBORS.LEFT, Matrix.NEIGHBORS.RIGHT])
+          .map(r => {
+            const nx = r.x + x
+            const ny = r.y + y
+            return {
+              x: nx,
+              y: ny,
+              z: this.heightmap.get(nx, ny),
+              next: r,
+            }
+          })
+          .forEach(neigh => {
+            while (neigh?.z) {
+              minNeighborZ = Math.min(neigh.z, minNeighborZ)
+
+              // Se houver um bloco para tras para a verificação
+              // Se houver um bloco para tras para a verificação
+              const backBlock = { x: neigh.x, y: neigh.y - 1 }
+              if (
+                this.heightmap.get(backBlock.x, backBlock.y) &&
+                !(backBlock.x == this.door.x && backBlock.y == this.door.y)
+              )
+                break
+
+              const nextNeighX = neigh.x + neigh.next.x
+              const nextNeighY = neigh.y + neigh.next.y
+              neigh = {
+                ...neigh,
+                x: nextNeighX,
+                y: nextNeighY,
+                z: this.heightmap.get(nextNeighX, nextNeighY),
+              }
+            }
+          })
+
+        // Calcula a menor elevação ligada ao bloco atual
+        const minZElevation = (minNeighborZ - 1) * 32
+
+        const height = MAX_HEIGHT + WALL_HEIGHT - minZElevation
+        const isDoor = x === this.door?.x && y - 1 === this.door?.y
+
+        // Elevação relativa a elevação do bloco com o menor z
+        const relativeElevation = elevation - minZElevation
 
         // Renderiza
-        const texture = this.roomImager.generateWallTexture(1, 32, height, isDoor, 8, false, elevation)
-        const position = new IsoPoint((x + 1) * 32, y * 32, height + 20)
+        const texture = this.roomImager.generateWallTexture(1, 32, height, isDoor, 8, false, relativeElevation)
+        const position = new IsoPoint((x + 1) * 32, y * 32, height + 20 + minZElevation)
         const wall = new Wall(texture, position)
 
         wall.zIndex = this.calcZIndex(
           {
             ...position,
-            z: elevation,
+            z: minZElevation,
           },
           PRIORITY.WALL_H,
         )
@@ -165,20 +220,19 @@ export class RoomEngine {
       }
     }
 
+    // X máximo onde pode haver paredes
+    let maxWallX = this.heightmap.width
+
     // Paredes Verticais
     for (let y = 0; y < this.heightmap.height; y++) {
-      for (let x = 0; x < this.heightmap.width; x++) {
-        if (x === this.door.x && y === this.door.y) continue
+      for (let x = 0; x <= maxWallX; x++) {
+        if (x === this.door?.x && y === this.door?.y) continue
         const z = this.heightmap.get(x, y)
         // Não testar blocos com 0
         if (!z) continue
 
-        // Não enfileirar paredes verticais
-        // horizontalmente
-        if (x > maxVX) break
-
         // Define a posição X máxima para o bloco atual
-        maxVX = x
+        maxWallX = x
 
         let elevation = (z - 1) * 32
 
@@ -186,48 +240,56 @@ export class RoomEngine {
         // um bloco horizontal nesta posição
         // let conner = walls[y][x] === WH
 
-        let neighY = [Matrix.NEIGHBORS.TOP, Matrix.NEIGHBORS.BOTTOM].map(r => {
-          const nx = r.x + x
-          const ny = r.y + y
-          return {
-            x: nx,
-            y: ny,
-            z: this.heightmap.get(x, y)
-          }
-        })
-        let minZ = z
+        // Encontra os vizinhos de cima e de baixo sucessivamente para encontrar
+        // o menor Z ligado ao bloco atual
+        let minNeighborZ = z
+        Array.from([Matrix.NEIGHBORS.TOP, Matrix.NEIGHBORS.BOTTOM])
+          .map(r => {
+            const nx = r.x + x
+            const ny = r.y + y
+            return {
+              x: nx,
+              y: ny,
+              z: this.heightmap.get(nx, ny),
+              next: r,
+            }
+          })
+          .forEach(neigh => {
+            while (neigh?.z) {
+              minNeighborZ = Math.min(neigh.z, minNeighborZ)
 
-        let [top, bottom] = neighY
+              // Se houver um bloco para tras para a verificação
+              const backBlock = { x: neigh.x - 1, y: neigh.y }
+              if (
+                this.heightmap.get(backBlock.x, backBlock.y) &&
+                !(backBlock.x == this.door.x && backBlock.y == this.door.y)
+              )
+                break
 
-        while (top?.z) {
-          minZ = Math.min(top.z, minZ)
+              const nextNeighX = neigh.x + neigh.next.x
+              const nextNeighY = neigh.y + neigh.next.y
+              neigh = {
+                ...neigh,
+                x: nextNeighX,
+                y: nextNeighY,
+                z: this.heightmap.get(nextNeighX, nextNeighY),
+              }
+            }
+          })
 
-          top = {
-            x: top.x,
-            y: top.y - 1,
-            z: this.heightmap.get(top.x, top.y - 1),
-          }
-        }
+        // Calcula a menor elevação ligada ao bloco atual
+        const minZElevation = (minNeighborZ - 1) * 32
 
-        while (bottom?.z) {
-          minZ = Math.min(bottom.z, minZ)
-
-          bottom = {
-            x: bottom.x,
-            y: bottom.y + 1,
-            z: this.heightmap.get(bottom.x, bottom.y + 1),
-          }
-        }
-
-        const minZElevation = (minZ - 1) * 32;
-
-        const isDoor = x - 1 === this.door.x && y === this.door.y
-        const height = MAX_HEIGHT + WALL_HEIGHT
+        const isDoor = x - 1 === this.door?.x && y === this.door?.y
+        const height = MAX_HEIGHT + WALL_HEIGHT - minZElevation
         const isConner = !!this.walls.get(x, y)
 
+        // Elevação relativa a elevação do bloco com o menor z
+        const relativeElevation = elevation - minZElevation
+
         // Renderiza
-        const texture = this.roomImager.generateWallTexture(0, 32, height, isDoor, 8, isConner, elevation)
-        const position = new IsoPoint(x * 32 - 8, y * 32, height)
+        const texture = this.roomImager.generateWallTexture(0, 32, height, isDoor, 8, isConner, relativeElevation)
+        const position = new IsoPoint(x * 32 - 8, y * 32, height + minZElevation)
         const wall = new Wall(texture, position)
 
         if (isConner)
@@ -236,7 +298,13 @@ export class RoomEngine {
             .toPoint()
             .copyTo(wall.position)
 
-        wall.zIndex = this.calcZIndex(position, PRIORITY.WALL_V)
+        wall.zIndex = this.calcZIndex(
+          {
+            ...position,
+            z: minZElevation,
+          },
+          PRIORITY.WALL_V,
+        )
 
         this.walls.set(x, y, wall)
 
