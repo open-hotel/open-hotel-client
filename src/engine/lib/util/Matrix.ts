@@ -178,6 +178,13 @@ export class Matrix<T = any> {
   }
 
   /**
+   * Retorna uma string única contendo a matriz
+   */
+  toLegacyString() {
+    return this.mapRows((lin, nlin) => lin.map((val: any) => HEIGHTS[val]).join('')).join('\n')
+  }
+
+  /**
    * Mapeia todas as linhas da matriz
    * @param cb Callback de mapeamento
    */

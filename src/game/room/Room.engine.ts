@@ -10,12 +10,15 @@ import { createFloorTestFunction } from '../../engine/lib/util/FloorUtils'
 import ladders from './floor/ladders'
 import { Wall } from './wall/Wall'
 import { PointLike } from '../../engine/lib/util/Walk'
+import Culling from 'pixi-cull'
+import { Viewport } from 'pixi-viewport'
+import PIXI from 'pixi.js'
 
 const PRIORITY = {
   FLOOR_DOOR: 1,
   WALL_V: 1,
-  WALL_H: 3,
-  FLOOR: 5,
+  WALL_H: 2,
+  FLOOR: 3,
 }
 
 @Provider('TRANSIENT')
@@ -65,7 +68,7 @@ export class RoomEngine {
       const inBound = this.walls.get(x + 1, y) || this.walls.get(x, y + 1)
       const priority = isDoor && inBound ? PRIORITY.FLOOR_DOOR : PRIORITY.FLOOR
 
-      if (this.spawn.x === x && this.spawn.y === y) tile.tint = 0xff0000
+      if (this.spawn?.x === x && this.spawn?.y === y) tile.tint = 0xff0000
 
       tile.zIndex = (isDoor ? this.walls.get(x + 1, y)?.zIndex : null) ?? this.calcZIndex(position, priority)
 
@@ -81,6 +84,8 @@ export class RoomEngine {
   renderWalls() {
     const WALL_HEIGHT = 92
     const MAX_HEIGHT = this.heightmap.reduce((max, z) => Math.max(max, z * 32), -Infinity)
+    const WALL_SIZE = 32
+    const WALL_THICKNESS = 8
 
     this.walls = new Matrix(this.heightmap.width, this.heightmap.height)
 
@@ -93,13 +98,29 @@ export class RoomEngine {
       if (!spawnBlock) this.spawn = null
       else {
         // Verifica se é um local válido para a renderização de uma porta
-        const spawnIsDoor = this.heightmap
-          .neighborsOf(this.spawn.x, this.spawn.y, [
-            Matrix.NEIGHBORS.TOP,
-            Matrix.NEIGHBORS.BOTTOM,
-            Matrix.NEIGHBORS.LEFT,
-          ])
-          .every(b => !b)
+        let spawnIsDoor: boolean = false
+
+        // Parede vertical
+        spawnIsDoor =
+          spawnIsDoor ||
+          this.heightmap
+            .neighborsOf(this.spawn.x, this.spawn.y, [
+              Matrix.NEIGHBORS.TOP,
+              Matrix.NEIGHBORS.LEFT,
+              Matrix.NEIGHBORS.BOTTOM,
+            ])
+            .every(b => !b)
+
+        // Parede horizontal
+        spawnIsDoor =
+          spawnIsDoor ||
+          this.heightmap
+            .neighborsOf(this.spawn.x, this.spawn.y, [
+              Matrix.NEIGHBORS.LEFT,
+              Matrix.NEIGHBORS.TOP,
+              Matrix.NEIGHBORS.RIGHT,
+            ])
+            .every(b => !b)
 
         if (spawnIsDoor) {
           this.door = this.spawn
@@ -123,12 +144,15 @@ export class RoomEngine {
           // Define a posição X máxima para o bloco atual
           maxDoorX = x
 
+          // Verificação de um bloco válido para renderização da porta
           const validDoorBlock = this.heightmap
             .neighborsOf(x, y, [Matrix.NEIGHBORS.TOP, Matrix.NEIGHBORS.BOTTOM, Matrix.NEIGHBORS.LEFT])
             .every(b => !b)
 
           if (validDoorBlock) {
             this.door = { x, y }
+
+            // Se não houver um spawn definido ele será o local da porta encontrada
             if (!this.spawn) this.spawn = this.door
             break loopDoor
           }
@@ -148,6 +172,30 @@ export class RoomEngine {
         const z = this.heightmap.get(x, y)
         // Se for 0, não inserir paredes
         if (!z) continue
+
+        // Comprimento da parede
+        let wallLength = 1
+
+        // Se o bloco atual deve renderizar uma porta
+        const isDoor = x === this.door?.x && y - 1 === this.door?.y
+
+        // Se o bloco atual não for uma porta, calcula o tamanho da parede
+        if (!isDoor) {
+          let neighY = y
+          let neighX = x + 1
+          do {
+            // Para a verificação de paredes conexas ao encontrar um bloco nulo
+            let neighZ = this.heightmap.get(neighX, neighY)
+            if (!neighZ) break
+
+            // Para a verificação de paredes conexas ao encontrar uma possível parede atras
+            const backBlock = { x: neighX, y: neighY - 1 }
+            if (this.heightmap.get(backBlock.x, backBlock.y)) break
+
+            wallLength++
+            neighX++
+          } while (neighX < this.heightmap.width)
+        }
 
         // Não enfileirar paredes horizontais verticalmente
         maxWallY = y
@@ -177,7 +225,7 @@ export class RoomEngine {
               const backBlock = { x: neigh.x, y: neigh.y - 1 }
               if (
                 this.heightmap.get(backBlock.x, backBlock.y) &&
-                !(backBlock.x == this.door.x && backBlock.y == this.door.y)
+                !(backBlock.x == this.door?.x && backBlock.y == this.door?.y)
               )
                 break
 
@@ -193,23 +241,38 @@ export class RoomEngine {
           })
 
         // Calcula a menor elevação ligada ao bloco atual
-        const minZElevation = (minNeighborZ - 1) * 32
+        const minZElevation = (minNeighborZ - 1) * WALL_SIZE
 
         const height = MAX_HEIGHT + WALL_HEIGHT - minZElevation
-        const isDoor = x === this.door?.x && y - 1 === this.door?.y
+        const width = WALL_SIZE * wallLength
 
         // Elevação relativa a elevação do bloco com o menor z
         const relativeElevation = elevation - minZElevation
 
         // Renderiza
-        const texture = this.roomImager.generateWallTexture(1, 32, height, isDoor, 8, false, relativeElevation)
-        const position = new IsoPoint((x + 1) * 32, y * 32, height + 20 + minZElevation)
+        const texture = this.roomImager.generateWallTexture(
+          1,
+          width,
+          height,
+          isDoor,
+          WALL_THICKNESS,
+          isDoor,
+          relativeElevation,
+        )
+
+        // Calcula a posição de renderização da parede
+        const posX = (x + 1) * WALL_SIZE
+        const posY = y * WALL_SIZE
+        const posZ = height + 20 + minZElevation // + (wallLength - 1) * (WALL_SIZE / 2)
+        const position = new IsoPoint(posX, posY, posZ)
+
         const wall = new Wall(texture, position)
 
         wall.zIndex = this.calcZIndex(
           {
-            ...position,
-            z: minZElevation,
+            x,
+            y,
+            z: Math.max(minZElevation, 1),
           },
           PRIORITY.WALL_H,
         )
@@ -217,6 +280,9 @@ export class RoomEngine {
         this.walls.set(x, y, wall)
 
         this.container.addChild(wall)
+
+        // Pula para o x apos a ultima parede inserida
+        x += wallLength - 1
       }
     }
 
@@ -226,15 +292,43 @@ export class RoomEngine {
     // Paredes Verticais
     for (let y = 0; y < this.heightmap.height; y++) {
       for (let x = 0; x <= maxWallX; x++) {
+        // Se for o bloco da porta ignora
         if (x === this.door?.x && y === this.door?.y) continue
+
+        // Não testa blocos com 0
         const z = this.heightmap.get(x, y)
-        // Não testar blocos com 0
         if (!z) continue
+
+        // Verifica so o bloco atual deve renderizar uma porta
+        const isDoor = x - 1 === this.door?.x && y === this.door?.y
+
+        // Comprimento da parede
+        let wallLength = 1
+
+        // Se o bloco atual não for uma porta, calcula o tamanho da parede
+        if (!isDoor) {
+          let neighY = y + 1
+          let neighX = x
+          do {
+            // Para a verificação de paredes conexas ao encontrar um bloco nulo
+            let neighZ = this.heightmap.get(neighX, neighY)
+            if (!neighZ) break
+
+            // Para a verificação de paredes conexas ao encontrar uma possível parede atras
+            const backBlock = { x: neighX - 1, y: neighY }
+            if (this.heightmap.get(backBlock.x, backBlock.y)) break
+
+            wallLength++
+            neighY++
+          } while (neighY < this.heightmap.height)
+
+          console.log(`X: ${x}, y: ${y}, length: ${wallLength}`)
+        }
+
+        const elevation = (z - 1) * WALL_SIZE
 
         // Define a posição X máxima para o bloco atual
         maxWallX = x
-
-        let elevation = (z - 1) * 32
 
         // Bloco com canto se já existir
         // um bloco horizontal nesta posição
@@ -262,7 +356,7 @@ export class RoomEngine {
               const backBlock = { x: neigh.x - 1, y: neigh.y }
               if (
                 this.heightmap.get(backBlock.x, backBlock.y) &&
-                !(backBlock.x == this.door.x && backBlock.y == this.door.y)
+                !(backBlock.x == this.door?.x && backBlock.y == this.door?.y)
               )
                 break
 
@@ -278,18 +372,32 @@ export class RoomEngine {
           })
 
         // Calcula a menor elevação ligada ao bloco atual
-        const minZElevation = (minNeighborZ - 1) * 32
+        const minZElevation = (minNeighborZ - 1) * WALL_SIZE
 
-        const isDoor = x - 1 === this.door?.x && y === this.door?.y
         const height = MAX_HEIGHT + WALL_HEIGHT - minZElevation
+        const width = wallLength * WALL_SIZE
         const isConner = !!this.walls.get(x, y)
 
         // Elevação relativa a elevação do bloco com o menor z
         const relativeElevation = elevation - minZElevation
 
         // Renderiza
-        const texture = this.roomImager.generateWallTexture(0, 32, height, isDoor, 8, isConner, relativeElevation)
-        const position = new IsoPoint(x * 32 - 8, y * 32, height + minZElevation)
+        const texture = this.roomImager.generateWallTexture(
+          0,
+          width,
+          height,
+          isDoor,
+          WALL_THICKNESS,
+          isConner,
+          relativeElevation,
+        )
+
+        // Calcula a posição de renderização da parede
+        const posX = x * WALL_SIZE - WALL_THICKNESS
+        const posY = (y + wallLength - 1) * WALL_SIZE
+        const posZ = height + minZElevation + (wallLength - 1) * (WALL_SIZE / 2)
+        const position = new IsoPoint(posX, posY, posZ)
+
         const wall = new Wall(texture, position)
 
         if (isConner)
@@ -300,8 +408,9 @@ export class RoomEngine {
 
         wall.zIndex = this.calcZIndex(
           {
-            ...position,
-            z: minZElevation,
+            x,
+            y,
+            z: Math.max(minZElevation, 1),
           },
           PRIORITY.WALL_V,
         )
@@ -309,6 +418,9 @@ export class RoomEngine {
         this.walls.set(x, y, wall)
 
         this.container.addChild(wall)
+
+        // Pula para o y depois da parede gerada
+        y += wallLength - 1
       }
     }
   }

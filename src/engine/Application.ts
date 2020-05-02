@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import Cull from 'pixi-cull'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
 

@@ -45,6 +45,7 @@
     "injets": "^1.2.4",
     "lodash.merge": "^4.6.2",
     "msgpack-js-browser": "^0.1.4",
+    "pixi-cull": "^0.6.0",
     "pixi-viewport": "^4.3.3",
     "pixi.js-legacy": "^5.2.1",
     "promise-async": "^0.2.0",
