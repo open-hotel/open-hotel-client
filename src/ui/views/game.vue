@@ -11,13 +11,13 @@ import { Matrix } from '../../engine/lib/util/Matrix'
 
 export default {
   name: 'Game',
-  created () {
+  created() {
     this.$router.replace('/splash')
   },
   methods: {
     async startGame() {
       const app = await this.$injets.get(ApplicationProvider)
-      
+
       app.createApp({
         view: this.$refs.canvas,
       })
@@ -25,18 +25,19 @@ export default {
       const engine = await this.$injets.get(RoomProvider)
       await engine.create({
         users: {},
-        door: {
-          x: 0,
-          y: 2
-        },
         heightmap: Matrix.fromLegacyString(`
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xwvutsrqponmlkjihgfedcba9876543210
-wwvutsrqponmlkjihgfedcba9876543210
-xwvutsrqponmlkjihgfedcba9876543210
-xxxxxxxxxxx0xxxxxxxxxxxxxxxxxxx000
-x00000000000xxxxxxxxxxxxxxxxxxxxxx
-x00000000000xxxxxxxxxxxxxxxxxxxxxx
+xwvutsrqponmlkjihgfedcba9876543333
+wwvutsrqponmlkjihgfedcba9876543333
+xwvutsrqponmlkjihgfedcba9876543333
+bbbba98765432100000000000000000222
+xxxxxxxxxxxxxxx0000000000000000111
+x000000000000000000000000000000000
+x000000000000000000000000000000000
+x000000000000000000000000000000000
+x000000000000000000000000000000000
+x000000000000000000000000000000000
+x000000000000000000000000000000000
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         `),
       })

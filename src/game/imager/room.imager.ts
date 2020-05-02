@@ -202,14 +202,22 @@ export class RoomImager {
     return this.appProvider.app.renderer.generateTexture(g, SCALE_MODES.NEAREST, TEXTURE_RESOLUTION)
   }
 
-  generateWallTexture(direction: number, width = 32, height = 100, door = false, thickness = 8, conner = false, z = 0) {
+  generateWallTexture(
+    direction: number,
+    width = 32,
+    height = 100,
+    door = false,
+    thickness = 8,
+    conner = false,
+    elevation = 0,
+  ) {
     const walls = new Graphics()
     const cacheName = [direction, width, height, door, thickness, conner].join('_')
 
     if (cacheName in this.wallsCache) return this.wallsCache[cacheName]
 
     if (door) {
-      height -= 80 + z
+      height -= elevation + 80
     }
 
     const cubeOptions: CubeOptions = {
@@ -226,7 +234,6 @@ export class RoomImager {
       walls.addChild(
         new Cube({
           ...cubeOptions,
-          height,
           position: new Vector3(0, -thickness, 0),
           width: thickness,
           depth: thickness,
@@ -256,15 +263,15 @@ export class RoomImager {
       )
     }
 
-    
-    if (door) {
-      cubeOptions.position.z -= 80 + 44
+    if (door && elevation > 0) {
+      cubeOptions.position.z -= height + 80
+
       // Vertical
       if (direction === 0) {
         walls.addChild(
           new Cube({
             ...cubeOptions,
-            height: z,
+            height: elevation,
             width: thickness,
             depth: width,
           }),
@@ -276,7 +283,7 @@ export class RoomImager {
         walls.addChild(
           new Cube({
             ...cubeOptions,
-            height: z,
+            height: elevation,
             width: width,
             depth: thickness,
           }),
