@@ -38,19 +38,18 @@ export class RoomProvider {
         minScale: 0.5,
       })
       .bounce({
+        // @ts-ignore
         bounceBox: {
-          x: bounds.left - window.innerWidth,
-          y: bounds.top - window.innerHeight,
-          width: bounds.width,
-          height: bounds.height + window.innerHeight,
+          x: bounds.left - bounds.width / 1.5,
+          y: bounds.top - bounds.height / 4.5,
+          width: bounds.width * 1.5,
+          height: bounds.height / 1.5,
         },
-      } as any)
+      })
 
     this.appProvider.app.stage.addChild(camera)
 
     camera.addChild(room.container)
-
-    camera.fitWorld(true)
 
     this.setupCulling(camera, room)
   }

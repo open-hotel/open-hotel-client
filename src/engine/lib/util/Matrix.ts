@@ -429,9 +429,7 @@ export class Matrix<T = any> {
   }
 
   static fromLegacyString<T extends number>(map: string) {
-    console.log(map)
     map = map.replace(new RegExp(`[^${HEIGHTS}\n]|^\n+|\n+$`, 'gm'), '')
-    console.log(map)
     const { data, cols, rows } = map.split('').reduce(
       (acc, char) => {
         if (char === '\n') {

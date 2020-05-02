@@ -321,18 +321,12 @@ export class RoomEngine {
             wallLength++
             neighY++
           } while (neighY < this.heightmap.height)
-
-          console.log(`X: ${x}, y: ${y}, length: ${wallLength}`)
         }
 
         const elevation = (z - 1) * WALL_SIZE
 
         // Define a posição X máxima para o bloco atual
         maxWallX = x
-
-        // Bloco com canto se já existir
-        // um bloco horizontal nesta posição
-        // let conner = walls[y][x] === WH
 
         // Encontra os vizinhos de cima e de baixo sucessivamente para encontrar
         // o menor Z ligado ao bloco atual
