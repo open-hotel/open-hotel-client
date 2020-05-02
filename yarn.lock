@@ -4253,6 +4253,11 @@ pinkie@^2.0.0:
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha1-clVrgM+g1IqXToDnckjoDtT3+HA=
 
+pixi-cull@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/pixi-cull/-/pixi-cull-0.6.0.tgz#e9618049bef1c89427e102697ffa91e80eef8f73"
+  integrity sha512-y/u0Tz8mz+8qxi+ycXd7ouKifH1IwfuqZ1WLMHrBRaHmfJpcdqTjgu4EqAAXvpKkXnsUu1VHy0BzX5LzYxf1CA==
+
 pixi-viewport@^4.3.3:
   version "4.10.0"
   resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.10.0.tgz#53a831bb05c24a93e58d2e0d5d38934aa7de3111"
