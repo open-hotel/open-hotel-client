@@ -35,33 +35,16 @@ export function mergeDeep(target, ...sources) {
   return mergeDeep(target, ...sources)
 }
 
-const PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+export function gcd(a: number, b: number) {
+  if (b === 0) return a
+  return gcd(b, a % b)
+}
 
 export function mmc(num: number[]): number
-export function mmc(...num: number[]): number;
-export function mmc(...args: Array<number|number[]>): number {
-  let num = Array.from(new Set(args.flat()))
-  let mmc = 1
-
-  while (!num.every(n => n === 1)) {
-    for (let i = 0; i < PRIMES.length; i++) {
-      const p = PRIMES[i]
-      let divide = false
-
-      num = num.map(n => {
-        if (n !== 1 && n % p === 0) {
-          divide = true
-          return n / p
-        }
-        return n
-      })
-
-      if (divide) {
-        mmc *= p
-        break
-      }
-    }
-  }
-
-  return mmc
+export function mmc(...num: number[]): number
+export function mmc(...args: Array<number | number[]>) {
+  const numbers = [...new Set(args.flat())]
+  let ans = numbers[0]
+  for (let i = 1; i < numbers.length; i++) ans = (numbers[i] * ans) / gcd(numbers[i], ans)
+  return ans
 }
