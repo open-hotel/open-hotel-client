@@ -1,10 +1,10 @@
-import { RequestOptions, ResponseOptions } from './adapter.interface'
+import { RequestOptions, LoaderResponse } from './adapter.interface'
 
 export interface LoaderResource {
   name: string
   parsers?: string[]
   request: RequestOptions
-  response?: ResponseOptions
+  response?: LoaderResponse
   onResolve(data: any): void
   onReject(error: Error): void
 }
