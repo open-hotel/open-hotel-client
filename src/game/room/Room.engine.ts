@@ -10,15 +10,16 @@ import { createFloorTestFunction } from '../../engine/lib/util/FloorUtils'
 import ladders from './floor/ladders'
 import { Wall } from './wall/Wall'
 import { PointLike } from '../../engine/lib/util/Walk'
-import Culling from 'pixi-cull'
-import { Viewport } from 'pixi-viewport'
-import PIXI from 'pixi.js'
+import { HumanImager } from '../imager/human.imager'
+import { Figure } from '../imager/human/figure.util'
+import { Action } from '../imager/human/action.util'
 
 const PRIORITY = {
   FLOOR_DOOR: 1,
   WALL_V: 1,
   WALL_H: 2,
   FLOOR: 3,
+  USER: 4,
 }
 
 @Provider('TRANSIENT')
@@ -30,7 +31,11 @@ export class RoomEngine {
   private door: PointLike
   private spawn: PointLike
 
-  constructor(private readonly app: ApplicationProvider, private readonly roomImager: RoomImager) {}
+  constructor(
+    private readonly app: ApplicationProvider,
+    private readonly roomImager: RoomImager,
+    private readonly humanImager: HumanImager,
+  ) {}
 
   private getStairType(blocks: Matrix<number>) {
     const hasLadder = createFloorTestFunction(blocks)
@@ -419,12 +424,38 @@ export class RoomEngine {
     }
   }
 
-  init(room: RoomModel) {
+  async buildUser() {
+    // const textures = await this.humanImager.createAnimation({
+    //   figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
+    //   actions: Action.decode('std'),
+    //   direction: 2,
+    //   head_direction: 2,
+    //   is_ghost: false,
+    // })
+    // const sprite = new PIXI.AnimatedSprite(textures)
+    // return sprite
+  }
+
+  /**
+   * TODO: Render Furni
+   */
+  putFurni() {}
+
+  /**
+   * TODO: Render users
+   */
+  async putUsers() {
+    // this.container.addChild(await this.buildUser())
+  }
+
+  async init(room: RoomModel) {
     this.spawn = room.door
     this.heightmap = room.heightmap
     this.container.sortableChildren = true
     this.renderWalls()
     this.renderFloor()
+    this.putUsers()
+    this.putFurni()
     this.container.sortChildren()
   }
 }

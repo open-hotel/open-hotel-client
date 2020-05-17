@@ -66,11 +66,9 @@ const config = {
       template: './public/index.html',
     }),
   ],
+  devtool: '#source-map',
   devServer: {
     contentBase: './public',
-  },
-  externals: {
-    // 'pixi.js-legacy': 'PIXI'
   }
 }
 

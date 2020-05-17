@@ -1,7 +1,8 @@
-import { LoaderResource } from './resource.interface'
+import { LoaderResource } from './resource'
 import { Loader } from './Loader'
 
-export interface Parser {
-  setup?(loader: Loader): void
-  parse(resource: LoaderResource, loader: Loader): Promise<any>
+export interface LoaderMiddleware {
+  priority: number;
+  pre?(resource: LoaderResource, loader?: Loader): Promise<any>
+  use?(resource: LoaderResource, loader?: Loader): Promise<any>
 }

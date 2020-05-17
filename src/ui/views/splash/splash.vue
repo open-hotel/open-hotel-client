@@ -15,42 +15,41 @@
 
 <script>
 import { Loader } from '../../../engine/loader'
-import { getGameRef } from '../../../game/gameRef'
 
 export default {
   name: 'HotelSplash',
   data() {
     return {
-      progress: 0
+      progress: 0,
     }
   },
   methods: {
-    async loadAssets () {
-      const gameModule = await getGameRef()
-      const loader = await gameModule.get(Loader)
-       // Download assets
-      await loader.add(
-        [
-          { name: 'figuremap', url: 'figuremap.json', parsers: ['json'] },
-          { name: 'figuredata', url: 'figuredata.json', parsers: ['json'] },
-          { name: 'partsets', url: 'partsets.json', parsers: ['json'] },
-          { name: 'draworder', url: 'draworder.json', parsers: ['json'] },
-          { name: 'avatarActions', url: 'HabboAvatarActions.json', parsers: ['json'] },
-          { name: 'geometry', url: 'geometry.json', parsers: ['json'] },
-          { name: 'animations', url: 'animations.json', parsers: ['json'] },
-          { name: 'effectmap', url: 'effectmap.json', parsers: ['json'] },
-        ],
-        (loaded, total) => {
+    async loadAssets() {
+      const loader = await this.$injets.get(Loader)
+      // Download assets
+      await loader
+        .add({
+          figuremap: 'figuremap.json',
+          figuredata: 'figuredata.json',
+          partsets: 'HabboAvatarPartSets.json',
+          avatarActions: 'HabboAvatarActions.json',
+          geometry: 'HabboAvatarGeometry.json',
+          animations: 'HabboAvatarAnimations.json',
+          effectmap: 'effectmap.json',
+        })
+        .progress((loaded, total) => {
           this.progress = (loaded / total) * 100
-        },
-      )
+        })
+        .wait()
+
+      this.$emit('splash-ready', loader)
 
       this.$router.replace({ name: 'game' })
-    }
+    },
   },
-  created () {
+  created() {
     this.loadAssets()
-  } 
+  },
 }
 </script>
 

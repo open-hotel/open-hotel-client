@@ -1,17 +1,68 @@
 <template>
   <div id="app">
-    <transition name="fade">
-      <keep-alive include="Game">
-        <router-view />
-      </keep-alive>
-    </transition>
-    <oh-notifications class="notifications" />
-    <oh-toolbar />
+    <px-window-manager>
+      <transition name="fade">
+        <keep-alive include="Game">
+          <router-view @splash-ready="loaded = true" />
+        </keep-alive>
+      </transition>
+      <transition name="slide-y">
+        <oh-toolbar
+          v-if="loaded"
+          @toggle-window="toggleWindow($event)"
+        />
+      </transition>
+
+      <template v-if="loaded">
+        <oh-notifications class="notifications" />
+
+        <px-window v-bind.sync="window.browser">
+          <oh-browser />
+        </px-window>
+        <px-window v-bind.sync="window.wardrobe">
+          <oh-wardrobe />
+        </px-window>
+      </template>
+    </px-window-manager>
   </div>
 </template>
 <script>
+import OhBrowser from './browser/browser.vue'
+import OhWardrobe from './wardrobe/wardrobe.vue'
+
 export default {
-  components: {},
+  components: {
+    OhBrowser,
+    OhWardrobe,
+  },
+  data() {
+    return {
+      loaded: false,
+      window: {
+        browser: {
+          title: 'Navegador',
+          visible: false,
+          width: 480,
+          height: 480,
+          x: 64,
+          y: 32,
+        },
+        wardrobe: {
+          title: 'Guarda roupas',
+          visible: true,
+          width: 800,
+          height: 480,
+          x: 64,
+          y: 32,
+        },
+      },
+    }
+  },
+  methods: {
+    toggleWindow(name) {
+      this.window[name].focused = this.window[name].visible = !this.window[name].visible;
+    }
+  }
 }
 </script>
 <style lang="stylus">
@@ -56,6 +107,20 @@ export default {
   &-enter, &-leave-to {
     opacity: 0;
     transform: translate(100%, 0);
+  }
+}
+
+.slide-y {
+  &-enter-active, &-leave-active {
+    transition: all 0.5s ease;
+  }
+
+  &-enter-active {
+    transition-delay: 0.5s;
+  }
+
+  &-enter, &-leave-to {
+    transform: translate(0, 100%);
   }
 }
 </style>

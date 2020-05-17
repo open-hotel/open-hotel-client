@@ -1,27 +1,30 @@
 import { Texture } from 'pixi.js'
-import { Parser } from '../parser.interface'
-import { ResponseOptions } from '../adapter.interface'
-import { LoaderResource } from '../resource.interface'
-import { Loader } from '../Loader'
+import { LoaderMiddleware } from '../parser.interface'
+import { LoaderResource } from '../resource'
 
-declare module '../resource.interface' {
+declare module '../resource' {
   export interface LoaderResource {
-    texture: object
+    texture?: PIXI.Texture
   }
 }
 
-export class TextureParser implements Parser {
-  async parse(resource: LoaderResource, loader: Loader): Promise<object> {
-    const result = await loader.adapter.readAsBlob(
-      resource.response as ResponseOptions
-    )
-    const img = new Image()
-    img.src = URL.createObjectURL(result)
-    resource.texture = Texture.fromLoader(
-      img,
-      resource.request.url,
-      resource.name
-    )
-    return result
+export class TextureParser implements LoaderMiddleware {
+  priority = 1
+
+  async use(resource: LoaderResource): Promise<void> {
+    if (!String(resource.response.headers['content-type'] || '').startsWith('image/')) {
+      return
+    }
+    return new Promise(async (resolve, reject) => {
+      const blob = await resource.response.blob()
+      const img = new Image()
+
+      img.src = window.URL.createObjectURL(blob)
+
+      img.onload = () => {
+        resource.texture = Texture.fromLoader(img, resource.request.url, resource.name)
+        resolve()
+      }
+    })
   }
 }

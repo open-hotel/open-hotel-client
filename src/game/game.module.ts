@@ -1,7 +1,8 @@
-import { Module } from 'injets'
+import { Module, Inject } from 'injets'
 import { PixiModule } from './pixi/pixi.module'
 import { ImagerModule } from './imager/imager.module'
 import { RoomModule } from './room/room.module'
+import { Loader } from '../engine/loader'
 
 @Module({
   imports: [
@@ -10,4 +11,7 @@ import { RoomModule } from './room/room.module'
     RoomModule
   ],
 })
-export class GameModule {}
+export class GameModule {
+  @Inject()
+  loader: Loader
+}

@@ -1,91 +1,144 @@
 import { FetchAdapter } from './fetch.adapter'
-import { Parser } from './parser.interface'
+import { LoaderMiddleware } from './parser.interface'
 import { LoaderAdapter } from './adapter.interface'
-import { LoaderResource, LoaderResourceRequest } from './resource.interface'
+import { ILoaderResource, LoaderResourceRequest as LoaderResourceOptions, LoaderResource } from './resource'
 import urlJoin from 'url-join'
+import { JsonParser, TextureParser, SpritesheetParser } from './parsers'
+import { LibaryParser } from './parsers/library.parser'
 
 interface LoaderOptions {
   baseURL: string
   adapter: LoaderAdapter
   concurently: number
-  parsers: Record<string, Parser>
+  parsers: LoaderMiddleware[]
 }
-
-type LoaderProgressCallback = (loaded: number, total: number) => void
 
 function isURL(str: string) {
   try {
-    new URL(str);
+    new URL(str)
     return true
   } catch (_) {
-    return false;  
+    return false
   }
 }
 
-function joinURL (baseURL: string, url:string) {
+function joinURL(baseURL: string, url: string) {
   return isURL(url) ? url : urlJoin(baseURL, url)
+}
+
+interface LoaderAddMulti {
+  resources: LoaderResource[]
+  wait(): Promise<LoaderResource[]>
+  progress (cb: (loaded: number, total: number) => void): LoaderAddMulti
+}
+
+interface LoaderAdd {
+  resource: LoaderResource
+  wait(): Promise<LoaderResource>
 }
 
 export class Loader {
   private options: LoaderOptions
   private queue: LoaderResource[] = []
   private countLoading: number = 0
-  private parsers: Record<string, Parser> = {}
-  public adapter: LoaderAdapter
   public resources: Record<string, LoaderResource> = {}
 
   constructor(options: Partial<LoaderOptions> = {}) {
-    this.options = Object.assign({ concurently: 10 }, options) as LoaderOptions
-    this.adapter = this.options.adapter || new FetchAdapter()
-    Object.assign(this.parsers, {}, options.parsers)
+    this.options = Object.assign(
+      {
+        adapter: new FetchAdapter(),
+        concurently: 10,
+        parsers: [new JsonParser(), new TextureParser(), new SpritesheetParser(), new LibaryParser()],
+      },
+      options,
+    ) as LoaderOptions
+    this.parsers.sort((a, b) => a.priority - b.priority)
   }
 
-  add(url: string): Promise<any>
-  add(name: string, url: string): Promise<any>
-  add(resource: LoaderResourceRequest): Promise<any>
-  add(resources: LoaderResourceRequest[], cbProgress?: LoaderProgressCallback): Promise<any>
-  add(
-    urlOrNameOrResource: string | LoaderResourceRequest | LoaderResourceRequest[] | string[],
-    url?: string | LoaderProgressCallback,
-  ) {
-    if (Array.isArray(urlOrNameOrResource)) {
-      const resources = urlOrNameOrResource as LoaderResourceRequest[]
-      const cbProgress = (url as LoaderProgressCallback) || (() => null)
-      let loaded = 0
-      const total = urlOrNameOrResource.length
-      return Promise.all(resources.map(r => this.add(r).finally(() => cbProgress(++loaded, total))))
-    }
-    return new Promise((resolve, reject) => {
-      let resourceRequest: LoaderResourceRequest
+  get adapter() {
+    return this.options.adapter
+  }
 
-      if (typeof urlOrNameOrResource === 'string') {
-        resourceRequest = {
-          name: urlOrNameOrResource,
-          url: url as string || urlOrNameOrResource,
-        }
-      } else {
-        resourceRequest = urlOrNameOrResource
-      }
+  get parsers() {
+    return this.options.parsers
+  }
 
-      const resource = {
-        ...resourceRequest,
-        onResolve: resolve,
-        onReject: reject,
+  private addResource(name: string, url: string): LoaderResource {
+    let resource: LoaderResource =
+      this.resources[name] ??
+      new LoaderResource({
+        name,
         request: {
           method: 'GET',
-          url: joinURL(this.options.baseURL, resourceRequest.url),
+          url: joinURL(this.options.baseURL, url),
         },
-      }
+      })
 
-      this.queue.push((resource as unknown) as LoaderResource)
+    if (!resource.in_queue) {
+      this.resources[name] = resource
+      this.queue.push(resource)
+      resource.in_queue = true
       this.loadMore()
-    })
+    }
+
+    return resource
   }
 
-  parser(name: string, parser: Parser) {
-    this.parsers[name] = parser
-    if (parser.setup) parser.setup(this)
-    return this
+  private addArray(resources: Array<string | LoaderResourceOptions>): LoaderAddMulti {
+    const items = resources.map(item => {
+      if (typeof item === 'string') {
+        return this.addResource(item, item)
+      }
+      return this.addResource(item.name, item.url)
+    })
+
+    return {
+      resources: items,
+      wait: () => Promise.all(items.map(item => item.toPromise())),
+      progress(cb) {
+        let loaded = 0;
+        items.forEach((res) => {
+          res.toPromise().finally(() => {
+            cb(loaded++, items.length)
+          })
+        })
+        return this
+      }
+    }
+  }
+
+  private addDic(resources: Record<string, string>) {
+    return this.addArray(
+      Object.entries(resources).map(([name, resource]) => ({
+        name,
+        url: resource,
+      })),
+    )
+  }
+
+  add(url: string): LoaderAdd
+  add(name: string, url: string): LoaderAdd
+  add(resource: LoaderResourceOptions): LoaderAdd
+  add(resources: Record<string, string | LoaderResourceOptions>): LoaderAddMulti
+  add(resources: Record<string, string | LoaderResourceOptions>): LoaderAddMulti
+  add(resourceItem: any, url?: string): LoaderAdd | LoaderAddMulti {
+    if (Array.isArray(resourceItem)) return this.addArray(resourceItem)
+    if (typeof resourceItem === 'object' && !resourceItem.name) return this.addDic(resourceItem)
+
+    let name: string
+
+    if (typeof url === 'string') {
+      name = resourceItem
+    } else if (typeof resourceItem === 'string') {
+      name = url = resourceItem
+    }
+
+    const resource = this.addResource(name, url)
+
+    return {
+      resource: resource,
+      wait: () => resource.toPromise()
+    }
   }
 
   private loadMore() {
@@ -93,42 +146,46 @@ export class Loader {
       return
     }
 
-    const canLoadCount = this.options.concurently - this.countLoading
+    
+    const canLoadCount = Math.max(0, this.options.concurently - this.countLoading)
     const resources = this.queue.splice(0, canLoadCount)
-
+    
     this.countLoading += resources.length
 
-    resources.forEach(resource => {
-      this.loadItem(resource).finally(() => {
-        this.resources[resource.name] = resource
-        this.countLoading--
-      })
-    })
+    resources.forEach(resource => this.loadItem(resource))
+  }
+
+  private async hook(name: string, resource: ILoaderResource) {
+    for (const middleware of this.parsers) {
+      if (name in middleware) {
+        await middleware[name](resource, this)
+      }
+    }
   }
 
   private async loadItem(resource: LoaderResource): Promise<any> {
+    await this.hook('pre', resource)
+
     this.adapter
       .request(resource.request)
       .then(async res => {
-        const resolve = resource.onResolve
-        delete resource.onReject
-        delete resource.onResolve
+        this.countLoading--;
 
         resource.response = res
+        
+        await this.hook('use', resource)
 
-        const parsers = resource.parsers || []
-
-        for (const parser of parsers) {
-          await this.parse(parser, resource)
-        }
-
-        resolve(resource)
+        resource.ready = true
+        resource.emit('ready', resource)
       })
-      .catch(resource.onReject)
-      .finally(() => this.loadMore())
+      .catch(err => resource.emit('error', err))
+      .finally(() => {
+        resource.emit('load', resource)
+        this.loadMore()
+      })
   }
 
-  async parse(parser: string, resource: LoaderResource) {
+  async parse(parser: string, resource: ILoaderResource) {
     const parseInstance = this.parsers[parser]
     if (parseInstance) await parseInstance.parse(resource, this)
     return resource

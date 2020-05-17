@@ -1,21 +1,19 @@
-import { Parser } from '../parser.interface'
-import { ResponseOptions } from '../adapter.interface'
-import { LoaderResource } from '../resource.interface'
-import { Loader } from '../Loader'
+import { LoaderMiddleware } from '../parser.interface'
+import { LoaderResource } from '../resource'
 
-declare module '../resource.interface' {
+declare module '../resource' {
   export interface LoaderResource {
-    json: any
+    json?: any
   }
 }
 
-export class JsonParser implements Parser {
-  async parse(resource: LoaderResource, loader: Loader): Promise<object> {
-    const result = await loader.adapter.readAsJSON(
-      resource.response as ResponseOptions
-    )
-    resource.json = result
+export class JsonParser implements LoaderMiddleware {
+  priority = 0
 
-    return result
+  async use(resource: LoaderResource): Promise<any> {
+    const type = String(resource.response.headers['content-type'] || '')
+    if (type.startsWith('application/json') || type.startsWith('text/plain')) {
+      resource.json = await resource.response.json()
+    }
   }
 }

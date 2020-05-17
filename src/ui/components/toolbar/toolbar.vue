@@ -1,20 +1,24 @@
 <template>
   <div class="oh-toolbar">
     <div class="oh-toolbar-area">
-      <button v-if="$route.name === 'game'" class="oh-toolbar-button btn-hotelview" @click="$router.replace('hotel-view')">
+      <button
+        v-if="$route.name === 'game'"
+        class="oh-toolbar-button btn-hotelview"
+        @click="$router.replace('hotel-view')"
+      >
         <img src="./toolbar_button_hotelview.png" />
       </button>
       <button v-else class="oh-toolbar-button btn-hotelview" @click="$router.replace('game')">
         <img src="./toolbar_button_home.png" />
       </button>
-      <button class="oh-toolbar-button btn-navigator">
+      <button class="oh-toolbar-button btn-navigator" @click="$emit('toggle-window', 'browser')">
         <img src="./toolbar_button_navigator.png" />
       </button>
       <button class="oh-toolbar-button btn-shop">
         <img src="./toolbar_button_shop.png" />
       </button>
       <button class="oh-toolbar-button">
-        <img src="./toolbar_button_architect.png" />
+        <img src="./toolbar_button_architect.png" @click="$emit('toggle-window', 'wardrobe')"/>
       </button>
       <button class="oh-toolbar-button btn-inventory">
         <img src="./toolbar_button_inventory.png" />
@@ -36,8 +40,8 @@
 import OhFriendbar from './friendbar.vue'
 export default {
   components: {
-    OhFriendbar
-  }
+    OhFriendbar,
+  },
 }
 </script>
 <style lang="stylus">
@@ -71,8 +75,8 @@ export default {
     outline: none;
 
     &:hover {
-      filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.75));
-      transform: translate(0, -2px)
+      filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.75));
+      transform: translate(0, -2px);
     }
   }
 
@@ -80,7 +84,7 @@ export default {
     width: 1px;
     background: #454442;
     margin: 0 8px;
-    opacity: .82;
+    opacity: 0.82;
   }
 
   &-spacer {

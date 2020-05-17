@@ -1,6 +1,7 @@
 import { Module } from 'injets'
-import { Loader, JsonParser } from '../../engine/loader'
+import { Loader, JsonParser, SpritesheetParser } from '../../engine/loader'
 import { ApplicationProvider } from './application.provider'
+import { LibaryParser } from '../../engine/loader/parsers/library.parser'
 
 @Module(
   {
@@ -9,11 +10,8 @@ import { ApplicationProvider } from './application.provider'
       {
         provide: Loader,
         useValue: new Loader({
-          concurently: 20,
+          concurently: 1,
           baseURL: process.env.RESOURCES_BASE,
-          parsers: {
-            json: new JsonParser()
-          }
         }),
       },
       ApplicationProvider,

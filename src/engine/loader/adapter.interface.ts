@@ -5,16 +5,14 @@ export interface RequestOptions {
   headers?: Record<string, any>
 }
 
-export interface ResponseOptions<T = any> {
-  data: T
+export interface LoaderResponse {
   status: number
-  headers: Record<string, any>
+  headers?: Record<string, any>
+  text(): Promise<string>
+  json(): Promise<any>
+  blob(): Promise<Blob>
 }
 
 export interface LoaderAdapter {
-  request(request: RequestOptions): Promise<ResponseOptions>
-
-  readAsText(response: ResponseOptions): Promise<string>
-  readAsJSON(response: ResponseOptions): Promise<object>
-  readAsBlob(response: ResponseOptions): Promise<Blob>
+  request(request: RequestOptions): Promise<LoaderResponse>
 }

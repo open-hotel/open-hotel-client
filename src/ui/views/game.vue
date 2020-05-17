@@ -3,25 +3,29 @@
 </template>
 <script>
 import Vue from 'vue'
-import { getGameRef } from '../../game/gameRef'
 import { Application } from '../../engine/Application'
 import { ApplicationProvider } from '../../game/pixi/application.provider'
 import { RoomProvider } from '../../game/room/room.provider'
 import { Matrix } from '../../engine/lib/util/Matrix'
+import { Sprite, Graphics } from 'pixi.js-legacy'
+import { Loader } from '../../engine/loader'
 
 export default {
   name: 'Game',
-  created() {
-    this.$router.replace('/splash')
+  data() {
+    return {
+      loaded: false,
+      mounted: false,
+      /** @type {ApplicationProvider} */
+      app: null,
+      /** @type {RoomProvider} */
+      room: null,
+      /** @type {Loader} */
+      loader: null,
+    }
   },
   methods: {
     async startGame() {
-      const app = await this.$injets.get(ApplicationProvider)
-
-      app.createApp({
-        view: this.$refs.canvas,
-      })
-
       const engine = await this.$injets.get(RoomProvider)
       await engine.create({
         users: {},
@@ -39,18 +43,30 @@ export default {
         x000000000000000000000000000000000
         x000000000000000000000000000000000
         x000000000000000000000000000000000
-        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-                `),
+        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`),
       })
+
+      console.log(this.dataUrl)
     },
   },
 
-  mounted() {
+  async activated() {
+    if (!this.mounted) {
+      this.app = await this.$injets.get(ApplicationProvider)
+      this.room = await this.$injets.get(RoomProvider)
+      this.loader = await this.$injets.get(Loader)
+
+      this.app.createApp({ view: this.$refs.canvas })
+      this.mounted = true
+      if (!this.loaded) return this.$router.replace('/splash')
+      return
+    }
+
     this.startGame()
   },
 }
 </script>
+
 <style lang="stylus">
 #game {
   position: absolute;
