@@ -277,7 +277,7 @@ export class RoomEngine {
           {
             x,
             y,
-            z: Math.max(minZElevation, 1),
+            z,
           },
           PRIORITY.WALL_H,
         )
@@ -409,7 +409,7 @@ export class RoomEngine {
           {
             x,
             y,
-            z: Math.max(minZElevation, 1),
+            z,
           },
           PRIORITY.WALL_V,
         )
