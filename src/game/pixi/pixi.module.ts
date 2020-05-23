@@ -10,7 +10,7 @@ import { LibaryParser } from '../../engine/loader/parsers/library.parser'
       {
         provide: Loader,
         useValue: new Loader({
-          concurently: 1,
+          concurently: 20,
           baseURL: process.env.RESOURCES_BASE,
         }),
       },
