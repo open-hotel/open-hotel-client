@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from 'vue'
 import OhPalette from './palette'
 import { Loader } from '../../engine/loader'
 import { ApplicationProvider } from '../../game/pixi/application.provider'
@@ -167,9 +167,10 @@ export default {
   methods: {
     setPartId(id) {
       if (this.figure[this.current.type]) {
-        Vue.set(this.figure[this.current.type], 0, id)
+        this.figure[this.current.type][0] = id
+        this.$forceUpdate()
       } else {
-        Vue.set(this.figure, this.current.type, [id])
+        this.$set(this.figure, this.current.type, [id])
       }
     },
     changeTab(tab) {
