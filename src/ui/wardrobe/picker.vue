@@ -57,8 +57,10 @@ export default {
     },
   },
   watch: {
-    'value.id'() {
-      this.setColor()
+    value(a, b) {
+      if (a[this.type].id != b[this.type].id) {
+        this.setColor()
+      }
     },
   },
   computed: {
@@ -67,9 +69,7 @@ export default {
       const palette = figuredata.json.palette[figuredata.json.settype[this.type].paletteid]
       const { set } = figuredata.json.settype[this.type]
       const { id = Object.keys(set)[0] } = this.attrs
-      const count = set[id].parts
-        .filter(item => !['bd', 'lh', 'rh'].includes(item.type))
-        .reduce((max, item) => Math.max(max, Number(item.colorindex)), 0)
+      const count = set[id].parts.reduce((max, item) => Math.max(max, Number(item.colorindex)), 0)
       return new Array(count).fill(palette)
     },
     attrs() {

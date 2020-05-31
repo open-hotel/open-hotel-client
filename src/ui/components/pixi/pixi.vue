@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvas"></canvas>
+  <canvas ref="canvas" style="image-rendering:pixelated"></canvas>
 </template>
 <script>
 import { Application } from 'pixi.js-legacy'

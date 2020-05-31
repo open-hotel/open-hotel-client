@@ -1,10 +1,10 @@
 <template>
   <div class="oh-wardrobe">
     <px-tab-list>
-      <px-tab-list-item v-model="tab" target="face">Rosto</px-tab-list-item>
-      <px-tab-list-item v-model="tab" target="head">Cabeça</px-tab-list-item>
-      <px-tab-list-item v-model="tab" target="torso">Torso</px-tab-list-item>
-      <px-tab-list-item v-model="tab" target="lower">Pernas</px-tab-list-item>
+      <px-tab-list-item v-model="tab" @click.native="type = 'hd'" target="face">Rosto</px-tab-list-item>
+      <px-tab-list-item v-model="tab" @click.native="type = 'hr'" target="head">Cabeça</px-tab-list-item>
+      <px-tab-list-item v-model="tab" @click.native="type = 'ch'" target="torso">Torso</px-tab-list-item>
+      <px-tab-list-item v-model="tab" @click.native="type = 'lg'" target="lower">Pernas</px-tab-list-item>
     </px-tab-list>
     <div class="row">
       <px-tab-container class="column oh-wardrobe-tabs">
@@ -53,7 +53,9 @@
         </px-tab-view>
       </px-tab-container>
       <div class="column oh-wardrobe-preview">
-        <pre>{{ encodedFigure }}</pre>
+        <img :src="`https://www.habbo.com/habbo-imaging/avatarimage?figure=${encodedFigure}`" alt="">
+        <br>
+        <textarea v-model="encodedFigure" cols="24" rows="10" readonly style="resize: none"></textarea>
       </div>
       <div class="column oh-wardrobe-looks"></div>
     </div>
@@ -97,12 +99,7 @@ export default {
         torso: ['ch', 'cc', 'cp', 'ca'],
         lower: ['lg', 'sh', 'wa'],
       },
-      figure: {
-        hd: {
-          id: '180',
-          colors: [],
-        },
-      },
+      figure: Figure.decode('hr-100.hd-190-7.ch-210-66.lg-270-82.sh-290-80'),
     }
   },
   computed: {

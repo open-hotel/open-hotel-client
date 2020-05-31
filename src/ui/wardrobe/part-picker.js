@@ -38,8 +38,8 @@ export default Vue.extend({
     },
     buttonColor: {
       type: Number,
-      default: 0xffffff
-    }
+      default: 0xffffff,
+    },
   },
   watch: {
     type() {
@@ -61,7 +61,6 @@ export default Vue.extend({
   computed: {
     geometryType() {
       const [type, part] = this.geometry.split('.')
-      console.log(this.loader.resources.geometry.json.type[type])
       return this.loader.resources.geometry.json.type[type][part]
     },
   },
@@ -77,7 +76,7 @@ export default Vue.extend({
       const {
         json: { palette },
       } = this.loader.resources.figuredata
-      const colors = palette[paletteid];
+      const colors = palette[paletteid]
       const item = colors[color] || colors[Object.keys(colors)[0]]
       return Number(`0x${item.color}`)
     },
@@ -91,7 +90,7 @@ export default Vue.extend({
       const width = 50
       const height = 50
       const margin = 4
-      const border = 4;
+      const border = 4
       const qtPerLine = Math.floor(this.app.view.width / (width + margin * 2))
 
       let i = 0
@@ -102,7 +101,7 @@ export default Vue.extend({
 
       for (const id in set) {
         const item = set[id]
-        if (!genders.has(item.gender)) continue
+        if (!genders.has(item.gender) || item.selectable != 1) continue
         const { parts } = item
         const libs = parts.reduce((acc, part) => {
           const lib = this.getLibrary(part.type, part.id)
@@ -126,7 +125,8 @@ export default Vue.extend({
               spritesheet: { textures },
               manifest: { assets },
             } = this.loader.resources[lib]
-            const assetId = `h_std_${part.type}_${part.id}_2_0`
+            const type = part.type === 'hr' ? 'hrb' : part.type
+            const assetId = `h_std_${type}_${part.id}_2_0`
             const textureId = `${lib}_${assetId}.png`
             const texture = textures[textureId]
             const sprite = new Sprite(texture)
