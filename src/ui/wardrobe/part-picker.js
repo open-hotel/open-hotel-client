@@ -36,6 +36,10 @@ export default Vue.extend({
       type: Array,
       default: () => [],
     },
+    buttonColor: {
+      type: Number,
+      default: 0xffffff
+    }
   },
   watch: {
     type() {
@@ -152,7 +156,7 @@ export default Vue.extend({
         const centerY = height / 2
 
         if (id == this.value) g.lineStyle(border, 0xffffff, 1, 0)
-        g.beginFill(0xffffff, 0.25)
+        g.beginFill(this.buttonColor, 0.25)
         g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
 
         button.addChild(g, img)
@@ -175,21 +179,23 @@ export default Vue.extend({
             } else {
               g.lineStyle(border, 0xffffff, 0.75, 0)
             }
-            g.beginFill(0xffffff, 0.25)
+            g.beginFill(this.buttonColor, 0.25)
             g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
           })
           .addListener('pointerout', () => {
             g.clear()
 
             if (id == this.value) g.lineStyle(border, 0xffffff, 1, 0)
-            g.beginFill(0xffffff, 0.25)
+            g.beginFill(this.buttonColor, 0.25)
             g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
           })
 
         i++
       }
 
-      this.app.renderer.resize(this.app.view.width, items.height + margin * 2)
+      this.$nextTick(() => {
+        this.app.renderer.resize(this.app.view.width, items.height + margin * 2)
+      })
     },
   },
 })

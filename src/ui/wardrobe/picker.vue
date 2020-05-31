@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; display: flex; flex-direction: column">
+  <div class="oh-part-picker">
     <px-scrollview style="flex: 1;">
       <oh-part-picker
         :colors="colors"
@@ -10,7 +10,7 @@
         @input="setValue({ id: $event })"
       />
     </px-scrollview>
-    <div class="colors">
+    <div class="colors" v-if="palettes.length">
       <oh-palette
         v-for="(palette, i) in palettes"
         :value="colors[i]"
@@ -67,7 +67,9 @@ export default {
       const palette = figuredata.json.palette[figuredata.json.settype[this.type].paletteid]
       const { set } = figuredata.json.settype[this.type]
       const { id = Object.keys(set)[0] } = this.attrs
-      const count = set[id].parts.filter(item => !['bd', 'lh', 'rh'].includes(item.type)).reduce((max, item) => Math.max(max, Number(item.colorindex)), 0)
+      const count = set[id].parts
+        .filter(item => !['bd', 'lh', 'rh'].includes(item.type))
+        .reduce((max, item) => Math.max(max, Number(item.colorindex)), 0)
       return new Array(count).fill(palette)
     },
     attrs() {
@@ -100,11 +102,16 @@ export default {
   },
 }
 </script>
-<style scoped>
-.colors {
+<style lang="stylus">
+.oh-part-picker {
   display: flex;
-  flex-direction: row;
-  flex: 0 auto;
-  margin-top: 8px;
+  flex-direction: column;
+
+  .colors {
+    display: flex;
+    flex-direction: row;
+    flex: 0 auto;
+    margin-top: 8px;
+  }
 }
 </style>
