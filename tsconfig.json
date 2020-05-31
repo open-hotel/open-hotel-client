@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "lib": ["ES2020", "dom"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/ui/wardrobe/part-picker.js"],
   "exclude": ["node_modules"],
   "files": ["src/vue-shims.d.ts"]
 }
