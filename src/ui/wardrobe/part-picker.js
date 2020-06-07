@@ -22,7 +22,7 @@ export default Vue.extend({
     },
     geometry: {
       type: String,
-      default: 'vertical.head',
+      default: 'vertical',
     },
     gender: {
       type: String,
@@ -58,13 +58,14 @@ export default Vue.extend({
   mounted() {
     this.generate()
   },
-  computed: {
-    geometryType() {
-      const [type, part] = this.geometry.split('.')
-      return this.loader.resources.geometry.json.type[type][part]
-    },
-  },
   methods: {
+    getGeometry(parttype) {
+      for (const t in this.loader.resources.geometry.json.type[this.geometry]) {
+        const item = this.loader.resources.geometry.json.type[this.geometry][t]
+        if (!('items' in item) || !(parttype in item.items)) continue
+        return item
+      }
+    },
     getLibrary(type, id) {
       const {
         json: { libs, parts },
@@ -93,6 +94,10 @@ export default Vue.extend({
       const border = 4
       const qtPerLine = Math.floor(this.app.view.width / (width + margin * 2))
 
+      const typesAlias = {
+        hrb: 'hr',
+      }
+
       let i = 0
 
       this.app.stage.removeChildren(0, 1)
@@ -119,18 +124,32 @@ export default Vue.extend({
 
           for (const part of parts) {
             if (hidden.has(part.type)) continue
-            const lib = this.getLibrary(part.type, part.id)
+            const lib = this.getLibrary(typesAlias[part.type] || part.type, part.id)
             if (!lib) continue
             const {
               spritesheet: { textures },
               manifest: { assets },
             } = this.loader.resources[lib]
-            const type = part.type === 'hr' ? 'hrb' : part.type
-            const assetId = `h_std_${type}_${part.id}_2_0`
+            const assetIds = [
+              `h_std_${part.type}_${part.id}_2_0`,
+              `h_std_${part.type}_${part.id}_1_0`,
+              `h_std_${part.type}_${part.id}_0_0`,
+              `h_std_${part.type}_${part.id}_3_0`,
+              `h_sml_${part.type}_${part.id}_2_0`,
+              `h_spk_${part.type}_${part.id}_2_0`,
+              `h_spk_${part.type}_${part.id}_1_0`,
+              `h_spk_${part.type}_${part.id}_0_0`,
+              `h_lay_${part.type}_${part.id}_2_0`,
+              `h_std_${part.type}_${part.id}_7_0`,
+            ]
+            const assetId = assetIds.find(id => `${lib}_${id}.png` in textures)
+            const offsetId = assetIds.find(id => id in assets)
+
+            if (!assetId) continue
             const textureId = `${lib}_${assetId}.png`
             const texture = textures[textureId]
             const sprite = new Sprite(texture)
-            const [x, y] = (assets[assetId].offset || '').split(',').map(v => Number(v))
+            const [x, y] = (assets[offsetId].offset || '').split(',').map(v => Number(v))
 
             if (part.colorable == 1 && part.type !== 'ey') {
               const color = this.colors[part.colorindex - 1]
@@ -139,7 +158,12 @@ export default Vue.extend({
 
             sprite.pivot.set(x, y)
             sprite.position.set(0, 0)
-            sprite.zIndex = geometry.items[part.type].radius
+
+            const geometry = this.getGeometry(part.type)
+
+            if (geometry) {
+              sprite.zIndex = geometry.items[part.type].radius
+            }
 
             group.addChild(sprite)
           }

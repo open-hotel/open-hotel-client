@@ -30,6 +30,17 @@ interface FigureRenderOptions {
   }
 }
 
+interface FigureGroupItem {
+  zIndex: number
+  part: HumanPart
+}
+
+interface FigureGroup {
+  name: 'bottom' | 'behind' | 'torso' | 'leftitem' | 'rightitem' | 'leftarm' | 'rightarm' | 'head'
+  items: FigureGroupItem[]
+  zIndex: number
+}
+
 export interface FigureAnimationFrame {
   frame: number
   repeats?: number
@@ -100,62 +111,26 @@ export class HumanImager {
   }
 
   private getColor(type: string, color: string) {
-    const colors = this.getColors(type);
+    const colors = this.getColors(type)
     color = color ?? Object.keys(colors)[0]
     const colorItem = colors[color]
 
-    return colorItem && Number('0x'+colorItem.color)
+    return colorItem && Number('0x' + colorItem.color)
   }
 
-  async wardrobePartItem(
-    type: string,
-    id: string,
-    args: string[],
-    geometryType = 'vertical',
-    geometryPart = 'torso',
-    hiddenLayers = type == 'hd' ? ['bd', 'lh', 'rh'] : [],
-  ) {
-    const container = new PIXI.Container()
-    const data = this.figuredata.settype[type].set[id]
-    const removeLayers = new Set(hiddenLayers.concat(data.hiddenLayers || []))
-    const geometry = this.geometry.type[geometryType][geometryPart]
-    const len = data.parts.length
+  // renderGroups(groups: FigureGroup[] = []): PIXI.Texture {
+  //   const container = new PIXI.Container()
+    
+  //   groups.sort((a, b) => a.zIndex - b.zIndex)
+    
+  //   for (const group of groups) {
+  //     group.items.sort((a, b) => a.zIndex - b.zIndex);
+  //   }
 
-    container.sortableChildren = true
+  //   return container
+  // }
 
-    for (let i = 0; i < len; i++) {
-      const part = data.parts[i]
-      if (removeLayers.has(part.type)) continue
-      const lib = this.getLib(part.type, part.id)
-      if (!lib) continue
-
-      const { spritesheet } = await this.loader.add(lib, `${lib}/${lib}.json`).wait()
-      const p = new HumanPart({
-        type: part.type,
-        id: part.id,
-        lib,
-        direction: 2,
-        radius: geometry.items[part.type].radius,
-      })
-      const textureName = p.buildFilenameName()
-      const texture = spritesheet.textures[textureName]
-      const sprite = new PIXI.Sprite(texture)
-      const state = p.buildState()
-      const [x = 0, y = 0] = (this.loader.resources[p.lib].manifest.assets[state]?.offset ?? '')
-        .split(',')
-        .map(v => Number(v))
-
-      sprite.name = textureName
-      sprite.pivot.set(x, y)
-
-      if (p.type !== 'ey' && part.colorable && part.colorindex > 0) {
-        sprite.tint = this.getColor(type, args[part.colorindex])
-      }
-
-      sprite.zIndex = p.radius
-      container.addChild(sprite)
-    }
-
-    return this.app.renderer.extract.base64(container)
+  async createAnimation(options: HumanFigureProps): Promise<PIXI.Texture[]> {
+    return [PIXI.Texture.WHITE]
   }
 }

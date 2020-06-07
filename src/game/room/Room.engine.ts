@@ -425,15 +425,18 @@ export class RoomEngine {
   }
 
   async buildUser() {
-    // const textures = await this.humanImager.createAnimation({
-    //   figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
-    //   actions: Action.decode('std'),
-    //   direction: 2,
-    //   head_direction: 2,
-    //   is_ghost: false,
-    // })
-    // const sprite = new PIXI.AnimatedSprite(textures)
-    // return sprite
+    const textures = await this.humanImager.createAnimation({
+      figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
+      actions: Action.decode('std'),
+      direction: 2,
+      head_direction: 2,
+      is_ghost: false,
+    })
+    const sprite = new PIXI.AnimatedSprite(textures)
+
+    this.app.culling.add(sprite)
+
+    return sprite
   }
 
   /**

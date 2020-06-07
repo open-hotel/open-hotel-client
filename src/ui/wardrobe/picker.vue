@@ -53,7 +53,7 @@ export default {
     },
     geometry: {
       type: String,
-      default: 'vertical.head',
+      default: 'vertical',
     },
   },
   watch: {

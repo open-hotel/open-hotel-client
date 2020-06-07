@@ -49,7 +49,7 @@ export default {
         },
         wardrobe: {
           title: 'Guarda roupas',
-          visible: true,
+          visible: false,
           width: 800,
           height: 480,
           x: 64,

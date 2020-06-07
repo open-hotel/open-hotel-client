@@ -13,7 +13,7 @@
             <wd-button name="male" :active="gender === 'M'" @click="gender = 'M'">Menino</wd-button>
             <wd-button name="female" :active="gender === 'F'" @click="gender = 'F'">Menina</wd-button>
           </div>
-          <oh-picker v-model="figure" type="hd" :gender="gender" geometry="vertical.head" />
+          <oh-picker v-model="figure" type="hd" :gender="gender" />
         </px-tab-view>
         <px-tab-view v-model="tab" class="oh-wardrobe-tab" name="head">
           <div class="oh-wardrobe-tab-parts">
@@ -25,7 +25,7 @@
               @click="type = v"
             ></wd-button>
           </div>
-          <oh-picker v-model="figure" :type="type" :gender="gender" geometry="vertical.head" />
+          <oh-picker v-model="figure" :type="type" :gender="gender" />
         </px-tab-view>
         <px-tab-view v-model="tab" class="oh-wardrobe-tab" name="torso">
           <div class="oh-wardrobe-tab-parts">
@@ -37,7 +37,7 @@
               @click="type = v"
             ></wd-button>
           </div>
-          <oh-picker v-model="figure" :type="type" :gender="gender" geometry="vertical.torso" />
+          <oh-picker v-model="figure" :type="type" :gender="gender" />
         </px-tab-view>
         <px-tab-view v-model="tab" class="oh-wardrobe-tab" name="lower">
           <div class="oh-wardrobe-tab-parts">
@@ -49,12 +49,12 @@
               @click="type = v"
             ></wd-button>
           </div>
-          <oh-picker v-model="figure" :type="type" :gender="gender" geometry="vertical.torso" />
+          <oh-picker v-model="figure" :type="type" :gender="gender" />
         </px-tab-view>
       </px-tab-container>
       <div class="column oh-wardrobe-preview">
-        <img :src="`https://www.habbo.com/habbo-imaging/avatarimage?figure=${encodedFigure}`" alt="">
-        <br>
+        <img :src="`https://www.habbo.com/habbo-imaging/avatarimage?figure=${encodedFigure}`" alt />
+        <br />
         <textarea v-model="encodedFigure" cols="24" rows="10" readonly style="resize: none"></textarea>
       </div>
       <div class="column oh-wardrobe-looks"></div>
@@ -91,9 +91,8 @@ export default {
   data() {
     return {
       tab: 'face',
-      type: 'hr',
+      type: 'hd',
       gender: 'M',
-      geometry: 'vertical.head',
       buttons: {
         head: ['hr', 'ha', 'he', 'ea', 'fa'],
         torso: ['ch', 'cc', 'cp', 'ca'],
@@ -103,9 +102,9 @@ export default {
     }
   },
   computed: {
-    encodedFigure () {
+    encodedFigure() {
       return Figure.encode(this.figure)
-    }
+    },
   },
   methods: {},
 }

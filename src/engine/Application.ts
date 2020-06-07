@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js'
-import Cull from 'pixi-cull'
 import { Logger, Log } from './lib/Logger'
 import Tween from '@tweenjs/tween.js'
+import { Viewport } from 'pixi-viewport'
 
 export interface ApplicationOptions {
   autoStart?: boolean
@@ -30,46 +30,29 @@ export interface ApplicationOptions {
 PIXI.settings.TARGET_FPMS = 24 / 1000
 
 export class Application extends PIXI.Application {
+  public camera: Viewport
   public readonly $logger = new Logger('Application')
   public worker: Worker
 
   constructor(options: ApplicationOptions = {}) {
     super({
-      ...options,
+      resizeTo: window,
       backgroundColor: 0x000000,
+      antialias: true,
+      ...options,
     })
 
-    options = Object.assign(
-      {
-        logLevel: Log.ERROR,
-        logContext: null,
-        websocketServer: 'ws://localhost:65432/orion',
-      },
-      options,
-    )
-
-    this.$logger.context = options.logContext
-    this.$logger.level = options.logLevel
-
-    window.addEventListener('resize', this.onResize.bind(this))
+    window.addEventListener('resize', () => {
+      this.resize()
+      if (this.camera && this.camera.visible) {
+        this.camera.resize(window.innerWidth, window.innerHeight)
+      }
+    })
     this.tickerFallback()
-
-    this.onResize()
 
     this.renderer.autoDensity = true
 
     this.ticker.add(() => Tween.update(this.ticker.lastTime))
-
-    if (options.debug) {
-      // const pixiHooks = new GStats.PIXIHooks(this);
-      // const stats = new GStats.StatsJSAdapter(pixiHooks);
-      // const el = stats.stats.dom || stats.stats.domElement
-      // el.style.position = 'fixed';
-      // el.style.top = 0;
-      // el.style.right = 0;
-      // document.body.appendChild(el);
-      // this.ticker.add(() => stats.update())
-    }
   }
 
   tickerFallback() {
@@ -90,13 +73,5 @@ export class Application extends PIXI.Application {
 
     updateTicker()
     document.addEventListener('visibilitychange', updateTicker)
-  }
-
-  onResize() {
-    // resize renderer
-    this.renderer.resize(window.innerWidth, window.innerHeight)
-    this.view.width = window.innerWidth
-    this.view.height = window.innerHeight
-    this.$logger.info(`As dimensões da tela mudaram para ${this.view.width}x${this.view.height}`)
   }
 }
