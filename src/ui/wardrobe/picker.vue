@@ -7,7 +7,7 @@
         :geometry="geometry"
         :type="type"
         :value="attrs.id"
-        @input="setValue({ id: $event })"
+        @input="setValue($event && { id: $event })"
       />
     </px-scrollview>
     <div class="colors" v-if="palettes.length">
@@ -58,10 +58,15 @@ export default {
   },
   watch: {
     value(a, b) {
-      if (a[this.type].id != b[this.type].id) {
+      if (a && b && a[this.type] && b[this.type] && a[this.type].id != b[this.type].id) {
         this.setColor()
       }
     },
+  },
+  data () {
+    return {
+      lastColor: this.value && this.value[this.type] && this.value[this.type].colors
+    }
   },
   computed: {
     palettes() {
@@ -77,7 +82,7 @@ export default {
     },
     colors: {
       get() {
-        return this.attrs.colors || []
+        return this.attrs.colors || this.lastColor || []
       },
       set(colors) {
         this.setValue({ colors })
@@ -88,16 +93,22 @@ export default {
     setColor(index, color) {
       const colors = this.colors.slice(0, this.palettes.length)
       if (index !== undefined) colors[index] = color
+      this.lastColor = colors
       this.setValue({ colors })
     },
     setValue(value) {
-      this.$emit('input', {
-        ...(this.value || {}),
-        [this.type]: {
-          ...this.attrs,
-          ...value,
-        },
-      })
+      const figure = this.value || {}
+
+      if (value) {
+        figure[this.type] = Object.assign({}, this.attrs, value)
+        if (this.palettes.length && !figure.colors) {
+          figure[this.type].colors = this.lastColor || []
+        }
+      } else {
+        delete figure[this.type]
+      }
+
+      this.$emit('input', { ...figure })
     },
   },
 }

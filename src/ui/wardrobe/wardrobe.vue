@@ -90,8 +90,8 @@ export default {
   },
   data() {
     return {
-      tab: 'face',
-      type: 'hd',
+      tab: 'torso',
+      type: 'ch',
       gender: 'M',
       buttons: {
         head: ['hr', 'ha', 'he', 'ea', 'fa'],
@@ -132,7 +132,7 @@ export default {
   }
 
   &-preview {
-    width: 210px;
+    width: 200px;
     background: red;
   }
 

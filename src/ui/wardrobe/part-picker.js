@@ -41,6 +41,11 @@ export default Vue.extend({
       default: 0xffffff,
     },
   },
+  data() {
+    return {
+      clearable: new Set(['hr', 'ha', 'he', 'ea', 'fa', 'ch', 'cc', 'cp', 'ca', 'sh', 'wa']),
+    }
+  },
   watch: {
     type() {
       this.generate()
@@ -63,7 +68,10 @@ export default Vue.extend({
       for (const t in this.loader.resources.geometry.json.type[this.geometry]) {
         const item = this.loader.resources.geometry.json.type[this.geometry][t]
         if (!('items' in item) || !(parttype in item.items)) continue
-        return item
+        return {
+          type: t,
+          ...item,
+        }
       }
     },
     getLibrary(type, id) {
@@ -71,7 +79,13 @@ export default Vue.extend({
         json: { libs, parts },
       } = this.loader.resources.figuremap
       const index = parts[type][id]
-      return index !== undefined ? libs[index].id : null
+      const lib = index !== undefined && libs[index].id
+
+      if (!lib && (type === 'ls' || type === 'rs')) {
+        return this.getLibrary('ch', id)
+      }
+
+      return lib
     },
     getColor(paletteid, color) {
       const {
@@ -87,12 +101,11 @@ export default Vue.extend({
       const { set, paletteid, hiddenlayers = [] } = settype[this.type]
       const genders = new Set([this.gender, 'U'])
       const hidden = new Set(hiddenlayers.concat(this.hiddenlayers))
-      const geometry = this.geometryType
-      const width = 50
-      const height = 50
-      const margin = 4
+      const width = 64
+      const height = 64
+      const margin = 2
       const border = 4
-      const qtPerLine = Math.floor(this.app.view.width / (width + margin * 2))
+      const qtPerLine = Math.floor(this.app.view.width / (width + margin + border))
 
       const typesAlias = {
         hrb: 'hr',
@@ -103,6 +116,42 @@ export default Vue.extend({
       this.app.stage.removeChildren(0, 1)
       const items = new Container()
       this.app.stage.addChild(items)
+
+      if (this.clearable.has(this.type)) {
+        i++
+        const g = new Graphics()
+        const selected = this.value === null || this.value === undefined;
+        const size = 24;
+
+        g.lineStyle(4, selected ? 0xffffff : 0xb4ccd8)
+        g.moveTo(0, 0)
+        g.lineTo(size, size)
+        g.moveTo(size, 0)
+        g.lineTo(0, size)
+
+        const button = this.createButton({
+          selected,
+          child: g,
+          width,
+          height,
+          border,
+          onPress: () => this.$emit('input', null)
+        })
+
+        g.pivot.set(
+          g.width / 2,
+          g.height / 2,
+        )
+        g.position.set(
+          (border + width) / 2,
+          (border + height) / 2,
+        )
+
+        button.x = border
+        button.y = border
+
+        items.addChild(button)
+      }
 
       for (const id in set) {
         const item = set[id]
@@ -117,6 +166,7 @@ export default Vue.extend({
 
         const group = new Container()
         const img = new Sprite()
+        const groups = {}
 
         group.sortableChildren = true
         ;(async () => {
@@ -124,7 +174,7 @@ export default Vue.extend({
 
           for (const part of parts) {
             if (hidden.has(part.type)) continue
-            const lib = this.getLibrary(typesAlias[part.type] || part.type, part.id)
+            let lib = this.getLibrary(typesAlias[part.type] || part.type, part.id)
             if (!lib) continue
             const {
               spritesheet: { textures },
@@ -161,11 +211,20 @@ export default Vue.extend({
 
             const geometry = this.getGeometry(part.type)
 
-            if (geometry) {
-              sprite.zIndex = geometry.items[part.type].radius
+            if (!(geometry.type in groups)) {
+              const container = new Container()
+
+              container.zIndex = geometry.radius
+              container.sortableChildren = true
+
+              groups[geometry.type] = container
+
+              group.addChild(container)
             }
 
-            group.addChild(sprite)
+            sprite.zIndex = geometry.items[part.type].radius
+
+            groups[geometry.type].addChild(sprite)
           }
 
           img.texture = this.app.renderer.generateTexture(group, 1, 1)
@@ -174,52 +233,66 @@ export default Vue.extend({
           img.pivot.set(Math.ceil(img.width / 2), Math.ceil(img.height / 2))
         })()
 
-        const g = new Graphics()
-        const button = new Container()
         const centerX = width / 2
         const centerY = height / 2
 
-        if (id == this.value) g.lineStyle(border, 0xffffff, 1, 0)
-        g.beginFill(this.buttonColor, 0.25)
-        g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
+        const button = this.createButton({
+          selected: id === this.value,
+          child: img,
+          width,
+          height,
+          border,
+          onPress: () => this.$emit('input', id)
+        })
 
-        button.addChild(g, img)
-
-        button.interactive = true
-        button.cursor = 'pointer'
-
-        button.position.x = border + (width + margin + border) * (i % qtPerLine)
-        button.position.y = border + (height + margin + border) * Math.floor(i / qtPerLine)
+        button.position.x = Math.ceil(border + (width + margin + border) * (i % qtPerLine))
+        button.position.y = Math.ceil(border + (height + margin + border) * Math.floor(i / qtPerLine))
 
         items.addChild(button)
-
-        button
-          .addListener('pointertap', () => this.$emit('input', id))
-          .addListener('pointerover', () => {
-            g.clear()
-
-            if (id == this.value) {
-              g.lineStyle(border, 0xffffff, 1, 0)
-            } else {
-              g.lineStyle(border, 0xffffff, 0.75, 0)
-            }
-            g.beginFill(this.buttonColor, 0.25)
-            g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
-          })
-          .addListener('pointerout', () => {
-            g.clear()
-
-            if (id == this.value) g.lineStyle(border, 0xffffff, 1, 0)
-            g.beginFill(this.buttonColor, 0.25)
-            g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
-          })
-
         i++
       }
 
       this.$nextTick(() => {
         this.app.renderer.resize(this.app.view.width, items.height + margin * 2)
       })
+    },
+    createButton({ selected = false, child, onPress = () => {}, width = 50, height = 50, border = 4 } = {}) {
+      const g = new Graphics()
+      const button = new Container()
+      const centerX = width / 2
+      const centerY = height / 2
+
+      if (selected) g.lineStyle(border, 0xffffff, 1, 0)
+      g.beginFill(this.buttonColor, 0.25)
+      g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
+
+      button.addChild(g, child)
+
+      button.interactive = true
+      button.cursor = 'pointer'
+
+      button
+        .addListener('pointertap', onPress)
+        .addListener('pointerover', () => {
+          g.clear()
+
+          if (selected) {
+            g.lineStyle(border, 0xffffff, 1, 0)
+          } else {
+            g.lineStyle(border, 0xffffff, 0.75, 0)
+          }
+          g.beginFill(this.buttonColor, 0.25)
+          g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
+        })
+        .addListener('pointerout', () => {
+          g.clear()
+
+          if (selected) g.lineStyle(border, 0xffffff, 1, 0)
+          g.beginFill(this.buttonColor, 0.25)
+          g.drawCircle(centerX, centerY, (width + height) / 2 / 2)
+        })
+
+      return button
     },
   },
 })
