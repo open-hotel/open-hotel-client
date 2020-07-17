@@ -1,8 +1,14 @@
+# ⚠️ Important!
+
+Please read this [important message.](https://github.com/open-hotel/open-hotel-client/issues/43)
+
+---
+
 # Open Hotel
 
-Check out the [Demo](https://open-hotel-demo.netlify.com/)
-
 Open Hotel is an open-source project that aims to build a brand new canvas-drawn Habbo Remake.
+
+Check out the [Demo](https://structure-migration--open-hotel-demo.netlify.com/)
 
 ## Walking
 
