@@ -14,12 +14,12 @@ export const router = new VueRouter({
     {
       path: '/hotel-view',
       name: 'hotel-view',
-      component: () => import('./views/hotel-view.vue'),
+      component: () => import('./views/hotel-page.vue'),
     },
     {
       path: '/game',
       name: 'game',
-      component: () => import('./views/game.vue'),
+      component: () => import('./views/game-page.vue'),
       meta: {
         keepAlive: true
       }

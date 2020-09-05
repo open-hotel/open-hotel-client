@@ -29,7 +29,6 @@ export default {
       const engine = await this.$injets.get(RoomProvider)
       await engine.create({
         users: {},
-        // heightmap: new Matrix(64, 64).fill(() => 1),
         heightmap: Matrix.fromLegacyString(`
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx3xx
         xwvutsrqponmlkjihgfedcba9876543333

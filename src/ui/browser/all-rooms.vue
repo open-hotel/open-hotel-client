@@ -3,11 +3,18 @@
     <px-scrollview>
       <ul class="room-list">
         <li class="room-list-category">
-          <div class="room-list-header">Quartos mais populares</div>
+          <div class="room-list-header">Popular Rooms</div>
           <ul class="room-list">
-            <li v-for="i in 5" :key="i" class="room-list-item">
-              <div class="count-users">123</div>
-              <p class="room-list-item-title">Room {{ i }}</p>
+            <li
+              v-for="(room, i) in popularRooms"
+              :key="i"
+              class="room-list-item"
+              @click="selectRoom(room)"
+            >
+              <div class="count-users text-center">{{ room.usersCount }}</div>
+              <p class="room-list-item-title">
+                {{ room.name }}
+              </p>
             </li>
           </ul>
         </li>
@@ -43,6 +50,29 @@
   </div>
 </template>
 
+<script>
+import { RoomProvider } from '../../game/room/room.provider'
+import demoRooms from '../../../schema/demo/room-list'
+import { Matrix } from '../../engine/lib/util/Matrix'
+
+export default {
+  data () {
+    return {
+      popularRooms: demoRooms.popular
+    }
+  },
+  methods: {
+    async selectRoom (room) {
+      const engine = await this.$injets.get(RoomProvider)
+      await engine.create({
+        users: {},
+        heightmap: Matrix.fromLegacyString(room.heightmap)
+      })
+    }
+  }
+}
+</script>
+
 <style lang="stylus">
 .room-list {
   margin-right: 0.25em;
@@ -61,13 +91,21 @@
     align-items: center;
     padding: 2px;
     color: #000;
+    cursor: pointer;
 
     &-title {
       flex: 1;
     }
 
+    &:hover {
+      background-color: #F0F0F0;
+    }
+
     &:nth-child(2n+1) {
-      background: #D5EDFF;
+      background-color: #D5EDFF;
+      &:hover {
+        background-color: #C5DDEF;
+      }
     }
   }
 
@@ -79,6 +117,7 @@
     color: #FFF;
     font-weight: bold;
     margin-right: 0.5em;
+    width: 43.42px;
   }
 }
 </style>

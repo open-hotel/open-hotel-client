@@ -40,7 +40,7 @@ export default {
       loaded: false,
       window: {
         browser: {
-          title: 'Navegador',
+          title: 'Navigator',
           visible: false,
           width: 480,
           height: 480,
@@ -48,7 +48,7 @@ export default {
           y: 32,
         },
         wardrobe: {
-          title: 'Guarda roupas',
+          title: 'Wardrobe',
           visible: false,
           width: 800,
           height: 480,
@@ -66,6 +66,8 @@ export default {
 }
 </script>
 <style lang="stylus">
+@import "./global.styl";
+
 #app {
   background: #000;
 
