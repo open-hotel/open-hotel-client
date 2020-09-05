@@ -23,10 +23,10 @@ export class RoomProvider {
     this.appProvider.camera.removeChild(this.currentRoomContainer)
   }
 
-  async create (options: RoomModel) {
+  async create (roomModel: RoomModel) {
     this.removeCurrentRoom()
     const roomEngine = await this.gameModule.get<RoomEngine>(RoomEngine)
-    roomEngine.init(options)
+    await roomEngine.init(roomModel)
     this.currentRoomContainer = roomEngine.container
 
     this.appProvider.camera.addChild(roomEngine.container)

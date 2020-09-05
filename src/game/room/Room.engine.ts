@@ -13,6 +13,7 @@ import { PointLike } from '../../engine/lib/util/Walk'
 import { HumanImager } from '../imager/human.imager'
 import { Figure } from '../imager/human/figure.util'
 import { Action } from '../imager/human/action.util'
+import { RoomUser, RoomUserOptions } from './users/RoomUser'
 
 const PRIORITY = {
   FLOOR_DOOR: 1,
@@ -424,40 +425,35 @@ export class RoomEngine {
     }
   }
 
-  async buildUser() {
-    const textures = await this.humanImager.createAnimation({
-      figure: Figure.decode('hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61'),
-      actions: Action.decode('std'),
-      direction: 2,
-      head_direction: 2,
-      is_ghost: false,
-    })
-    const sprite = new PIXI.AnimatedSprite(textures)
-
-    this.app.culling.add(sprite)
-
-    return sprite
-  }
-
   /**
    * TODO: Render Furni
    */
   putFurni() {}
 
-  /**
-   * TODO: Render users
-   */
-  async putUsers() {
-    // this.container.addChild(await this.buildUser())
+  private roomUserIdToRoomUser: Record<string, RoomUser>
+  putUsers (userOptionsDictionary: Record<string, RoomUserOptions>) {
+    this.roomUserIdToRoomUser = {}
+
+    return Object.entries(userOptionsDictionary)
+      .map(([userId, roomUserOptions]) => {
+        const roomUser = new RoomUser(roomUserOptions, this.humanImager)
+        this.roomUserIdToRoomUser[userId] = roomUser
+        return this.addUserSprite(roomUser)
+      })
   }
 
-  async init(room: RoomModel) {
-    this.spawn = room.door
-    this.heightmap = room.heightmap
+  private async addUserSprite (roomUser: RoomUser) {
+    const sprite = await roomUser.initSprite()
+    this.container.addChild(sprite)
+  }
+
+  async init(roomModel: RoomModel) {
+    this.spawn = roomModel.door
+    this.heightmap = roomModel.heightmap
     this.container.sortableChildren = true
     this.renderWalls()
     this.renderFloor()
-    this.putUsers()
+    await Promise.all(this.putUsers(roomModel.roomUserDictionary))
     this.putFurni()
     this.container.sortChildren()
   }

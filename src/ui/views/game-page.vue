@@ -28,7 +28,18 @@ export default {
     async startGame() {
       const engine = await this.$injets.get(RoomProvider)
       await engine.create({
-        users: {},
+        roomUserDictionary: {
+          userId1: {
+            nickname: 'testNickname',
+            imagerOptions: {
+              encodedFigure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
+              encodedActions: 'std',
+              direction: 2,
+              head_direction: 2,
+              is_ghost: false,
+            }
+          }
+        },
         heightmap: Matrix.fromLegacyString(`
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx3xx
         xwvutsrqponmlkjihgfedcba9876543333
