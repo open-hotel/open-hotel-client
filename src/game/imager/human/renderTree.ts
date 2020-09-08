@@ -5,12 +5,14 @@ import { HumanFigure } from './figure.util'
 import { HumanPart, calcFlip } from './HumanPart'
 import { HumanDirection } from './direction.enum'
 import { Vector3 } from '../../../engine/isometric'
+import { Viewport } from 'pixi-viewport'
 
 
 export class RenderTree {
   constructor (
     private loader: Loader,
     private actions: any[],
+    private camera: Viewport,
   ) {
 
   }
@@ -89,14 +91,17 @@ export class RenderTree {
       const groupContainer = new Container()
       groupContainer.sortableChildren = true
       groupContainer.name = groupName
-      groupContainer.zIndex = this.calcPointZIndex(0, group)
+      const direction = groupName === 'head' ? options.head_direction : options.direction
+      groupContainer.zIndex = group.zIndex = this.calcPointZIndex(direction, group)
 
       for (const [partName, part] of Object.entries(group.parts)) {
         const partContainer = new Container()
         // partContainer.sortableChildren = true
         partContainer.name = partName
-        partContainer.zIndex = this.calcPointZIndex(group.z, part)
+        // @ts-ignore
+        partContainer.zIndex = part.zIndex = this.calcPointZIndex(direction, part)
 
+        // @ts-ignore
         for (const humanPart of part.humanParts) {
           const sprite = this.createSprite(humanPart)
           partContainer.addChild(sprite)
@@ -110,10 +115,29 @@ export class RenderTree {
     return mainContainer
   }
 
-  calcPointZIndex (groupZ: number, point: Vector3 & { radius: number }): number {
-    const min = Math.abs((groupZ) - point.radius)
-    const max = Math.abs((groupZ) + point.radius)
-    return Math.min(min, max)
+  calcPointZIndex (direction: number, point): number {
+    const angle = HumanDirection.DirectionAngles[direction]
+
+    var angleInRad = ((angle * Math.PI) / 180)
+    var cos: number = Math.cos(angleInRad);
+    var sin: number = Math.sin(angleInRad);
+    const vec4 = [cos, 0, sin, 0, 1, 0, -(sin), 0, cos]
+
+    const vecMult = (vector4D, vector3D: any) => {
+      var _local_2:Number = (((vector3D.x * vector4D[0]) + (vector3D.y * vector4D[3])) + (vector3D.z * vector4D[6]));
+      var _local_3:Number = (((vector3D.x * vector4D[1]) + (vector3D.y * vector4D[4])) + (vector3D.z * vector4D[7]));
+      var _local_4:Number = (((vector3D.x * vector4D[2]) + (vector3D.y * vector4D[5])) + (vector3D.z * vector4D[8]));
+      return { x: _local_2, y: _local_3, z: _local_4 }
+    }
+
+    const vec3 = vecMult(vec4, point)
+
+    const getDistance = (vec3) => {
+        var min = Math.abs(((vec3.z - point.z) - point.radius));
+        var max = Math.abs(((vec3.z - point.z) + point.radius));
+        return (Math.min(min, max))
+    }
+    return getDistance(vec3)
   }
 
   createSprite (humanPart: HumanPart): Sprite {
@@ -122,6 +146,10 @@ export class RenderTree {
     const offsets: [number, number] = manifest.assets[stateName].offset.split(',').map(o => parseInt(o))
     const textures = spritesheet.textures[humanPart.buildFilenameName()]
     const sprite = new Sprite(textures)
+
+    if (humanPart.type === 'ey') {
+      // debugger
+    }
 
     sprite.pivot.x = offsets[0]
     sprite.pivot.y = offsets[1]

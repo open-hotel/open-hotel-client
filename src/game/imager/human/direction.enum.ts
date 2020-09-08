@@ -19,10 +19,5 @@ export module HumanDirection {
     return normalize((angle/360) * 8)
   }
 
-  // export const radiusMirrors = {
-  //   [HumanDirection.NW]: HumanDirection.SE,
-  //   [HumanDirection.W]: HumanDirection.N,
-  //   [HumanDirection.SW]: HumanDirection.NE,
-  //   [HumanDirection.S]:
-  // }
+  export const DirectionAngles = [45, 90, 135, 180, 225, 270, 315, 0]
 }

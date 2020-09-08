@@ -121,10 +121,11 @@ export class HumanImager {
 
     await this.loadDependencies(setTypes)
     const actions = this.getActions(options)
-    const renderTree = new RenderTree(this.loader, actions)
+    const renderTree = new RenderTree(this.loader, actions, this.app.camera)
       .createRenderTree(setTypes, options)
 
     console.log(renderTree)
+    console.log(this.figuredata)
     const { canvas } = renderTree
 
     const container = renderTree.createContainer(options)
