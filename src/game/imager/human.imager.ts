@@ -1,49 +1,10 @@
 import * as PIXI from 'pixi.js'
-import { mergeWith } from 'lodash'
-
-import { HumanPart, calcFlip } from './human/HumanPart'
-import { HumanActions } from './human/action.util'
-import { HumanFigure } from './human/figure.util'
-import { mmc } from '../../engine/lib/util/Util'
 import { Loader } from '../../engine/loader'
 import { ApplicationProvider } from '../pixi/application.provider'
 import { Provider } from 'injets/dist'
 import { Application } from '../../engine/Application'
-import { HumanDirection } from './human/direction.enum'
-
-export type FigurePartList = Record<string, HumanPart[]>
-
-export interface HumanFigureProps {
-  figure: HumanFigure
-  actions: HumanActions
-  size?: 'h' | 'sh'
-  head_direction: HumanDirection
-  direction: HumanDirection
-  is_ghost: boolean
-}
-
-export interface FigurePartAnimationFrame {
-  frame: number
-  repeats?: number
-  action?: string
-  // wlk, std, sw, etc
-  assetpartdefinition?: string
-  dx?: number
-  dy?: number
-  dd?: number
-}
-
-export interface FigureAnimation {
-  frames: Record<string, FigurePartAnimationFrame>[]
-  offsets?: Array<{ dx: number; dy: number }>
-}
-
-interface SetType {
-  set: any
-  settype: any
-  colors: number[]
-  typeName: string
-}
+import { SetType, HumanFigureProps } from './human/humanImagerTypes'
+import { RenderTree } from './human/renderTree'
 
 @Provider()
 export class HumanImager {
@@ -165,74 +126,12 @@ export class HumanImager {
       )
 
     await this.loadDependencies(setTypes)
-    this.createRenderTree(setTypes, options)
-
-    return [PIXI.Texture.WHITE]
-  }
-
-  private createRenderTree (setTypes: SetType[], options: HumanFigureProps) {
     const actions = this.getActions(options)
-    const lastAction = actions[actions.length - 1]
-    const geometryType = this.geometry.type[lastAction.geometrytype]
-
-    const partNameToGeometryType = Object.entries(geometryType)
-      .reduce((acc, [geometryGroupName, geometryGroup]: [string, any]) => {
-        Object.entries(geometryGroup.items).forEach(([partName, partTransformOptions]) => {
-          acc[partName] = geometryGroupName
-        })
-        return acc
-      }, {})
-
-    const groupRenderTree = setTypes
-      .flatMap(setType => {
-        return setType.set.parts.map(part => ({ ...part, setType }))
-      })
-      .reduce((acc, part) => {
-      const geometryGroupName = partNameToGeometryType[part.type]
-      const geometryGroup = geometryType[geometryGroupName]
-
-      if (!acc[geometryGroupName]) {
-        acc[geometryGroupName] = {
-          radius: geometryGroup.radius,
-          parts: {}
-        }
-      }
-
-      if (!acc[geometryGroupName].parts[part.type]) {
-        acc[geometryGroupName].parts[part.type] = {
-          radius: geometryGroup.items[part.type].radius,
-          sprites: []
-        }
-      }
-
-      acc[geometryGroupName].parts[part.type].sprites.push(
-        {
-          id: part.id,
-          color: part.setType.colors[part.colorindex - 1]
-        }
-      )
-
-      return acc
-    }, {})
-
+    const renderTree = new RenderTree(this.geometry, actions)
+      .createRenderTree(setTypes, options)
     debugger
 
-    const exgroupRenderTree = {
-      head: {
-        radius: 3,
-        parts: {
-          hd: {
-            radius: 1323,
-            sprites: [
-              {
-                color: '',
-                id: 4233
-              }
-            ]
-          }
-        }
-      }
-    }
+    return [PIXI.Texture.WHITE]
   }
 
   private getActions(props: HumanFigureProps) {
