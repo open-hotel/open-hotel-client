@@ -32,7 +32,7 @@ export default {
           userId1: {
             nickname: 'testNickname',
             imagerOptions: {
-              encodedFigure: 'hd-206-1.hr-828-61.ha-1002-109.ch-3342-100.lg-280-110.sh-305-62',
+              encodedFigure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
               encodedActions: 'std,fx,dance',
               direction: 2,
               head_direction: 3,

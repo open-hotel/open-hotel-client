@@ -9,7 +9,7 @@ import { Viewport } from 'pixi-viewport'
 
 
 export class RenderTree {
-  constructor (
+  constructor(
     private loader: Loader,
     private actions: any[],
     private camera: Viewport,
@@ -21,7 +21,7 @@ export class RenderTree {
   canvas: any
 
 
-  createRenderTree (setTypes: SetType[], options: HumanFigureProps) {
+  createRenderTree(setTypes: SetType[], options: HumanFigureProps) {
     const { actions } = this
     const lastAction = actions[actions.length - 1]
     const geometryType = this.loader.resources.geometry.json.type[lastAction.geometrytype]
@@ -39,50 +39,50 @@ export class RenderTree {
         return setType.set.parts.map(part => ({ ...part, setType }))
       })
       .reduce((acc, part) => {
-      const geometryGroupName = partNameToGeometryType[part.type]
-      const geometryGroup = geometryType[geometryGroupName]
+        const geometryGroupName = partNameToGeometryType[part.type]
+        const geometryGroup = geometryType[geometryGroupName]
 
-      if (!acc[geometryGroupName]) {
-        acc[geometryGroupName] = {
-          ...geometryGroup,
-          parts: {}
+        if (!acc[geometryGroupName]) {
+          acc[geometryGroupName] = {
+            ...geometryGroup,
+            parts: {}
+          }
         }
-      }
 
-      if (!acc[geometryGroupName].parts[part.type]) {
-        acc[geometryGroupName].parts[part.type] = {
-          ...geometryGroup.items[part.type],
-          humanParts: []
+        if (!acc[geometryGroupName].parts[part.type]) {
+          acc[geometryGroupName].parts[part.type] = {
+            ...geometryGroup.items[part.type],
+            humanParts: []
+          }
         }
-      }
 
-      const libName = HumanFigure.getLib(
-        this.loader.resources.figuremap.json,
-        part.type,
-        part.id
-      )
+        const libName = HumanFigure.getLib(
+          this.loader.resources.figuremap.json,
+          part.type,
+          part.id
+        )
 
-      const humanPart = new HumanPart({
-        id: part.id,
-        tint: part.setType.colors[part.colorindex - 1],
-        type: part.type,
-        lib: libName,
-        direction: HumanFigure.isFromPartSet(this.loader.resources.partsets.json, 'head', part.type)
-          ? options.head_direction
-          : options.direction
-      })
+        const humanPart = new HumanPart({
+          id: part.id,
+          tint: part.setType.colors[part.colorindex - 1],
+          type: part.type,
+          lib: libName,
+          direction: HumanFigure.isFromPartSet(this.loader.resources.partsets.json, 'head', part.type)
+            ? options.head_direction
+            : options.direction
+        })
 
-      acc[geometryGroupName].parts[part.type].humanParts.push(humanPart)
+        acc[geometryGroupName].parts[part.type].humanParts.push(humanPart)
 
-      return acc
-    }, {})
+        return acc
+      }, {})
 
     this.groups = groupRenderTree,
-    this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
+      this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
     return this
   }
 
-  createContainer (options: HumanFigureProps): Container {
+  createContainer(options: HumanFigureProps): Container {
 
     const mainContainer = new Container()
     mainContainer.sortableChildren = true
@@ -115,7 +115,7 @@ export class RenderTree {
     return mainContainer
   }
 
-  calcPointZIndex (direction: number, point): number {
+  calcPointZIndex(direction: number, point): number {
     const angle = HumanDirection.DirectionAngles[direction]
 
     var angleInRad = ((angle * Math.PI) / 180)
@@ -124,36 +124,42 @@ export class RenderTree {
     const vec4 = [cos, 0, sin, 0, 1, 0, -(sin), 0, cos]
 
     const vecMult = (vector4D, vector3D: any) => {
-      var _local_2:Number = (((vector3D.x * vector4D[0]) + (vector3D.y * vector4D[3])) + (vector3D.z * vector4D[6]));
-      var _local_3:Number = (((vector3D.x * vector4D[1]) + (vector3D.y * vector4D[4])) + (vector3D.z * vector4D[7]));
-      var _local_4:Number = (((vector3D.x * vector4D[2]) + (vector3D.y * vector4D[5])) + (vector3D.z * vector4D[8]));
+      var _local_2: Number = (((vector3D.x * vector4D[0]) + (vector3D.y * vector4D[3])) + (vector3D.z * vector4D[6]));
+      var _local_3: Number = (((vector3D.x * vector4D[1]) + (vector3D.y * vector4D[4])) + (vector3D.z * vector4D[7]));
+      var _local_4: Number = (((vector3D.x * vector4D[2]) + (vector3D.y * vector4D[5])) + (vector3D.z * vector4D[8]));
       return { x: _local_2, y: _local_3, z: _local_4 }
     }
 
     const vec3 = vecMult(vec4, point)
 
     const getDistance = (vec3) => {
-        var min = Math.abs(((vec3.z - point.z) - point.radius));
-        var max = Math.abs(((vec3.z - point.z) + point.radius));
-        return (Math.min(min, max))
+      var min = Math.abs(((vec3.z - point.z) - point.radius));
+      var max = Math.abs(((vec3.z - point.z) + point.radius));
+      return (Math.min(min, max))
     }
     return getDistance(vec3)
   }
 
-  createSprite (humanPart: HumanPart): Sprite {
+  createSprite(humanPart: HumanPart): Sprite {
     const { manifest, spritesheet } = this.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
     const stateName = humanPart.buildState()
     const offsets: [number, number] = manifest.assets[stateName].offset.split(',').map(o => parseInt(o))
-    const textures = spritesheet.textures[humanPart.buildFilenameName()]
-    const sprite = new Sprite(textures)
+    let texture = spritesheet.textures[humanPart.buildFilenameName()]
+    const sprite = new Sprite()
 
-    if (humanPart.type === 'ey') {
-      // debugger
+    if (!texture) {
+      if (humanPart.type === 'ey' && humanPart.assetpartdefinition == 'std') {
+        texture = spritesheet.textures[
+          humanPart.buildFilenameName({ assetpartdefinition: 'sml' })
+        ]
+      }
     }
 
+    sprite.texture = texture;
     sprite.pivot.x = offsets[0]
     sprite.pivot.y = offsets[1]
-    sprite.tint = humanPart.tint
+
+    if(humanPart.type !== 'ey') sprite.tint = humanPart.tint
 
     return sprite
   }
