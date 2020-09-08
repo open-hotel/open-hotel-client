@@ -3,6 +3,7 @@ import { RequestOptions, LoaderResponse } from './adapter.interface'
 
 export interface ILoaderResource {
   name: string
+  options?: object
   request: RequestOptions
   response?: LoaderResponse
 }
@@ -10,6 +11,7 @@ export interface ILoaderResource {
 export interface LoaderResourceRequest {
   name: string
   url: string
+  options: any
 }
 
 export class LoaderResource extends EventEmitter implements ILoaderResource {
@@ -17,8 +19,10 @@ export class LoaderResource extends EventEmitter implements ILoaderResource {
   request: RequestOptions
   response: LoaderResponse = null
   error: Error = null
+  loaded = false
   ready = false
   in_queue = false
+  options?: LoaderResourceRequest['options']
 
   constructor(resource: ILoaderResource) {
     super()

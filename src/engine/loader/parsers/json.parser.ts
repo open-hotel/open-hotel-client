@@ -11,7 +11,7 @@ export class JsonParser implements LoaderMiddleware {
   priority = 0
 
   async use(resource: LoaderResource): Promise<any> {
-    const type = String(resource.response.headers['content-type'] || '')
+    const type = (resource.response && resource.response.headers['content-type']) ?? ''
     if (type.startsWith('application/json') || type.startsWith('text/plain')) {
       resource.json = await resource.response.json()
     }

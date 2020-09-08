@@ -29,7 +29,7 @@ function joinURL(baseURL: string, url: string) {
 interface LoaderAddMulti {
   resources: LoaderResource[]
   wait(): Promise<LoaderResource[]>
-  progress (cb: (loaded: number, total: number) => void): LoaderAddMulti
+  progress(cb: (loaded: number, total: number) => void): LoaderAddMulti
 }
 
 interface LoaderAdd {
@@ -63,7 +63,7 @@ export class Loader {
     return this.options.parsers
   }
 
-  private addResource(name: string, url: string): LoaderResource {
+  private addResource(name: string, url: string, options?: object): LoaderResource {
     let resource: LoaderResource =
       this.resources[name] ??
       new LoaderResource({
@@ -72,6 +72,7 @@ export class Loader {
           method: 'GET',
           url: joinURL(this.options.baseURL, url),
         },
+        options
       })
 
     if (!resource.in_queue) {
@@ -89,7 +90,7 @@ export class Loader {
       if (typeof item === 'string') {
         return this.addResource(item, item)
       }
-      return this.addResource(item.name, item.url)
+      return this.addResource(item.name, item.url, item.options)
     })
 
     return {
@@ -112,6 +113,7 @@ export class Loader {
       Object.entries(resources).map(([name, resource]) => ({
         name,
         url: resource,
+        options: {}
       })),
     )
   }
@@ -167,13 +169,12 @@ export class Loader {
   private async loadItem(resource: LoaderResource): Promise<any> {
     await this.hook('pre', resource)
 
-    this.adapter
-      .request(resource.request)
+    return this.adapter.request(resource.request)
       .then(async res => {
         this.countLoading--;
 
         resource.response = res
-
+        resource.loaded = true;
         await this.hook('use', resource)
 
         resource.ready = true
