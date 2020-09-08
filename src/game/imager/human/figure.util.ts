@@ -26,4 +26,23 @@ export module HumanFigure {
       .map(part => part.split('-'))
       .reduce((obj, [type, id, ...colors]) => ({ ...obj, [type]: { id, colors } }), {})
   }
+
+  export function getLib (figuremap: Record<string, any>, type: string, id: string) {
+    const libraryIndex = figuremap.parts[type][id]
+    const lib = figuremap.libs[libraryIndex]?.id
+    if (!lib) {
+      if (type === 'hrb') {
+        return getLib(figuremap, 'hr', id)
+      }
+      if (type === 'ls' || type === 'rs') {
+        return getLib(figuremap, 'ch', id)
+      }
+    }
+    return lib
+  }
+
+  export function isFromPartSet (partsets: Record<string, any>, partSet: string, partType: string) {
+    return new Set(partsets.activePartSets[partSet]).has(partType)
+  }
+
 }

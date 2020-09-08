@@ -23,6 +23,7 @@ export class TextureParser implements LoaderMiddleware {
 
       img.onload = () => {
         resource.texture = Texture.fromLoader(img, resource.request.url, resource.name)
+        window.URL.revokeObjectURL(img.src)
         resolve()
       }
     })

@@ -5,6 +5,7 @@ import { Provider } from 'injets/dist'
 import { Application } from '../../engine/Application'
 import { SetType, HumanFigureProps } from './human/humanImagerTypes'
 import { RenderTree } from './human/renderTree'
+import { HumanFigure } from './human/figure.util'
 
 @Provider()
 export class HumanImager {
@@ -60,12 +61,6 @@ export class HumanImager {
     )
   }
 
-
-  private getLib(type: string, id: string) {
-    const { libs, parts } = this.figuremap
-    return libs[parts[type][id]]?.id
-  }
-
   private getColors(type: string) {
     const { palette, settype } = this.figuredata
     return palette[settype[type].paletteid]
@@ -98,8 +93,7 @@ export class HumanImager {
   private async loadDependencies (setTypes: SetType[]) {
     const dependencies = setTypes.flatMap<string>(({ set }) => {
       const setDependecies = set.parts.map(part => {
-        const libraryIndex = this.figuremap.parts[part.type][part.id]
-        const lib = this.figuremap.libs[libraryIndex]?.id
+        const lib = HumanFigure.getLib(this.figuremap, part.type, part.id)
         return lib && `${lib}/${lib}.json`
       })
       return Array.from(new Set(setDependecies))
@@ -127,11 +121,22 @@ export class HumanImager {
 
     await this.loadDependencies(setTypes)
     const actions = this.getActions(options)
-    const renderTree = new RenderTree(this.geometry, actions)
+    const renderTree = new RenderTree(this.loader, actions)
       .createRenderTree(setTypes, options)
-    debugger
+    const { canvas } = renderTree
 
-    return [PIXI.Texture.WHITE]
+    const container = renderTree.createContainer()
+    const DEFAULT_HUMAN_OFFSET = 8
+
+    return [
+      this.app.renderer.generateTexture(
+        container,
+        PIXI.SCALE_MODES.LINEAR,
+        1,
+        new PIXI.Rectangle(canvas.dx, canvas.dy - canvas.height + DEFAULT_HUMAN_OFFSET, canvas.width, canvas.height)
+      )
+    ]
+
   }
 
   private getActions(props: HumanFigureProps) {
