@@ -1,3 +1,4 @@
+
 export enum HumanDirection {
   N,
   NE,
@@ -17,4 +18,11 @@ export module HumanDirection {
   export function fromDeg(angle: number): HumanDirection {
     return normalize((angle/360) * 8)
   }
+
+  // export const radiusMirrors = {
+  //   [HumanDirection.NW]: HumanDirection.SE,
+  //   [HumanDirection.W]: HumanDirection.N,
+  //   [HumanDirection.SW]: HumanDirection.NE,
+  //   [HumanDirection.S]:
+  // }
 }

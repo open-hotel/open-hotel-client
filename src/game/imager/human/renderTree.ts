@@ -2,13 +2,15 @@ import { SetType, HumanFigureProps } from './humanImagerTypes'
 import { Container, Sprite } from 'pixi.js'
 import { Loader } from '../../../engine/loader'
 import { HumanFigure } from './figure.util'
-import { HumanPart } from './HumanPart'
+import { HumanPart, calcFlip } from './HumanPart'
+import { HumanDirection } from './direction.enum'
+import { Vector3 } from '../../../engine/isometric'
 
 
 export class RenderTree {
   constructor (
     private loader: Loader,
-    private actions: any[]
+    private actions: any[],
   ) {
 
   }
@@ -40,14 +42,14 @@ export class RenderTree {
 
       if (!acc[geometryGroupName]) {
         acc[geometryGroupName] = {
-          radius: geometryGroup.radius,
+          ...geometryGroup,
           parts: {}
         }
       }
 
       if (!acc[geometryGroupName].parts[part.type]) {
         acc[geometryGroupName].parts[part.type] = {
-          radius: geometryGroup.items[part.type].radius,
+          ...geometryGroup.items[part.type],
           humanParts: []
         }
       }
@@ -78,17 +80,22 @@ export class RenderTree {
     return this
   }
 
-  createContainer (): Container {
+  createContainer (options: HumanFigureProps): Container {
+
     const mainContainer = new Container()
+    mainContainer.sortableChildren = true
+
     for (const [groupName, group] of Object.entries(this.groups)) {
       const groupContainer = new Container()
+      groupContainer.sortableChildren = true
       groupContainer.name = groupName
-      groupContainer.zIndex = group.radius
+      groupContainer.zIndex = this.calcPointZIndex(0, group)
 
       for (const [partName, part] of Object.entries(group.parts)) {
         const partContainer = new Container()
+        // partContainer.sortableChildren = true
         partContainer.name = partName
-        partContainer.zIndex = part.radius
+        partContainer.zIndex = this.calcPointZIndex(group.z, part)
 
         for (const humanPart of part.humanParts) {
           const sprite = this.createSprite(humanPart)
@@ -101,6 +108,12 @@ export class RenderTree {
     }
 
     return mainContainer
+  }
+
+  calcPointZIndex (groupZ: number, point: Vector3 & { radius: number }): number {
+    const min = Math.abs((groupZ) - point.radius)
+    const max = Math.abs((groupZ) + point.radius)
+    return Math.min(min, max)
   }
 
   createSprite (humanPart: HumanPart): Sprite {

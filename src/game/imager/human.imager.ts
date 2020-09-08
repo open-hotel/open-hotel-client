@@ -123,9 +123,11 @@ export class HumanImager {
     const actions = this.getActions(options)
     const renderTree = new RenderTree(this.loader, actions)
       .createRenderTree(setTypes, options)
+
+    console.log(renderTree)
     const { canvas } = renderTree
 
-    const container = renderTree.createContainer()
+    const container = renderTree.createContainer(options)
     const DEFAULT_HUMAN_OFFSET = 8
 
     return [
