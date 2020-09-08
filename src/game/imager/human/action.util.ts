@@ -1,6 +1,6 @@
 export type HumanActions = Record<string, boolean | string>
 
-export namespace Action {
+export module HumanActions {
   /**
    * Convert object action to string
    * @param figure Action Dictionary

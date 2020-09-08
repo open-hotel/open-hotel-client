@@ -10,11 +10,11 @@ and how you can help us on making it better.
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
   * [How the project is divided](#how-the-project-is-divided)
-  
+
 [How Can I Contribute?](#how-can-i-contribute)
   * [Reporting Bugs](#reporting-bugs)
   * [Writing Tests](#writing-tests)
-  
+
 * [Development Environment](#development-environment)
 * [New assets](#new-assets)
 * [Links](#links)
@@ -100,7 +100,10 @@ throw away all the flash code and get only the sprite images.
 ### Naming conventions
 On human sprites, there is a file / sprite naming convention you should know to handle the sprites.
 
-That is <b>object prefix _ object action _ layer name _ type _ direction _ animation frame</b>
+That is <b>
+(lib          _size  _action   _type  _id   _direction   _frame)
+hh_human_body _h     _std      _hd    _2    _0           _0
+</b>
 
 For example, one of the hair sprites is called:
 
@@ -140,7 +143,7 @@ For example:
 . * .
 
 #### Direction 5
-. . 
+. .
 . / .
 * . .
 
@@ -156,7 +159,7 @@ For example:
 </pre>
 
 #### Animation Frame
-Non-animated sprites contain only the animation frame 0. 
+Non-animated sprites contain only the animation frame 0.
 
 ## Links
 [Follow our Facebook Page](https://www.facebook.com/openhabbohotel/)

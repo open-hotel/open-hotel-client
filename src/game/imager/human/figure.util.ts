@@ -6,7 +6,7 @@ export type HumanFigure = Record<
   }
 >
 
-export namespace Figure {
+export module HumanFigure {
   /**
    * Convert object figure to string
    * @param figure Figure Dictionary

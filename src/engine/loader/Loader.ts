@@ -121,6 +121,7 @@ export class Loader {
   add(resource: LoaderResourceOptions): LoaderAdd
   add(resources: Record<string, string | LoaderResourceOptions>): LoaderAddMulti
   add(resources: Record<string, string | LoaderResourceOptions>): LoaderAddMulti
+  add(resources: string[]): LoaderAddMulti
   add(resourceItem: any, url?: string): LoaderAdd | LoaderAddMulti {
     if (Array.isArray(resourceItem)) return this.addArray(resourceItem)
     if (typeof resourceItem === 'object' && !resourceItem.name) return this.addDic(resourceItem)
@@ -146,10 +147,10 @@ export class Loader {
       return
     }
 
-    
+
     const canLoadCount = Math.max(0, this.options.concurently - this.countLoading)
     const resources = this.queue.splice(0, canLoadCount)
-    
+
     this.countLoading += resources.length
 
     resources.forEach(resource => this.loadItem(resource))
@@ -172,7 +173,7 @@ export class Loader {
         this.countLoading--;
 
         resource.response = res
-        
+
         await this.hook('use', resource)
 
         resource.ready = true

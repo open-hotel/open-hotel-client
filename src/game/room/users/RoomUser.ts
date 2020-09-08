@@ -1,7 +1,7 @@
 import { Selectable } from "../Selectable.interface"
 import { HumanImager } from "../../imager/human.imager"
-import { Figure } from "../../imager/human/figure.util"
-import { Action } from "../../imager/human/action.util"
+import { HumanFigure } from "../../imager/human/figure.util"
+import { HumanActions } from "../../imager/human/action.util"
 
 export interface RoomUserOptions {
   nickname: string,
@@ -27,8 +27,8 @@ export class RoomUser {
   async initSprite () {
     const { imagerOptions } = this.options
     const textures = await this.humanImager.createAnimation({
-      figure: Figure.decode(imagerOptions.encodedFigure),
-      actions: Action.decode(imagerOptions.encodedActions),
+      figure: HumanFigure.decode(imagerOptions.encodedFigure),
+      actions: HumanActions.decode(imagerOptions.encodedActions),
       direction: imagerOptions.direction,
       head_direction: imagerOptions.head_direction,
       is_ghost: imagerOptions.is_ghost,

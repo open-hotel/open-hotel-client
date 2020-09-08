@@ -33,7 +33,7 @@ export default {
             nickname: 'testNickname',
             imagerOptions: {
               encodedFigure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
-              encodedActions: 'std',
+              encodedActions: 'std,fx,dance',
               direction: 2,
               head_direction: 2,
               is_ghost: false,

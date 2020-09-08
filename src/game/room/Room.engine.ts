@@ -11,8 +11,6 @@ import ladders from './floor/ladders'
 import { Wall } from './wall/Wall'
 import { PointLike } from '../../engine/lib/util/Walk'
 import { HumanImager } from '../imager/human.imager'
-import { Figure } from '../imager/human/figure.util'
-import { Action } from '../imager/human/action.util'
 import { RoomUser, RoomUserOptions } from './users/RoomUser'
 
 const PRIORITY = {
