@@ -20,7 +20,6 @@ export class RenderTree {
   groups: object
   canvas: any
 
-
   createRenderTree(setTypes: SetType[], options: HumanFigureProps) {
     const { actions } = this
     const lastAction = actions[actions.length - 1]
@@ -34,8 +33,13 @@ export class RenderTree {
         return acc
       }, {})
 
+    const hiddenLayers = new Set<string>()
+
     const groupRenderTree = setTypes
       .flatMap(setType => {
+        if (setType.set.hiddenLayers) {
+          setType.set.hiddenLayers.forEach(part => hiddenLayers.add(part))
+        }
         return setType.set.parts.map(part => ({ ...part, setType }))
       })
       .reduce((acc, part) => {
@@ -77,8 +81,14 @@ export class RenderTree {
         return acc
       }, {})
 
-    this.groups = groupRenderTree,
-      this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
+    for (const partType of hiddenLayers) {
+      const group = partNameToGeometryType[partType];
+      delete groupRenderTree[group].parts[partType]
+    }
+
+    this.groups = groupRenderTree;
+    this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
+
     return this
   }
 
@@ -89,9 +99,12 @@ export class RenderTree {
 
     for (const [groupName, group] of Object.entries(this.groups)) {
       const groupContainer = new Container()
+
       groupContainer.sortableChildren = true
       groupContainer.name = groupName
+
       const direction = groupName === 'head' ? options.head_direction : options.direction
+
       groupContainer.zIndex = group.zIndex = this.calcPointZIndex(direction, group)
 
       for (const [partName, part] of Object.entries(group.parts)) {
@@ -159,7 +172,7 @@ export class RenderTree {
     sprite.pivot.x = offsets[0]
     sprite.pivot.y = offsets[1]
 
-    if(humanPart.type !== 'ey') sprite.tint = humanPart.tint
+    if (humanPart.type !== 'ey') sprite.tint = humanPart.tint
 
     return sprite
   }
