@@ -3,15 +3,16 @@ import { Loader } from '../../engine/loader'
 import { ApplicationProvider } from '../pixi/application.provider'
 import { Provider } from 'injets/dist'
 import { Application } from '../../engine/Application'
-import { SetType, HumanFigureProps } from './human/humanImagerTypes'
+import { SetType, HumanFigureProps, AnimationName, FigureData, FigureDataSettypeKey } from './human/humanImagerTypes'
 import { RenderTree } from './human/renderTree'
 import { HumanFigure } from './human/figure.util'
+import { ActionType } from './human/action.util'
 
 @Provider()
 export class HumanImager {
   readonly app: Application
 
-  constructor(private readonly loader: Loader, appProvider: ApplicationProvider) {
+  constructor(public readonly loader: Loader, appProvider: ApplicationProvider) {
     this.app = appProvider.app
   }
 
@@ -23,7 +24,7 @@ export class HumanImager {
     return this.getData('figuremap')
   }
 
-  get figuredata() {
+  get figuredata(): FigureData {
     return this.getData('figuredata')
   }
 
@@ -47,18 +48,19 @@ export class HumanImager {
     return this.getData('effectmap')
   }
 
-  private _actionTypeToAnimationName
-  get actionTypeToAnimationName() {
+  private _actionTypeToAnimationName: Record<ActionType, AnimationName>
+  get actionTypeToAnimationName(): Record<ActionType, AnimationName> {
     if (this._actionTypeToAnimationName) {
       return this._actionTypeToAnimationName
     }
-    return this._actionTypeToAnimationName = Object.entries(this.avatarActions).reduce(
-      (acc, [name, { state }]) => ({
-        ...acc,
-        [state]: name,
-      }),
-      {},
-    )
+    return this._actionTypeToAnimationName = Object.entries(this.avatarActions)
+      .reduce<any>(
+        (acc, [name, { state }]) => ({
+          ...acc,
+          [state]: name,
+        }),
+        {},
+      )
   }
 
   private async loadDependencies(setTypes: SetType[]) {
@@ -73,27 +75,28 @@ export class HumanImager {
     await this.loader.add(dependencies).wait()
   }
 
-  async createAnimation(options: HumanFigureProps) {
-    const setTypes: SetType[] = Object.entries(options.figure)
+  async createFigure(options: HumanFigureProps) {
+    const setTypes = Object.entries(options.figure)
       .map(
         ([typeName, partOptions]) => {
-          const settype = this.figuredata.settype[typeName]
-          const colors: number[] = partOptions.colors.map(
-            colorId => Number('0x' + this.figuredata.palette[settype.paletteid][colorId].color)
+          const settype = this.figuredata.settype[typeName as FigureDataSettypeKey]
+          const palette = this.figuredata.palette[settype.paletteid]
+          const colors = partOptions.colors.map(
+            colorId => Number('0x' + palette[colorId].color)
           )
           return {
-            set: this.figuredata.settype[typeName].set[partOptions.id],
+            set: this.figuredata.settype[typeName].set[+partOptions.id],
             settype,
             colors,
             typeName
-          }
+          } as SetType
         }
       )
 
     await this.loadDependencies(setTypes)
 
     const actions = this.getActions(options)
-    const renderTree = new RenderTree(this.loader, actions).build(setTypes, options)
+    const renderTree = new RenderTree(this, actions).build(setTypes, options)
     const container = renderTree.createContainer(options)
 
     return {
@@ -108,7 +111,7 @@ export class HumanImager {
       .filter(a => a)
       .sort((a, b) => b.precedence - a.precedence)
 
-    actions.forEach(action => {
+    for (const action of actions) {
       const prevents = new Set((action.prevents || '').split(','))
       if (prevents.size > 0) {
         actions = actions.filter(a => {
@@ -118,7 +121,7 @@ export class HumanImager {
           return !prevents.has(a.state)
         })
       }
-    })
+    }
 
     return actions
   }

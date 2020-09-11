@@ -31,7 +31,7 @@ export class RoomUser {
 
   async initSprite () {
     const { imagerOptions } = this.options
-    const { container, renderTree } = await this.humanImager.createAnimation({
+    const { container, renderTree } = await this.humanImager.createFigure({
       figure: HumanFigure.decode(imagerOptions.encodedFigure),
       actions: HumanActions.decode(imagerOptions.encodedActions),
       direction: imagerOptions.direction,
@@ -40,10 +40,6 @@ export class RoomUser {
     })
     this.sprite = container
     this.renderTree = renderTree
-    container.x = Math.random() * screen.width
-    container.y = Math.random() * screen.height
-
-    RoomUser.ticker.add(this.startAnimationLoop)
 
     this.startAnimations()
     return this.sprite
@@ -53,6 +49,7 @@ export class RoomUser {
   private activeAnimations = []
 
   startAnimations () {
+    RoomUser.ticker.add(this.startAnimationLoop)
     const { actionTypeToAnimationName } = this.humanImager
     for (const action of this.renderTree.actions) {
       const animationName = actionTypeToAnimationName[action.state]
@@ -68,11 +65,14 @@ export class RoomUser {
     for (const animation of this.activeAnimations) {
       const currentAnimationFrame = this.currentFrame % animation.frames.length
       const currentFrame = animation.frames[currentAnimationFrame]
+
       for (const [partName, { frame, assetpartdefinition }] of Object.entries<any>(currentFrame.bodyparts)) {
         const partContainer = this.renderTree.partTypeToContainer[partName]
+
         if (!partContainer) {
           continue
         }
+
         const humanParts: HumanPart[] = this.renderTree.groups[partName]
         humanParts.forEach((humanPart, index) => {
           humanPart.frame = frame
@@ -80,7 +80,9 @@ export class RoomUser {
           const sprite = partContainer.children[index] as Sprite
           this.renderTree.updateSprite(sprite, humanPart)
         })
+
       }
+
     }
 
     this.currentFrame++

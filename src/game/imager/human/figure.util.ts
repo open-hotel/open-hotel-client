@@ -1,5 +1,7 @@
+import { FigureDataSettypeKey } from './humanImagerTypes'
+
 export type HumanFigure = Record<
-  string,
+  FigureDataSettypeKey,
   {
     id: string
     colors?: string[]
@@ -24,10 +26,10 @@ export module HumanFigure {
     return figure
       .split('.')
       .map(part => part.split('-'))
-      .reduce((obj, [type, id, ...colors]) => ({ ...obj, [type]: { id, colors } }), {})
+      .reduce((obj, [type, id, ...colors]) => ({ ...obj, [type]: { id, colors } }), <HumanFigure>{})
   }
 
-  export function getLib (figuremap: Record<string, any>, type: string, id: string) {
+  export function getLib (figuremap: Record<string, any>, type: string, id: string | number) {
     const libraryIndex = figuremap.parts[type][id]
     const lib = figuremap.libs[libraryIndex]?.id
     if (!lib) {

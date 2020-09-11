@@ -1,17 +1,17 @@
-import { SetType, HumanFigureProps } from './humanImagerTypes'
+import { SetType, HumanFigureProps, PartType, HumanGroupName, HumanGroup } from './humanImagerTypes'
 import { Container, Sprite, Texture } from 'pixi.js'
-import { Loader } from '../../../engine/loader'
 import { HumanFigure } from './figure.util'
 import { HumanPart, HumanChunkProps, calcFlip } from './HumanPart'
 import { HumanDirection } from './direction.enum'
+import { HumanImager } from '../human.imager'
 
 export class RenderTree {
   constructor(
-    private loader: Loader,
+    private humanImager: HumanImager,
     public actions: any[]
-  ) { }
+  ) {}
 
-  groups: object
+  groups: Record<PartType, HumanPart[]>
   canvas: any
   container: Container
 
@@ -31,7 +31,7 @@ export class RenderTree {
       })
       .reduce((acc, part) => {
         if (hiddenLayers.has(part.type)) {
-          return acc;
+          return acc
         }
 
         if (!acc[part.type]) {
@@ -39,12 +39,12 @@ export class RenderTree {
         }
 
         const libName = HumanFigure.getLib(
-          this.loader.resources.figuremap.json,
+          this.humanImager.figuremap,
           part.type,
           part.id
         )
 
-        const isHeadPart = HumanFigure.isFromPartSet(this.loader.resources.partsets.json, 'head', part.type)
+        const isHeadPart = HumanFigure.isFromPartSet(this.humanImager.partsets, 'head', part.type)
 
         const humanPart = new HumanPart({
           id: part.id,
@@ -60,26 +60,26 @@ export class RenderTree {
         acc[part.type].push(humanPart)
 
         return acc
-      }, {})
+      }, <Record<PartType, HumanPart[]>>{})
 
     this.groups = groupRenderTree;
-    this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
+    this.canvas = this.humanImager.geometry.canvas[options.size || 'h'][lastAction.geometrytype]
     this.applyActions()
 
     return this
   }
 
-  partTypeToContainer: Record<string, Container> = {}
+  partTypeToContainer = <Record<PartType, Container>>{}
 
   createContainer(options: HumanFigureProps): Container {
     const lastAction = this.actions[this.actions.length - 1]
-    const geometryType = this.loader.resources.geometry.json.type[lastAction.geometrytype]
+    const humanGroupDictionary: Record<HumanGroupName, HumanGroup> = this.humanImager.geometry.type[lastAction.geometrytype]
 
     const mainContainer = new Container()
 
     mainContainer.sortableChildren = true
 
-    for (const [groupName, group] of Object.entries<any>(geometryType)) {
+    for (const [groupName, group] of Object.entries(humanGroupDictionary)) {
       const groupContainer = new Container()
 
       groupContainer.sortableChildren = true
@@ -93,7 +93,7 @@ export class RenderTree {
       }
       groupContainer.zIndex = group.zIndex = this.calcPointZIndex(direction, group)
 
-      for (const [partType, groupItem] of Object.entries<any>(group.items)) {
+      for (const [partType, groupItem] of Object.entries(group.items)) {
         const partGroup = this.groups[partType]
 
         if (!partGroup?.length) continue;
@@ -145,26 +145,26 @@ export class RenderTree {
   }
 
   getOffsetOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
-    const { manifest } = this.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
+    const { manifest } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
     const stateName = humanPart.buildState(overrides)
     const { offset = null } = manifest.assets[stateName] ?? {}
     return offset?.split(',').map(o => parseInt(o))
   }
 
   getTextureOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): Texture | undefined {
-    const { spritesheet } = this.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
+    const { spritesheet } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
     return spritesheet.textures[
       humanPart.buildFilenameName(overrides)
     ]
   }
 
   getPartset(partType: string) {
-    return this.loader.resources.partsets.json.partSets[partType]
+    return this.humanImager.partsets.partSets[partType]
   }
 
   private applyActions () {
     for (const action of this.actions) {
-      const activePartset = this.loader.resources.partsets.json.activePartSets[action.activepartset]
+      const activePartset = this.humanImager.partsets.activePartSets[action.activepartset]
       for (const partType of activePartset) {
         this.groups[partType]?.forEach((part: HumanPart) => part.assetpartdefinition = action.assetpartdefinition)
       }

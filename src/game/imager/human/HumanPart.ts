@@ -3,7 +3,7 @@ export interface HumanChunkProps {
   size: 'h' | 'sh'
   assetpartdefinition: string
   type: string
-  id: string
+  id: string | number
   direction: number
   frame: number
   tint: number
