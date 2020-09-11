@@ -83,6 +83,10 @@ export class RenderTree {
 
       const direction = groupName === 'head' ? options.head_direction : options.direction
 
+      // TODO: why????
+      if (groupName === 'rightarm' || groupName === 'leftarm') {
+        group.z = -1
+      }
       groupContainer.zIndex = group.zIndex = this.calcPointZIndex(direction, group)
 
       for (const [partType, groupItem] of Object.entries<any>(group.items)) {
@@ -102,7 +106,7 @@ export class RenderTree {
 
         groupContainer.addChild(partContainer)
       }
-      
+
       mainContainer.addChild(groupContainer)
     }
 
@@ -156,7 +160,7 @@ export class RenderTree {
     const partset = this.getPartset(humanPart.type)
     let offsets = this.getOffsetOf(humanPart)
     let texture = this.getTextureOf(humanPart)
-    let flipped = false;
+    let flipped = false
     const sprite = new Sprite()
 
     if (!texture) {
@@ -170,10 +174,10 @@ export class RenderTree {
           type: partset['flipped-set-type'] ?? humanPart.type,
           direction: calcFlip(humanPart.direction)
         }
-        
+
         texture = this.getTextureOf(humanPart, opts)
         offsets = this.getOffsetOf(humanPart, opts)
-        flipped = true;
+        flipped = true
       }
     }
 
