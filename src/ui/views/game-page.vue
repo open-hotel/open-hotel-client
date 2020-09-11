@@ -16,44 +16,27 @@ export default {
     return {
       loaded: false,
       mounted: false,
-      /** @type {ApplicationProvider} */
-      // app: null,
-      // /** @type {RoomProvider} */
-      // room: null,
-      // /** @type {Loader} */
-      // loader: null,
     }
   },
   methods: {
     async startGame() {
       const engine = await this.$injets.get(RoomProvider)
       await engine.create({
-        roomUserDictionary: {
-          userId1: {
+        roomUserDictionary: new Array(1).fill(null).reduce((acc, nil, index) => {
+          acc[index] = {
             nickname: 'testNickname',
             imagerOptions: {
-              encodedFigure: 'hd-180-1.hr-110-61.ha-1012-110.ch-255-66.lg-280-110.sh-305-62',
-              encodedActions: 'std,mv',
-              direction: 2,
-              head_direction: 2,
+              encodedFigure: 'hd-180-1.hr-110-61.ch-210-66.lg-280-110.sh-305-62',
+              encodedActions: 'std',
+              direction: 4,
+              head_direction: 4,
               is_ghost: false,
             }
           }
-        },
+          return acc
+        }, {}),
         heightmap: Matrix.fromLegacyString(`
-        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx3xx
-        xwvutsrqponmlkjihgfedcba9876543333
-        wwvutsrqponmlkjihgfedcba9876543333
-        xwvutsrqponmlkjihgfedcba9876543333
-        xbbba98765432100000000000000000222
-        xxxxxxxxxxxxxxx0000000000000000111
-        x000000000000000000000000000000000
-        x000000000000000000000000000000000
-        x000000000000000000000000000000000
-        x000000000000000000000000000000000
-        x000000000000000000000000000000000
-        x000000000000000000000000000000000
-        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`),
+        00`),
       })
 
       console.log(this.dataUrl)

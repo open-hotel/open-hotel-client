@@ -40,7 +40,8 @@ export class RoomUser {
     })
     this.sprite = container
     this.renderTree = renderTree
-    container.x = -50
+    container.x = Math.random() * screen.width
+    container.y = Math.random() * screen.height
 
     RoomUser.ticker.add(this.startAnimationLoop)
 
@@ -74,8 +75,10 @@ export class RoomUser {
         }
         const humanParts: HumanPart[] = this.renderTree.groups[partName]
         humanParts.forEach((humanPart, index) => {
+          humanPart.frame = frame
+          humanPart.assetpartdefinition = assetpartdefinition
           const sprite = partContainer.children[index] as Sprite
-          sprite.texture = this.renderTree.getTextureOf(humanPart, { frame, assetpartdefinition })
+          this.renderTree.updateSprite(sprite, humanPart)
         })
       }
     }

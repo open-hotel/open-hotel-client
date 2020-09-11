@@ -105,7 +105,8 @@ export class RenderTree {
         partContainer.zIndex = groupItem.zIndex = this.calcPointZIndex(direction, groupItem)
 
         for (const humanPart of partGroup) {
-          const sprite = this.createSprite(humanPart)
+          const sprite = new Sprite()
+          this.updateSprite(sprite, humanPart)
           partContainer.addChild(sprite)
         }
 
@@ -170,17 +171,16 @@ export class RenderTree {
     }
   }
 
-  createSprite(humanPart: HumanPart): Sprite {
-    const partset = this.getPartset(humanPart.type)
+  updateSprite(sprite: Sprite, humanPart: HumanPart) {
     let offsets = this.getOffsetOf(humanPart)
     let texture = this.getTextureOf(humanPart)
     let flipped = false
-    const sprite = new Sprite()
 
     if (!texture) {
-      if (humanPart.type === 'ey' && humanPart.assetpartdefinition == 'std') {
+      if (humanPart.type === 'ey' && humanPart.assetpartdefinition === 'std') {
         texture = this.getTextureOf(humanPart, { assetpartdefinition: 'sml' })
       }
+      const partset = this.getPartset(humanPart.type)
 
       // Fliped texture and offsets
       if (!texture && humanPart.direction > 3 && humanPart.direction < 7) {
@@ -191,7 +191,22 @@ export class RenderTree {
 
         texture = this.getTextureOf(humanPart, opts)
         offsets = this.getOffsetOf(humanPart, opts)
+
+        // if (humanPart.type === 'ch' && humanPart.assetpartdefinition === 'wlk') {
+        if (!texture) {
+          Object.assign(opts, { assetpartdefinition: 'std', frame: 0 })
+          offsets = this.getOffsetOf(humanPart, opts)
+          texture = this.getTextureOf(humanPart, opts)
+        }
+
         flipped = true
+      }
+
+      // if (humanPart.type === 'ch' && humanPart.assetpartdefinition === 'wlk') {
+      if (!texture) {
+        const opts =  { assetpartdefinition: 'std', frame: 0 }
+        offsets = this.getOffsetOf(humanPart, opts)
+        texture = this.getTextureOf(humanPart, opts)
       }
     }
 
@@ -204,12 +219,10 @@ export class RenderTree {
 
     if (flipped) {
       sprite.scale.x = -1
-      sprite.x += this.canvas.width
+      sprite.pivot.x += 68
     }
 
     if (humanPart.tint !== null && humanPart.type !== 'ey') sprite.tint = humanPart.tint
-
-    return sprite
   }
 
 }
