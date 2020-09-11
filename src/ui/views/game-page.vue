@@ -17,11 +17,11 @@ export default {
       loaded: false,
       mounted: false,
       /** @type {ApplicationProvider} */
-      app: null,
-      /** @type {RoomProvider} */
-      room: null,
-      /** @type {Loader} */
-      loader: null,
+      // app: null,
+      // /** @type {RoomProvider} */
+      // room: null,
+      // /** @type {Loader} */
+      // loader: null,
     }
   },
   methods: {
@@ -33,9 +33,9 @@ export default {
             nickname: 'testNickname',
             imagerOptions: {
               encodedFigure: 'hd-180-1.hr-110-61.ha-1012-110.ch-255-66.lg-280-110.sh-305-62',
-              encodedActions: 'std,fx,dance',
-              direction: 0,
-              head_direction: 0,
+              encodedActions: 'std,mv',
+              direction: 2,
+              head_direction: 2,
               is_ghost: false,
             }
           }

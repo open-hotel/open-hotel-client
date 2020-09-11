@@ -2,6 +2,9 @@ import { Selectable } from "../Selectable.interface"
 import { HumanImager } from "../../imager/human.imager"
 import { HumanFigure } from "../../imager/human/figure.util"
 import { HumanActions } from "../../imager/human/action.util"
+import { RenderTree } from "../../imager/human/renderTree"
+import { HumanPart } from "../../imager/human/HumanPart"
+import { Sprite, Ticker } from "pixi.js"
 
 export interface RoomUserOptions {
   nickname: string,
@@ -22,19 +25,68 @@ export class RoomUser {
     private readonly humanImager: HumanImager,
   ) {}
 
-  public sprite: PIXI.AnimatedSprite
+  public sprite: PIXI.Container
+  private renderTree: RenderTree
+  static ticker = new Ticker()
 
   async initSprite () {
     const { imagerOptions } = this.options
-    const textures = await this.humanImager.createAnimation({
+    const { container, renderTree } = await this.humanImager.createAnimation({
       figure: HumanFigure.decode(imagerOptions.encodedFigure),
       actions: HumanActions.decode(imagerOptions.encodedActions),
       direction: imagerOptions.direction,
       head_direction: imagerOptions.head_direction,
       is_ghost: imagerOptions.is_ghost,
     })
-    this.sprite = new PIXI.AnimatedSprite(textures)
+    this.sprite = container
+    this.renderTree = renderTree
+    container.x = -50
 
+    RoomUser.ticker.add(this.startAnimationLoop)
+
+    this.startAnimations()
     return this.sprite
   }
+
+  private currentFrame = 0
+  private activeAnimations = []
+
+  startAnimations () {
+    const { actionTypeToAnimationName } = this.humanImager
+    for (const action of this.renderTree.actions) {
+      const animationName = actionTypeToAnimationName[action.state]
+      const animation = this.humanImager.animations[animationName]
+      if (!animation) {
+        continue
+      }
+      this.activeAnimations.push(animation)
+    }
+  }
+
+  startAnimationLoop = () => {
+    for (const animation of this.activeAnimations) {
+      const currentAnimationFrame = this.currentFrame % animation.frames.length
+      const currentFrame = animation.frames[currentAnimationFrame]
+      for (const [partName, { frame, assetpartdefinition }] of Object.entries<any>(currentFrame.bodyparts)) {
+        const partContainer = this.renderTree.partTypeToContainer[partName]
+        if (!partContainer) {
+          continue
+        }
+        const humanParts: HumanPart[] = this.renderTree.groups[partName]
+        humanParts.forEach((humanPart, index) => {
+          const sprite = partContainer.children[index] as Sprite
+          sprite.texture = this.renderTree.getTextureOf(humanPart, { frame, assetpartdefinition })
+        })
+      }
+    }
+
+    this.currentFrame++
+  }
+
+  destroy () {
+    RoomUser.ticker.remove(this.startAnimationLoop)
+  }
 }
+
+RoomUser.ticker.maxFPS = 12
+RoomUser.ticker.start()

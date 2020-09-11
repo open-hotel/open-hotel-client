@@ -8,11 +8,12 @@ import { HumanDirection } from './direction.enum'
 export class RenderTree {
   constructor(
     private loader: Loader,
-    private actions: any[]
+    public actions: any[]
   ) { }
 
   groups: object
   canvas: any
+  container: Container
 
   build(setTypes: SetType[], options: HumanFigureProps) {
     const { actions } = this
@@ -63,9 +64,12 @@ export class RenderTree {
 
     this.groups = groupRenderTree;
     this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
+    this.applyActions()
 
     return this
   }
+
+  partTypeToContainer: Record<string, Container> = {}
 
   createContainer(options: HumanFigureProps): Container {
     const lastAction = this.actions[this.actions.length - 1]
@@ -95,6 +99,7 @@ export class RenderTree {
         if (!partGroup?.length) continue;
 
         const partContainer = new Container()
+        this.partTypeToContainer[partType] = partContainer
 
         partContainer.name = partType
         partContainer.zIndex = groupItem.zIndex = this.calcPointZIndex(direction, groupItem)
@@ -110,7 +115,7 @@ export class RenderTree {
       mainContainer.addChild(groupContainer)
     }
 
-    return mainContainer
+    return this.container = mainContainer
   }
 
   calcPointZIndex(direction: number, point): number {
@@ -154,6 +159,15 @@ export class RenderTree {
 
   getPartset(partType: string) {
     return this.loader.resources.partsets.json.partSets[partType]
+  }
+
+  private applyActions () {
+    for (const action of this.actions) {
+      const activePartset = this.loader.resources.partsets.json.activePartSets[action.activepartset]
+      for (const partType of activePartset) {
+        this.groups[partType]?.forEach((part: HumanPart) => part.assetpartdefinition = action.assetpartdefinition)
+      }
+    }
   }
 
   createSprite(humanPart: HumanPart): Sprite {

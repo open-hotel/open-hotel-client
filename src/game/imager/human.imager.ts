@@ -9,7 +9,7 @@ import { HumanFigure } from './human/figure.util'
 
 @Provider()
 export class HumanImager {
-  private readonly app: Application
+  readonly app: Application
 
   constructor(private readonly loader: Loader, appProvider: ApplicationProvider) {
     this.app = appProvider.app
@@ -47,12 +47,12 @@ export class HumanImager {
     return this.getData('effectmap')
   }
 
-  private _actionTypeToAction
-  private get actionTypeToAction() {
-    if (this._actionTypeToAction) {
-      return this._actionTypeToAction
+  private _actionTypeToAnimationName
+  get actionTypeToAnimationName() {
+    if (this._actionTypeToAnimationName) {
+      return this._actionTypeToAnimationName
     }
-    return this._actionTypeToAction = Object.entries(this.avatarActions).reduce(
+    return this._actionTypeToAnimationName = Object.entries(this.avatarActions).reduce(
       (acc, [name, { state }]) => ({
         ...acc,
         [state]: name,
@@ -73,8 +73,7 @@ export class HumanImager {
     await this.loader.add(dependencies).wait()
   }
 
-  async createAnimation(options: HumanFigureProps): Promise<PIXI.Texture[]> {
-    const animation = [];
+  async createAnimation(options: HumanFigureProps) {
     const setTypes: SetType[] = Object.entries(options.figure)
       .map(
         ([typeName, partOptions]) => {
@@ -95,27 +94,17 @@ export class HumanImager {
 
     const actions = this.getActions(options)
     const renderTree = new RenderTree(this.loader, actions).build(setTypes, options)
-
-    const { canvas } = renderTree
-
     const container = renderTree.createContainer(options)
-    const DEFAULT_HUMAN_OFFSET = 8
-    const rect = new PIXI.Rectangle(canvas.dx, canvas.dy - canvas.height + DEFAULT_HUMAN_OFFSET, canvas.width, canvas.height)
-    const textures = [
-      this.app.renderer.generateTexture(
-        container,
-        PIXI.SCALE_MODES.NEAREST,
-        1,
-        rect
-      )
-    ]
 
-    return textures
+    return {
+      container,
+      renderTree
+    }
   }
 
   private getActions(props: HumanFigureProps) {
     let actions = Object.keys(props.actions)
-      .map(a => this.avatarActions[this.actionTypeToAction[a]])
+      .map(a => this.avatarActions[this.actionTypeToAnimationName[a]])
       .filter(a => a)
       .sort((a, b) => b.precedence - a.precedence)
 
