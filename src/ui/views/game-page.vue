@@ -34,8 +34,8 @@ export default {
             imagerOptions: {
               encodedFigure: 'hd-180-1.hr-110-61.ha-1012-110.ch-255-66.lg-280-110.sh-305-62',
               encodedActions: 'std,fx,dance',
-              direction: 2,
-              head_direction: 3,
+              direction: 0,
+              head_direction: 0,
               is_ghost: false,
             }
           }

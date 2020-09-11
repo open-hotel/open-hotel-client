@@ -52,7 +52,7 @@ export class HumanImager {
     if (this._actionTypeToAction) {
       return this._actionTypeToAction
     }
-    return this._actionTypeToAction  = Object.entries(this.avatarActions).reduce(
+    return this._actionTypeToAction = Object.entries(this.avatarActions).reduce(
       (acc, [name, { state }]) => ({
         ...acc,
         [state]: name,
@@ -61,36 +61,7 @@ export class HumanImager {
     )
   }
 
-  private getColors(type: string) {
-    const { palette, settype } = this.figuredata
-    return palette[settype[type].paletteid]
-  }
-
-  private getColor(type: string, color: string) {
-    const colors = this.getColors(type)
-    color = color ?? Object.keys(colors)[0]
-    const colorItem = colors[color]
-
-    return colorItem && Number('0x' + colorItem.color)
-  }
-
-  // renderGroups(groups: FigureGroup[] = []): PIXI.Texture {
-  //   const container = new PIXI.Container()
-
-  //   groups.sort((a, b) => a.zIndex - b.zIndex)
-
-  //   for (const group of groups) {
-  //     group.items.sort((a, b) => a.zIndex - b.zIndex);
-  //   }
-
-  //   return container
-  // }
-
-  renderFrame () {
-
-  }
-
-  private async loadDependencies (setTypes: SetType[]) {
+  private async loadDependencies(setTypes: SetType[]) {
     const dependencies = setTypes.flatMap<string>(({ set }) => {
       const setDependecies = set.parts.map(part => {
         const lib = HumanFigure.getLib(this.figuremap, part.type, part.id)
@@ -103,6 +74,7 @@ export class HumanImager {
   }
 
   async createAnimation(options: HumanFigureProps): Promise<PIXI.Texture[]> {
+    const animation = [];
     const setTypes: SetType[] = Object.entries(options.figure)
       .map(
         ([typeName, partOptions]) => {
@@ -122,25 +94,23 @@ export class HumanImager {
     await this.loadDependencies(setTypes)
 
     const actions = this.getActions(options)
-    const renderTree = new RenderTree(this.loader, actions, this.app.camera)
-      .createRenderTree(setTypes, options)
+    const renderTree = new RenderTree(this.loader, actions).build(setTypes, options)
 
-    console.log(renderTree)
-    console.log(this.figuredata)
     const { canvas } = renderTree
 
     const container = renderTree.createContainer(options)
     const DEFAULT_HUMAN_OFFSET = 8
-
-    return [
+    const rect = new PIXI.Rectangle(canvas.dx, canvas.dy - canvas.height + DEFAULT_HUMAN_OFFSET, canvas.width, canvas.height)
+    const textures = [
       this.app.renderer.generateTexture(
         container,
-        PIXI.SCALE_MODES.LINEAR,
+        PIXI.SCALE_MODES.NEAREST,
         1,
-        new PIXI.Rectangle(canvas.dx, canvas.dy - canvas.height + DEFAULT_HUMAN_OFFSET, canvas.width, canvas.height)
+        rect
       )
     ]
 
+    return textures
   }
 
   private getActions(props: HumanFigureProps) {

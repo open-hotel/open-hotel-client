@@ -1,6 +1,3 @@
-import * as PIXI from 'pixi.js'
-import { Loader } from '../../../engine/loader'
-
 export interface HumanChunkProps {
   lib: string
   size: 'h' | 'sh'
@@ -11,7 +8,7 @@ export interface HumanChunkProps {
   frame: number
   tint: number
   alpha: number
-  radius: number
+  part: any
 }
 
 export const calcFlip = (d: number) => (d > 3 && d < 7 ? 6 - d : d)
@@ -26,7 +23,7 @@ export class HumanPart implements HumanChunkProps {
   frame = 0
   tint = 0xffffff
   alpha = 100
-  radius = 0
+  part: any;
 
   constructor(props: Partial<HumanChunkProps>) {
     Object.assign(this, props)

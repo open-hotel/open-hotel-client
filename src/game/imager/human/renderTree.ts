@@ -1,37 +1,22 @@
 import { SetType, HumanFigureProps } from './humanImagerTypes'
-import { Container, Sprite } from 'pixi.js'
+import { Container, Sprite, Texture } from 'pixi.js'
 import { Loader } from '../../../engine/loader'
 import { HumanFigure } from './figure.util'
-import { HumanPart, calcFlip } from './HumanPart'
+import { HumanPart, HumanChunkProps, calcFlip } from './HumanPart'
 import { HumanDirection } from './direction.enum'
-import { Vector3 } from '../../../engine/isometric'
-import { Viewport } from 'pixi-viewport'
-
 
 export class RenderTree {
   constructor(
     private loader: Loader,
-    private actions: any[],
-    private camera: Viewport,
-  ) {
-
-  }
+    private actions: any[]
+  ) { }
 
   groups: object
   canvas: any
 
-  createRenderTree(setTypes: SetType[], options: HumanFigureProps) {
+  build(setTypes: SetType[], options: HumanFigureProps) {
     const { actions } = this
     const lastAction = actions[actions.length - 1]
-    const geometryType = this.loader.resources.geometry.json.type[lastAction.geometrytype]
-
-    const partNameToGeometryType = Object.entries(geometryType)
-      .reduce((acc, [geometryGroupName, geometryGroup]: [string, any]) => {
-        Object.entries(geometryGroup.items).forEach(([partName, partTransformOptions]) => {
-          acc[partName] = geometryGroupName
-        })
-        return acc
-      }, {})
 
     const hiddenLayers = new Set<string>()
 
@@ -40,24 +25,16 @@ export class RenderTree {
         if (setType.set.hiddenLayers) {
           setType.set.hiddenLayers.forEach(part => hiddenLayers.add(part))
         }
+
         return setType.set.parts.map(part => ({ ...part, setType }))
       })
       .reduce((acc, part) => {
-        const geometryGroupName = partNameToGeometryType[part.type]
-        const geometryGroup = geometryType[geometryGroupName]
-
-        if (!acc[geometryGroupName]) {
-          acc[geometryGroupName] = {
-            ...geometryGroup,
-            parts: {}
-          }
+        if (hiddenLayers.has(part.type)) {
+          return acc;
         }
 
-        if (!acc[geometryGroupName].parts[part.type]) {
-          acc[geometryGroupName].parts[part.type] = {
-            ...geometryGroup.items[part.type],
-            humanParts: []
-          }
+        if (!acc[part.type]) {
+          acc[part.type] = []
         }
 
         const libName = HumanFigure.getLib(
@@ -66,25 +43,23 @@ export class RenderTree {
           part.id
         )
 
+        const isHeadPart = HumanFigure.isFromPartSet(this.loader.resources.partsets.json, 'head', part.type)
+
         const humanPart = new HumanPart({
           id: part.id,
-          tint: part.setType.colors[part.colorindex - 1],
+          tint: part.colorable ? part.setType.colors[part.colorindex - 1] : null,
           type: part.type,
           lib: libName,
-          direction: HumanFigure.isFromPartSet(this.loader.resources.partsets.json, 'head', part.type)
+          part,
+          direction: isHeadPart
             ? options.head_direction
             : options.direction
         })
 
-        acc[geometryGroupName].parts[part.type].humanParts.push(humanPart)
+        acc[part.type].push(humanPart)
 
         return acc
       }, {})
-
-    for (const partType of hiddenLayers) {
-      const group = partNameToGeometryType[partType];
-      delete groupRenderTree[group].parts[partType]
-    }
 
     this.groups = groupRenderTree;
     this.canvas = this.loader.resources.geometry.json.canvas[options.size || 'h'][lastAction.geometrytype]
@@ -93,11 +68,14 @@ export class RenderTree {
   }
 
   createContainer(options: HumanFigureProps): Container {
+    const lastAction = this.actions[this.actions.length - 1]
+    const geometryType = this.loader.resources.geometry.json.type[lastAction.geometrytype]
 
     const mainContainer = new Container()
+
     mainContainer.sortableChildren = true
 
-    for (const [groupName, group] of Object.entries(this.groups)) {
+    for (const [groupName, group] of Object.entries<any>(geometryType)) {
       const groupContainer = new Container()
 
       groupContainer.sortableChildren = true
@@ -107,21 +85,24 @@ export class RenderTree {
 
       groupContainer.zIndex = group.zIndex = this.calcPointZIndex(direction, group)
 
-      for (const [partName, part] of Object.entries(group.parts)) {
-        const partContainer = new Container()
-        // partContainer.sortableChildren = true
-        partContainer.name = partName
-        // @ts-ignore
-        partContainer.zIndex = part.zIndex = this.calcPointZIndex(direction, part)
+      for (const [partType, groupItem] of Object.entries<any>(group.items)) {
+        const partGroup = this.groups[partType]
 
-        // @ts-ignore
-        for (const humanPart of part.humanParts) {
+        if (!partGroup?.length) continue;
+
+        const partContainer = new Container()
+
+        partContainer.name = partType
+        partContainer.zIndex = groupItem.zIndex = this.calcPointZIndex(direction, groupItem)
+
+        for (const humanPart of partGroup) {
           const sprite = this.createSprite(humanPart)
           partContainer.addChild(sprite)
         }
 
         groupContainer.addChild(partContainer)
       }
+      
       mainContainer.addChild(groupContainer)
     }
 
@@ -153,26 +134,62 @@ export class RenderTree {
     return getDistance(vec3)
   }
 
+  getOffsetOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
+    const { manifest } = this.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
+    const stateName = humanPart.buildState(overrides)
+    const { offset = null } = manifest.assets[stateName] ?? {}
+    return offset?.split(',').map(o => parseInt(o))
+  }
+
+  getTextureOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): Texture | undefined {
+    const { spritesheet } = this.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
+    return spritesheet.textures[
+      humanPart.buildFilenameName(overrides)
+    ]
+  }
+
+  getPartset(partType: string) {
+    return this.loader.resources.partsets.json.partSets[partType]
+  }
+
   createSprite(humanPart: HumanPart): Sprite {
-    const { manifest, spritesheet } = this.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
-    const stateName = humanPart.buildState()
-    const offsets: [number, number] = manifest.assets[stateName].offset.split(',').map(o => parseInt(o))
-    let texture = spritesheet.textures[humanPart.buildFilenameName()]
+    const partset = this.getPartset(humanPart.type)
+    let offsets = this.getOffsetOf(humanPart)
+    let texture = this.getTextureOf(humanPart)
+    let flipped = false;
     const sprite = new Sprite()
 
     if (!texture) {
       if (humanPart.type === 'ey' && humanPart.assetpartdefinition == 'std') {
-        texture = spritesheet.textures[
-          humanPart.buildFilenameName({ assetpartdefinition: 'sml' })
-        ]
+        texture = this.getTextureOf(humanPart, { assetpartdefinition: 'sml' })
+      }
+
+      // Fliped texture and offsets
+      if (!texture && humanPart.direction > 3 && humanPart.direction < 7) {
+        const opts: Partial<HumanChunkProps> = {
+          type: partset['flipped-set-type'] ?? humanPart.type,
+          direction: calcFlip(humanPart.direction)
+        }
+        
+        texture = this.getTextureOf(humanPart, opts)
+        offsets = this.getOffsetOf(humanPart, opts)
+        flipped = true;
       }
     }
 
     sprite.texture = texture;
-    sprite.pivot.x = offsets[0]
-    sprite.pivot.y = offsets[1]
 
-    if (humanPart.type !== 'ey') sprite.tint = humanPart.tint
+    if (offsets) {
+      sprite.pivot.x = offsets[0]
+      sprite.pivot.y = offsets[1]
+    }
+
+    if (flipped) {
+      sprite.scale.x = -1
+      sprite.x += this.canvas.width
+    }
+
+    if (humanPart.tint !== null && humanPart.type !== 'ey') sprite.tint = humanPart.tint
 
     return sprite
   }
