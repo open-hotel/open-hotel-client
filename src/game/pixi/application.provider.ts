@@ -13,7 +13,7 @@ export class ApplicationProvider {
     this.app = new Application(options)
 
     // Camera
-    this.camera = new Viewport({ divWheel: this.app.view, disableOnContextMenu: true })
+    this.camera = this.app.camera = new Viewport({ divWheel: this.app.view, disableOnContextMenu: true })
       .drag({ wheelScroll: 0 })
       .wheel({ reverse: false, smooth: 10 })
       .clampZoom({ maxScale: 2, minScale: 0.5 })

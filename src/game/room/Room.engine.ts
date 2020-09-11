@@ -443,6 +443,8 @@ export class RoomEngine {
   private async addUserSprite (roomUser: RoomUser) {
     const sprite = await roomUser.initSprite()
     this.container.addChild(sprite)
+    roomUser.sprite.x = Math.random() * screen.width / 3
+    roomUser.sprite.y = Math.random() * screen.height / 3
   }
 
   async init(roomModel: RoomModel) {

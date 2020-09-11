@@ -1,9 +1,11 @@
-import { SetType, HumanFigureProps, PartType, HumanGroupName, HumanGroup } from './humanImagerTypes'
+import { SetType, HumanFigureProps, PartType, HumanGroupName, HumanGroup, HumanItem } from './humanImagerTypes'
 import { Container, Sprite, Texture } from 'pixi.js'
 import { HumanFigure } from './figure.util'
 import { HumanPart, HumanChunkProps, calcFlip } from './HumanPart'
 import { HumanDirection } from './direction.enum'
 import { HumanImager } from '../human.imager'
+import { ZIndexUtils } from '../../../engine/isometric/ZIndexUtils'
+import { IsoPointObject } from '../../../engine/lib/IsoPoint'
 
 export class RenderTree {
   constructor(
@@ -91,7 +93,7 @@ export class RenderTree {
       if (groupName === 'rightarm' || groupName === 'leftarm') {
         group.z = -1
       }
-      groupContainer.zIndex = group.zIndex = this.calcPointZIndex(direction, group)
+      groupContainer.zIndex = group.zIndex = this.calcGroupZIndex(direction, group)
 
       for (const [partType, groupItem] of Object.entries(group.items)) {
         const partGroup = this.groups[partType]
@@ -102,7 +104,7 @@ export class RenderTree {
         this.partTypeToContainer[partType] = partContainer
 
         partContainer.name = partType
-        partContainer.zIndex = groupItem.zIndex = this.calcPointZIndex(direction, groupItem)
+        partContainer.zIndex = groupItem.zIndex = this.calcPartZIndex(direction, groupItem)
 
         for (const humanPart of partGroup) {
           const sprite = new Sprite()
@@ -119,39 +121,32 @@ export class RenderTree {
     return this.container = mainContainer
   }
 
-  calcPointZIndex(direction: number, point): number {
+  calcGroupZIndex (direction: HumanDirection, humanGroup: HumanGroup) {
     const angle = HumanDirection.DirectionAngles[direction]
+    const yRotationMatrix = ZIndexUtils.getYRotationMatrix(angle)
+    const vec3: any = ZIndexUtils.multiply4x4Matrix(yRotationMatrix, humanGroup)
+    vec3.radius = humanGroup.radius
 
-    var angleInRad = ((angle * Math.PI) / 180)
-    var cos: number = Math.cos(angleInRad);
-    var sin: number = Math.sin(angleInRad);
-    const vec4 = [cos, 0, sin, 0, 1, 0, -(sin), 0, cos]
-
-    const vecMult = (vector4D, vector3D: any) => {
-      var _local_2: Number = (((vector3D.x * vector4D[0]) + (vector3D.y * vector4D[3])) + (vector3D.z * vector4D[6]));
-      var _local_3: Number = (((vector3D.x * vector4D[1]) + (vector3D.y * vector4D[4])) + (vector3D.z * vector4D[7]));
-      var _local_4: Number = (((vector3D.x * vector4D[2]) + (vector3D.y * vector4D[5])) + (vector3D.z * vector4D[8]));
-      return { x: _local_2, y: _local_3, z: _local_4 }
-    }
-
-    const vec3 = vecMult(vec4, point)
-
-    const getDistance = (vec3) => {
-      var min = Math.abs(((vec3.z - point.z) - point.radius));
-      var max = Math.abs(((vec3.z - point.z) + point.radius));
-      return (Math.min(min, max))
-    }
-    return getDistance(vec3)
+    const distance = ZIndexUtils.getDistance(vec3, this.humanImager.geometry.camera)
+    return -distance
   }
 
-  getOffsetOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
+  calcPartZIndex (direction: HumanDirection, humanItem: HumanItem): number {
+    const angle = HumanDirection.DirectionAngles[direction]
+    const yRotationMatrix = ZIndexUtils.getYRotationMatrix(angle)
+    const vec3 = ZIndexUtils.multiply4x4Matrix(yRotationMatrix, humanItem)
+
+    return ZIndexUtils.getDistance(humanItem, vec3)
+  }
+
+  getOffsetOf (humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
     const { manifest } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
     const stateName = humanPart.buildState(overrides)
     const { offset = null } = manifest.assets[stateName] ?? {}
     return offset?.split(',').map(o => parseInt(o))
   }
 
-  getTextureOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): Texture | undefined {
+  getTextureOf (humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): Texture | undefined {
     const { spritesheet } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
     return spritesheet.textures[
       humanPart.buildFilenameName(overrides)

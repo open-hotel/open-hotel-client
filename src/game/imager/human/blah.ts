@@ -42,7 +42,7 @@
 //             bodyPartsInAvatarSet.forEach((bodyPart: GeometryBodyPart) => {
 //               // resumão do que acontece
 //               bodypart.xyz = rotationMatrix.vectorMultiplication(bodyPart)
-//               const distanceBetween: number = bodyPart.getDistance(this.avatarPosition);
+//               const distanceBetween: number = bodyPart.getDistance(this.geometryCamera);
 //               bodyPartDistances.push({ distanceBetween, bodyPart });
 //             })
 

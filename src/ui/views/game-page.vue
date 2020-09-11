@@ -22,14 +22,14 @@ export default {
     async startGame() {
       const engine = await this.$injets.get(RoomProvider)
       await engine.create({
-        roomUserDictionary: new Array(1).fill(null).reduce((acc, nil, index) => {
+        roomUserDictionary: new Array(7).fill(null).reduce((acc, nil, index) => {
           acc[index] = {
             nickname: 'testNickname',
             imagerOptions: {
               encodedFigure: 'hd-180-1.hr-110-61.ch-210-66.lg-280-110.sh-305-62',
               encodedActions: 'std,mv',
-              direction: 4,
-              head_direction: 4,
+              direction: index,
+              head_direction: index,
               is_ghost: false,
             }
           }
