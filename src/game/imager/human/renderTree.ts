@@ -87,7 +87,7 @@ export class RenderTree {
 
       const direction = groupName === 'head' ? options.head_direction : options.direction
 
-      // TODO: why????
+      // TODO: how to fix indexes?
       if (groupName === 'rightarm' || groupName === 'leftarm') {
         group.z = -1
       }
@@ -192,7 +192,6 @@ export class RenderTree {
         texture = this.getTextureOf(humanPart, opts)
         offsets = this.getOffsetOf(humanPart, opts)
 
-        // if (humanPart.type === 'ch' && humanPart.assetpartdefinition === 'wlk') {
         if (!texture) {
           Object.assign(opts, { assetpartdefinition: 'std', frame: 0 })
           offsets = this.getOffsetOf(humanPart, opts)
@@ -202,7 +201,6 @@ export class RenderTree {
         flipped = true
       }
 
-      // if (humanPart.type === 'ch' && humanPart.assetpartdefinition === 'wlk') {
       if (!texture) {
         const opts =  { assetpartdefinition: 'std', frame: 0 }
         offsets = this.getOffsetOf(humanPart, opts)

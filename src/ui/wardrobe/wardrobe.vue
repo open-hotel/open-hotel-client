@@ -72,7 +72,7 @@ import { Sprite } from 'pixi.js-legacy'
 import { HumanImager } from '../../game/imager/human.imager'
 import { ImagerModule } from '../../game/imager/imager.module'
 import OhPicker from './picker.vue'
-import { Figure } from '../../game/imager/human/figure.util'
+import { HumanFigure } from '../../game/imager/human/figure.util'
 
 export default {
   components: {
@@ -98,12 +98,12 @@ export default {
         torso: ['ch', 'cc', 'cp', 'ca'],
         lower: ['lg', 'sh', 'wa'],
       },
-      figure: Figure.decode('hr-100.hd-190-7.ch-210-66.lg-270-82.sh-290-80'),
+      figure: HumanFigure.decode('hr-100.hd-190-7.ch-210-66.lg-270-82.sh-290-80'),
     }
   },
   computed: {
     encodedFigure() {
-      return Figure.encode(this.figure)
+      return HumanFigure.encode(this.figure)
     },
   },
   methods: {},
