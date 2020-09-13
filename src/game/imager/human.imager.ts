@@ -4,7 +4,7 @@ import { ApplicationProvider } from '../pixi/application.provider'
 import { Provider } from 'injets/dist'
 import { Application } from '../../engine/Application'
 import { SetType, HumanFigureProps, AnimationName, FigureData, FigureDataSettypeKey } from './human/humanImagerTypes'
-import { RenderTree } from './human/renderTree'
+import { AvatarStructure } from './human/AvatarStructure'
 import { HumanFigure } from './human/figure.util'
 import { ActionType } from './human/action.util'
 
@@ -96,7 +96,7 @@ export class HumanImager {
     await this.loadDependencies(setTypes)
 
     const actions = this.getActions(options)
-    const renderTree = new RenderTree(this, actions).build(setTypes, options)
+    const renderTree = new AvatarStructure(this, actions).build(setTypes, options)
     const container = renderTree.createContainer(options)
 
     return {

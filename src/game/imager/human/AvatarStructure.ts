@@ -5,9 +5,8 @@ import { HumanPart, HumanChunkProps, calcFlip } from './HumanPart'
 import { HumanDirection } from './direction.enum'
 import { HumanImager } from '../human.imager'
 import { ZIndexUtils } from '../../../engine/isometric/ZIndexUtils'
-import { IsoPointObject } from '../../../engine/lib/IsoPoint'
 
-export class RenderTree {
+export class AvatarStructure {
   constructor(
     private humanImager: HumanImager,
     public actions: any[]
@@ -206,8 +205,8 @@ export class RenderTree {
     sprite.texture = texture;
 
     if (offsets) {
-      sprite.pivot.x = offsets[0]
-      sprite.pivot.y = offsets[1]
+      sprite.pivot.x = offsets[0] + Number(humanPart.dx || 0)
+      sprite.pivot.y = offsets[1] + Number(humanPart.dy || 0)
     }
 
     if (flipped) {

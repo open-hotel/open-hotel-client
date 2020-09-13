@@ -2,9 +2,10 @@ import { Selectable } from "../Selectable.interface"
 import { HumanImager } from "../../imager/human.imager"
 import { HumanFigure } from "../../imager/human/figure.util"
 import { HumanActions } from "../../imager/human/action.util"
-import { RenderTree } from "../../imager/human/renderTree"
+import { AvatarStructure } from "../../imager/human/AvatarStructure"
 import { HumanPart } from "../../imager/human/HumanPart"
 import { Sprite, Ticker } from "pixi.js"
+import { AnimationManager } from "../../imager/human/animation/AnimationManager"
 
 export interface RoomUserOptions {
   nickname: string,
@@ -20,16 +21,19 @@ interface ImagerOptions {
 }
 
 export class RoomUser {
-  constructor (
-    private readonly options: RoomUserOptions,
-    private readonly humanImager: HumanImager,
-  ) {}
 
   public sprite: PIXI.Container
-  private renderTree: RenderTree
+  private structure: AvatarStructure
+  private animationManager = new AnimationManager()
+
+  constructor(
+    private readonly options: RoomUserOptions,
+    private readonly humanImager: HumanImager,
+  ) { }
+
   static ticker = new Ticker()
 
-  async initSprite () {
+  async initSprite() {
     const { imagerOptions } = this.options
     const { container, renderTree } = await this.humanImager.createFigure({
       figure: HumanFigure.decode(imagerOptions.encodedFigure),
@@ -38,57 +42,82 @@ export class RoomUser {
       head_direction: imagerOptions.head_direction,
       is_ghost: imagerOptions.is_ghost,
     })
+
     this.sprite = container
-    this.renderTree = renderTree
+    this.structure = renderTree
 
     this.startAnimations()
     return this.sprite
   }
 
-  private currentFrame = 0
-  private activeAnimations = []
-
-  startAnimations () {
+  startAnimations() {
     RoomUser.ticker.add(this.startAnimationLoop)
+
     const { actionTypeToAnimationName } = this.humanImager
-    for (const action of this.renderTree.actions) {
+
+    this.animationManager.animations = []
+
+    for (const action of this.structure.actions) {
       const animationName = actionTypeToAnimationName[action.state]
       const animation = this.humanImager.animations[animationName]
+
       if (!animation) {
         continue
       }
-      this.activeAnimations.push(animation)
+
+      this.animationManager.animations.push(animation)
     }
+
+    this.animationManager.buildFrames()
   }
 
   startAnimationLoop = () => {
-    for (const animation of this.activeAnimations) {
-      const currentAnimationFrame = this.currentFrame % animation.frames.length
-      const currentFrame = animation.frames[currentAnimationFrame]
+    const frame = this.animationManager.nextFrame()
 
-      for (const [partName, { frame, assetpartdefinition }] of Object.entries<any>(currentFrame.bodyparts)) {
-        const partContainer = this.renderTree.partTypeToContainer[partName]
+    // Update HumanPartOptions
+    for (const [setType, partOptions] of Object.entries(frame.bodyparts)) {
+      const humanParts: HumanPart[] = this.structure.groups[setType]
+      
+      if (!humanParts) continue;
 
-        if (!partContainer) {
-          continue
-        }
+      humanParts.forEach((humanPart) => {
+        humanPart.assetpartdefinition = partOptions.assetpartdefinition ?? humanPart.assetpartdefinition;
+        humanPart.frame = partOptions.frame ?? humanPart.frame;
+        humanPart.dx = Number(partOptions.dx ?? humanPart.dx);
+        humanPart.dy = Number(partOptions.dy ?? humanPart.dy);
+      })
+    }
+    
+    // Update Offsets
+    for (const [activePartset, offset] of Object.entries(frame.offsets[this.options.imagerOptions.direction] || {})) {
+      const setTypes: string[] = this.humanImager.partsets.activePartSets[activePartset]
+      
+      setTypes.forEach((setType) => {
+        const humanParts: HumanPart[] = this.structure.groups[setType]
 
-        const humanParts: HumanPart[] = this.renderTree.groups[partName]
-        humanParts.forEach((humanPart, index) => {
-          humanPart.frame = frame
-          humanPart.assetpartdefinition = assetpartdefinition
-          const sprite = partContainer.children[index] as Sprite
-          this.renderTree.updateSprite(sprite, humanPart)
+        if (!Array.isArray(humanParts)) return;
+
+        humanParts.forEach((humanPart) => {
+          humanPart.dx = Number(offset.dx)
+          humanPart.dy = Number(offset.dy)
         })
-
-      }
-
+      })
     }
 
-    this.currentFrame++
+    // Update Sprites
+    for (const [setType, humanParts] of Object.entries(this.structure.groups)) {      
+      const partContainer = this.structure.partTypeToContainer[setType]
+
+      if (!Array.isArray(humanParts)) continue;
+      
+      humanParts.forEach((humanPart, index) => {
+        const sprite = partContainer.children[index] as Sprite
+        this.structure.updateSprite(sprite, humanPart)
+      })
+    }
   }
 
-  destroy () {
+  destroy() {
     RoomUser.ticker.remove(this.startAnimationLoop)
   }
 }

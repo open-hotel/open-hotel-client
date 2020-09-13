@@ -40,11 +40,15 @@ export function gcd(a: number, b: number) {
   return gcd(b, a % b)
 }
 
-export function mmc(num: number[]): number
-export function mmc(...num: number[]): number
-export function mmc(...args: Array<number | number[]>) {
+export function lcm(num: number[]): number
+export function lcm(...num: number[]): number
+export function lcm(...args: Array<number | number[]>) {
   const numbers = [...new Set(args.flat())]
   let ans = numbers[0]
-  for (let i = 1; i < numbers.length; i++) ans = (numbers[i] * ans) / gcd(numbers[i], ans)
+
+  for (let i = 1; i < numbers.length; i++) {
+    ans = (numbers[i] * ans) / gcd(numbers[i], ans)
+  }
+
   return ans
 }

@@ -25,6 +25,9 @@ export class HumanPart implements HumanChunkProps {
   alpha = 100
   part: any;
 
+  dx = 0
+  dy = 0
+
   constructor(props: Partial<HumanChunkProps>) {
     Object.assign(this, props)
   }
