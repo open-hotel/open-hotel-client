@@ -78,21 +78,25 @@ export class AnimationManager {
         frameIndex < this.frameCount;
         frameIndex += animationFrameCount
       ) {
-        frames.forEach(({ bodyparts, offsets }, f) => {
-          const frameRef = this.getFrameRef(frameIndex + f)
 
-          frameRef.offsets = offsets || {} as IAnimationFrame['offsets']
+        let loadedFrames = 0
+        frames.forEach(({ bodyparts, offsets }) => {
+          let maxRepeat = 0
 
           for (const [setType, bodyPart] of Object.entries(bodyparts || {})) {
             const repeat = Number(bodyPart.repeats || 1)
-
+            maxRepeat = Math.max(maxRepeat, repeat)
+            
             for (let r = 0; r < repeat; r++) {
-              const frameRefIndex = frameIndex + f + r
+              const frameRefIndex = frameIndex + loadedFrames + r
               const frameRef = this.getFrameRef(frameRefIndex)
+              frameRef.offsets = offsets || {} as IAnimationFrame['offsets']
 
               frameRef.bodyparts[setType] = cloneDeep(bodyPart)
             }
           }
+
+          loadedFrames += maxRepeat
         })
       }
     })

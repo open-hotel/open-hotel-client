@@ -70,6 +70,7 @@ export class RoomUser {
     }
 
     this.animationManager.buildFrames()
+    console.log(this.animationManager.frames)
   }
 
   startAnimationLoop = () => {
