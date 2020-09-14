@@ -1,21 +1,19 @@
+import { HumanDirection } from "../direction.enum"
+
+export interface IAnimationFrameOffset {
+  dx?: number;
+  dy?: number;
+}
+
+export interface IAnimationFrameBodyPart extends IAnimationFrameOffset {
+  assetpartdefinition: string;
+  frame: number;
+  repeats?: number;
+}
+
 export interface IAnimationFrame {
-  bodyparts?: {
-    [k: string]: {
-      assetpartdefinition: string
-      frame: number
-      repeats?: number
-      dx?: number
-      dy?: number
-    }
-  }
-  offsets?: {
-    [k: number]: {
-      [k: string]: {
-        dx?: number
-        dy?: number
-      }
-    }
-  }
+  bodyparts?: Record<string, IAnimationFrameBodyPart>;
+  offsets?: Record<HumanDirection, Record<string, IAnimationFrameOffset>>;
 }
 
 export interface IAnimation {
