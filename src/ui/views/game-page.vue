@@ -27,7 +27,7 @@ export default {
             nickname: 'testNickname',
             imagerOptions: {
               encodedFigure: 'hd-180-1.hr-110-61.ch-210-66.lg-280-110.sh-305-62',
-              encodedActions: 'mv,wave',
+              encodedActions: 'dance=1',
               direction: 2,
               head_direction: 2,
               is_ghost: false,

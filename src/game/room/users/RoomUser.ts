@@ -6,6 +6,7 @@ import { AvatarStructure } from "../../imager/human/AvatarStructure"
 import { HumanPart } from "../../imager/human/HumanPart"
 import { Sprite, Ticker } from "pixi.js"
 import { AnimationManager } from "../../imager/human/animation/AnimationManager"
+import { IAnimationFrameOffset } from "../../imager/human/animation/IAnimation"
 
 export interface RoomUserOptions {
   nickname: string,
@@ -65,7 +66,7 @@ export class RoomUser {
         continue
       }
 
-      this.animationManager.animations.push(animation)
+      this.animationManager.add(animation)
     }
 
     this.animationManager.buildFrames()
@@ -74,10 +75,12 @@ export class RoomUser {
   startAnimationLoop = () => {
     const frame = this.animationManager.nextFrame()
 
+    if (!frame) return;
+
     // Update HumanPartOptions
     for (const [setType, partOptions] of Object.entries(frame.bodyparts)) {
       const humanParts: HumanPart[] = this.structure.groups[setType]
-      
+
       if (!humanParts) continue;
 
       humanParts.forEach((humanPart) => {
@@ -87,11 +90,13 @@ export class RoomUser {
         humanPart.dy = Number(partOptions.dy ?? humanPart.dy);
       })
     }
-    
+
     // Update Offsets
-    for (const [activePartset, offset] of Object.entries(frame.offsets[this.options.imagerOptions.direction] || {})) {
+    const offsets: IAnimationFrameOffset = frame.offsets[this.options.imagerOptions.direction] || {}
+
+    for (const [activePartset, offset] of Object.entries(offsets)) {
       const setTypes: string[] = this.humanImager.partsets.activePartSets[activePartset]
-      
+
       setTypes.forEach((setType) => {
         const humanParts: HumanPart[] = this.structure.groups[setType]
 
@@ -105,11 +110,11 @@ export class RoomUser {
     }
 
     // Update Sprites
-    for (const [setType, humanParts] of Object.entries(this.structure.groups)) {      
+    for (const [setType, humanParts] of Object.entries(this.structure.groups)) {
       const partContainer = this.structure.partTypeToContainer[setType]
 
       if (!Array.isArray(humanParts)) continue;
-      
+
       humanParts.forEach((humanPart, index) => {
         const sprite = partContainer.children[index] as Sprite
         this.structure.updateSprite(sprite, humanPart)

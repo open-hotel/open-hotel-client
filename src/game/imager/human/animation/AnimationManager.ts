@@ -12,15 +12,38 @@ export class AnimationManager {
     if (this.frames[frameIndex] === undefined) {
       const prevFrame = this.frames[frameIndex - 1]
 
-      this.frames[frameIndex] = prevFrame
-        ? cloneDeep(prevFrame)
-        : {
-            bodyparts: {},
-            offsets: {}
-          }
+      this.frames[frameIndex] = cloneDeep(prevFrame ?? {
+        bodyparts: {},
+        offsets: {}
+      })
     }
 
     return this.frames[frameIndex]
+  }
+
+  // Add and normalize animation
+  add(animation: IAnimation) {
+    animation = cloneDeep(animation)
+
+    const bodyPartsEnds = [...new Set(
+      animation.frames.flatMap((frame) => Object.keys(frame.bodyparts))
+    )]
+    
+    bodyPartsEnds.forEach((setType) => {
+      const endIndex = animation.frames.findIndex(frame => !(setType in frame.bodyparts))
+      
+      
+      for (let i = endIndex; i >= 0 && i < animation.frames.length; i++) {
+        const frame = animation.frames[i]
+        const loopFrame = animation.frames[i % endIndex]
+        
+        frame.bodyparts[setType] = loopFrame.bodyparts[setType]
+      }
+    }, {})
+
+    this.animations.push(animation)
+
+    return this
   }
 
   private countAnimationFrames(animation: IAnimation) {
@@ -47,7 +70,7 @@ export class AnimationManager {
 
     this.frames = new Array(this.frameCount)
 
-    this.animations.forEach(({ frames }, animationIndex) => {
+    this.animations.forEach(({ frames, desc }, animationIndex) => {
       const animationFrameCount = animationsFrameCount[animationIndex]
 
       for (
@@ -58,15 +81,16 @@ export class AnimationManager {
         frames.forEach(({ bodyparts, offsets }, f) => {
           const frameRef = this.getFrameRef(frameIndex + f)
 
-          frameRef.offsets = offsets || {}
+          frameRef.offsets = offsets || {} as IAnimationFrame['offsets']
 
           for (const [setType, bodyPart] of Object.entries(bodyparts || {})) {
-            const repeat = bodyPart.repeats || 1
+            const repeat = Number(bodyPart.repeats || 1)
 
             for (let r = 0; r < repeat; r++) {
-              const frameRef = this.getFrameRef(frameIndex + f + r)
+              const frameRefIndex = frameIndex + f + r
+              const frameRef = this.getFrameRef(frameRefIndex)
 
-              frameRef.bodyparts[setType] = bodyPart
+              frameRef.bodyparts[setType] = cloneDeep(bodyPart)
             }
           }
         })
