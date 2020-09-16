@@ -1,7 +1,7 @@
-import { HumanFigure } from "./figure.util";
-import { HumanPart } from "./HumanPart";
-import { HumanDirection } from "./direction.enum";
-import { HumanActions } from "./action.util";
+import { HumanFigure } from "./util/figure";
+import { HumanPart } from "./AvatarChunk";
+import { HumanDirection } from "./util/directions";
+import { HumanActions } from "./util/action";
 
 export type PartType = 'bd' | 'ch' | 'sh' | 'lg' | 'lh' | 'ls' | 'rh' | 'rs' | 'hd' | 'fc' | 'ey' | 'hr' | 'hrb'
 export type ItemType = 'li' | 'ri'

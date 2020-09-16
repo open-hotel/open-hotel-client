@@ -70,6 +70,10 @@ export class FloorRenderer {
       tile.zIndex = (isDoor ? wallRenderer.walls.get(x + 1, y)?.zIndex : null) ?? this.roomEngine.calcZIndex(position, priority)
 
       this.roomEngine.container.addChild(tile)
+
+      tile.addListener('pointertap', () => {
+        this.roomEngine.currentUser.moveTo(position)
+      })
       return tile
     })
   }

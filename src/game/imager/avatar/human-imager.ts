@@ -1,15 +1,14 @@
-import * as PIXI from 'pixi.js'
-import { Loader } from '../../engine/loader'
-import { ApplicationProvider } from '../pixi/application.provider'
-import { Provider } from 'injets/dist'
-import { Application } from '../../engine/Application'
-import { SetType, HumanFigureProps, AnimationName, FigureData, FigureDataSettypeKey } from './human/humanImagerTypes'
-import { AvatarStructure } from './human/AvatarStructure'
-import { HumanFigure } from './human/figure.util'
-import { ActionType } from './human/action.util'
+import { Loader } from '../../../engine/loader'
+import { ApplicationProvider } from '../../pixi/application.provider'
+import { Provider } from 'injets'
+import { Application } from '../../../engine/Application'
+import { SetType, HumanFigureProps, AnimationName, FigureData, FigureDataSettypeKey } from './types'
+import { AvatarStructure } from './AvatarStructure'
+import { HumanFigure } from './util/figure'
+import { ActionType } from './util/action'
 
 @Provider()
-export class HumanImager {
+export class AvatarImager {
   readonly app: Application
 
   constructor(public readonly loader: Loader, appProvider: ApplicationProvider) {
@@ -96,12 +95,12 @@ export class HumanImager {
     await this.loadDependencies(setTypes)
 
     const actions = this.getActions(options)
-    const renderTree = new AvatarStructure(this, actions).build(setTypes, options)
-    const container = renderTree.createContainer(options)
+    const structure = new AvatarStructure(this, actions).build(setTypes, options)
+    const container = structure.createContainer(options)
 
     return {
       container,
-      renderTree
+      structure
     }
   }
 

@@ -1,4 +1,4 @@
-import { HumanDirection } from "../direction.enum"
+import { HumanDirection } from "../util/directions"
 
 export interface IAnimationFrameOffset {
   dx?: number;

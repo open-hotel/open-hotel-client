@@ -1,3 +1,5 @@
+import { HumanDirection } from "./util/directions"
+
 export interface HumanChunkProps {
   lib: string
   size: 'h' | 'sh'
@@ -19,7 +21,7 @@ export class HumanPart implements HumanChunkProps {
   assetpartdefinition = 'std'
   type = null
   id = '1'
-  direction = 0
+  direction: HumanDirection = 0
   frame = 0
   tint = 0xffffff
   alpha = 100
@@ -32,7 +34,7 @@ export class HumanPart implements HumanChunkProps {
     Object.assign(this, props)
   }
 
-  buildState(options?: Partial<HumanChunkProps>) {
+  buildPartName(options?: Partial<HumanChunkProps>) {
     options = Object.assign({}, this, options)
     return [options.size, options.assetpartdefinition, options.type, options.id, options.direction, options.frame].join(
       '_',
@@ -42,7 +44,7 @@ export class HumanPart implements HumanChunkProps {
   buildFilenameName(options?: Partial<HumanChunkProps>) {
     options = Object.assign({}, this, options)
 
-    const parts = [options.lib, this.buildState(options)].join('_')
+    const parts = [options.lib, this.buildPartName(options)].join('_')
     return `${parts}.png`
   }
 

@@ -6,18 +6,16 @@ import PixelUi from '@open-hotel/pixel'
 import './components'
 import App from './app.vue'
 import { router } from './router'
-import { GameModule } from '../game'
 import { VueInjets } from '../vue-injets'
+import { gameRef } from '../game'
 
 Vue.use(PixelUi)
 
-const injets = createModule(GameModule)
-
-Vue.use(VueInjets, injets)
+Vue.use(VueInjets, gameRef)
 
 new Vue({
   el: '#app',
   router,
-  injets,
+  injets: gameRef,
   render: h => h(App),
 })

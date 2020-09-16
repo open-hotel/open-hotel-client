@@ -1,14 +1,14 @@
-import { SetType, HumanFigureProps, PartType, HumanGroupName, HumanGroup, HumanItem } from './humanImagerTypes'
+import { SetType, HumanFigureProps, PartType, HumanGroupName, HumanGroup, HumanItem } from './types'
 import { Container, Sprite, Texture } from 'pixi.js'
-import { HumanFigure } from './figure.util'
-import { HumanPart, HumanChunkProps, calcFlip } from './HumanPart'
-import { HumanDirection } from './direction.enum'
-import { HumanImager } from '../human.imager'
+import { HumanFigure } from './util/figure'
+import { HumanPart, HumanChunkProps, calcFlip } from './AvatarChunk'
+import { HumanDirection } from './util/directions'
+import { AvatarImager } from './human-imager'
 import { ZIndexUtils } from '../../../engine/isometric/ZIndexUtils'
 
 export class AvatarStructure {
   constructor(
-    private humanImager: HumanImager,
+    private humanImager: AvatarImager,
     public actions: any[]
   ) {}
 
@@ -117,6 +117,9 @@ export class AvatarStructure {
       mainContainer.addChild(groupContainer)
     }
 
+    mainContainer.pivot.x = 2
+    mainContainer.pivot.y -= 14
+
     return this.container = mainContainer
   }
 
@@ -140,7 +143,7 @@ export class AvatarStructure {
 
   getOffsetOf (humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
     const { manifest } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
-    const stateName = humanPart.buildState(overrides)
+    const stateName = humanPart.buildPartName(overrides)
     const { offset = null } = manifest.assets[stateName] ?? {}
     return offset?.split(',').map(o => parseInt(o))
   }

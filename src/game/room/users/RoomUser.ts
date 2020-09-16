@@ -1,66 +1,63 @@
-import { Selectable } from "../Selectable.interface"
-import { HumanImager } from "../../imager/human.imager"
-import { HumanFigure } from "../../imager/human/figure.util"
-import { HumanActions } from "../../imager/human/action.util"
-import { AvatarStructure } from "../../imager/human/AvatarStructure"
-import { HumanPart } from "../../imager/human/HumanPart"
+
 import { Sprite, Ticker } from "pixi.js"
-import { AnimationManager } from "../../imager/human/animation/AnimationManager"
-import { IAnimationFrameOffset } from "../../imager/human/animation/IAnimation"
-
-export interface RoomUserOptions {
-  nickname: string,
-  imagerOptions: ImagerOptions
-}
-
-interface ImagerOptions {
-  encodedFigure: string
-  encodedActions: string
-  direction: number
-  head_direction: number
-  is_ghost: boolean
-}
+import Tween from '@tweenjs/tween.js'
+import { AvatarImager } from "../../imager/avatar/human-imager"
+import { HumanFigure } from "../../imager/avatar/util/figure"
+import { HumanActions } from "../../imager/avatar/util/action"
+import { AvatarStructure } from "../../imager/avatar/AvatarStructure"
+import { HumanPart } from "../../imager/avatar/AvatarChunk"
+import { AnimationManager } from "../../imager/avatar/animation/AnimationManager"
+import { IAnimationFrameOffset } from "../../imager/avatar/animation/IAnimation"
+import { IUserModel } from "../../users/types"
+import { RoomEngine } from "../Room.engine"
+import { IsoPoint } from "../../../engine/lib/IsoPoint"
 
 export class RoomUser {
 
-  public sprite: PIXI.Container
+  public container: PIXI.Container
   private structure: AvatarStructure
   private animationManager = new AnimationManager()
+  private teleTween = new Tween.Tween({ x: 0, y: 0 })
+  public iso = new IsoPoint()
 
   constructor(
-    private readonly options: RoomUserOptions,
-    private readonly humanImager: HumanImager,
-  ) { }
+    public readonly model: IUserModel,
+    private readonly room: RoomEngine,
+  ) {
+    this.iso.set(model.x, model.y, model.z)
+  }
 
   static ticker = new Ticker()
 
   async initSprite() {
-    const { imagerOptions } = this.options
-    const { container, renderTree } = await this.humanImager.createFigure({
-      figure: HumanFigure.decode(imagerOptions.encodedFigure),
-      actions: HumanActions.decode(imagerOptions.encodedActions),
-      direction: imagerOptions.direction,
-      head_direction: imagerOptions.head_direction,
-      is_ghost: imagerOptions.is_ghost,
+    const { name, look, action, direction, head_direction, is_ghost, x = 0, y = 0 } = this.model
+    const { container, structure } = await this.room.avatarImager.createFigure({
+      figure: HumanFigure.decode(look),
+      actions: HumanActions.decode(action),
+      direction,
+      head_direction,
+      is_ghost,
     })
 
-    this.sprite = container
-    this.structure = renderTree
+    container.name = `user: ${name}`
+
+    this.container = container
+    this.structure = structure
 
     this.startAnimations()
-    return this.sprite
+    return this.container
   }
 
   startAnimations() {
     RoomUser.ticker.add(this.startAnimationLoop)
 
-    const { actionTypeToAnimationName } = this.humanImager
+    const { actionTypeToAnimationName } = this.room.avatarImager
 
     this.animationManager.animations = []
 
     for (const action of this.structure.actions) {
       const animationName = actionTypeToAnimationName[action.state]
-      const animation = this.humanImager.animations[animationName]
+      const animation = this.room.avatarImager.animations[animationName]
 
       if (!animation) {
         continue
@@ -70,7 +67,6 @@ export class RoomUser {
     }
 
     this.animationManager.buildFrames()
-    console.log(this.animationManager.frames)
   }
 
   startAnimationLoop = () => {
@@ -93,10 +89,10 @@ export class RoomUser {
     }
 
     // Update Offsets
-    const offsets: IAnimationFrameOffset = frame.offsets[this.options.imagerOptions.direction] || {}
+    const offsets: IAnimationFrameOffset = frame.offsets[this.model.direction] || {}
 
     for (const [activePartset, offset] of Object.entries(offsets)) {
-      const setTypes: string[] = this.humanImager.partsets.activePartSets[activePartset]
+      const setTypes: string[] = this.room.avatarImager.partsets.activePartSets[activePartset]
 
       setTypes.forEach((setType) => {
         const humanParts: HumanPart[] = this.structure.groups[setType]
@@ -125,6 +121,29 @@ export class RoomUser {
 
   destroy() {
     RoomUser.ticker.remove(this.startAnimationLoop)
+  }
+
+  setPosition(position: IsoPoint) {
+    this.iso = position
+    position.toPoint().copyTo(this.container.position)
+    return this
+  }
+
+  moveTo(position: IsoPoint) {
+    this.teleTween.stop()
+    this.teleTween = new Tween.Tween({
+      x: this.iso.x,
+      y: this.iso.y,
+      z: this.iso.z,
+    }).to({
+      x: position.x,
+      y: position.y,
+      z: position.z,
+    }, 400)
+    .onUpdate(({ x, y, z }) => {
+      this.setPosition(this.iso.set(x, y, z))
+    })
+    .start(undefined)
   }
 }
 

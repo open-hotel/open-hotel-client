@@ -1,9 +1,9 @@
 import { Matrix } from "../../../engine/lib/util/Matrix";
-import { PointLike } from "../../../engine/lib/util/Walk";
-import { RoomUserOptions } from "../users/RoomUser";
+import { PointLike } from "../wall/WallRenderer";
+import { IUserModel } from "../../users/types";
 
 export interface RoomModel {
   door?: PointLike
   heightmap: Matrix<number>
-  roomUserDictionary: Record<string, RoomUserOptions>
+  roomUserDictionary: Record<string, IUserModel>
 }

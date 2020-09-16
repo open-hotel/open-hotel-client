@@ -1,3 +1,4 @@
+import Tween from '@tweenjs/tween.js'
 import { Provider } from 'injets'
 import { Application, ApplicationOptions } from '../../engine/Application'
 import { Viewport } from 'pixi-viewport'
@@ -36,8 +37,11 @@ export class ApplicationProvider {
       }
     })
 
-    // Cull whenever the viewport moves
     this.app.ticker.add(() => {
+      // Update tween
+      Tween.update(this.app.ticker.lastTime)
+
+      // Cull whenever the viewport moves
       if (this.camera.dirty) {
         this.culling.cull(this.cullingBox)
         this.camera.dirty = false

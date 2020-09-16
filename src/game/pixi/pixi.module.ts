@@ -1,7 +1,6 @@
 import { Module } from 'injets'
-import { Loader, JsonParser, SpritesheetParser } from '../../engine/loader'
+import { Loader } from '../../engine/loader'
 import { ApplicationProvider } from './application.provider'
-import { LibaryParser } from '../../engine/loader/parsers/library.parser'
 
 @Module(
   {

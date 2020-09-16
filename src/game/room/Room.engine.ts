@@ -1,76 +1,87 @@
 import { Container } from 'pixi.js'
 import { Provider } from 'injets'
-import { ApplicationProvider } from '../pixi/application.provider'
 import { Matrix } from '../../engine/lib/util/Matrix'
-import { Floor } from './floor/Floor'
 import { RoomImager } from '../imager/room.imager'
-import { IsoPoint, IsoPointObject } from '../../engine/lib/IsoPoint'
+import { IsoPointObject } from '../../engine/lib/IsoPoint'
 import { RoomModel } from './types/room.model'
-import { Wall } from './wall/Wall'
-import { PointLike } from '../../engine/lib/util/Walk'
-import { HumanImager } from '../imager/human.imager'
-import { RoomUser, RoomUserOptions } from './users/RoomUser'
+import { AvatarImager } from '../imager/avatar/human-imager'
+import { RoomUser } from './users/RoomUser'
 import { PRIORITY } from './room.constants'
 import { FloorRenderer } from './floor/FloorRenderer'
 import { WallRenderer } from './wall/WallRenderer'
+import { IUserModel } from '../users/types'
+import { ApplicationProvider } from '../pixi/application.provider'
 
-@Provider('TRANSIENT')
+@Provider()
 export class RoomEngine {
   public readonly container = new Container()
   public heightmap: Matrix<number>
   public floorRenderer: FloorRenderer
   public wallRenderer: WallRenderer
+  private users = new Map<string, RoomUser>()
 
   constructor(
-    private readonly app: ApplicationProvider,
+    public readonly appProvider: ApplicationProvider,
     public readonly roomImager: RoomImager,
-    private readonly humanImager: HumanImager,
-  ) {}
+    public readonly avatarImager: AvatarImager
+  ) {
+    this.appProvider.app.ticker.add((delta) => this.tick(delta))
+  }
+
+  // TODO: GET CURRENT USER
+  get currentUser () {
+    return this.users.get('abc')
+  }
 
   calcZIndex({ x, y, z }: IsoPointObject, priority = 1) {
     return (x + y + z) * priority
   }
 
+  destroy () {
+    this.container.removeChild()
+    this.users.clear()
+  }
+
   /**
    * TODO: Render Furni
    */
-  putFurni() {}
+  putFurni() { }
 
-  private roomUserIdToRoomUser: Record<string, RoomUser>
-  putUsers (userOptionsDictionary: Record<string, RoomUserOptions>) {
-    this.roomUserIdToRoomUser = {}
+  putUsers(userOptionsDictionary: Record<string, IUserModel>) {
+    this.users.clear()
 
     return Object.entries(userOptionsDictionary)
-      .map(([userId, roomUserOptions]) => {
-        const roomUser = new RoomUser(roomUserOptions, this.humanImager)
-        this.roomUserIdToRoomUser[userId] = roomUser
+      .map(([userId, userModel]) => {
+        const roomUser = new RoomUser(userModel, this)
+        this.users.set(userId, roomUser)
         return this.addUserSprite(roomUser)
       })
   }
 
-  private async addUserSprite (roomUser: RoomUser) {
-    const sprite = await roomUser.initSprite()
-    this.container.addChild(sprite)
-    if (this.wallRenderer.door) {
-      const spawnBlock = this.floorRenderer.tiles.get(this.wallRenderer.door.x, this.wallRenderer.door.y)
-      sprite.x = spawnBlock.x
-      sprite.y = spawnBlock.y
-    }
-
-    sprite.zIndex = this.calcZIndex({
-      x: sprite.x,
-      y: sprite.y,
-      z: 80
-    }, PRIORITY.USER)
+  updateUsersZIndex() {
+    this.users.forEach(roomUser => {
+      if (!roomUser.container) return;
+      roomUser.container.zIndex = this.calcZIndex(roomUser.iso, PRIORITY.USER)
+    })
   }
 
-  private renderWalls (roomModel: RoomModel) {
+  tick(delta: number) {
+    this.updateUsersZIndex()
+  }
+
+  private async addUserSprite(roomUser: RoomUser) {
+    await roomUser.initSprite()
+
+    this.container.addChild(roomUser.container)
+  }
+
+  private renderWalls(roomModel: RoomModel) {
     this.wallRenderer = new WallRenderer(this)
     this.wallRenderer.spawn = roomModel.door
     this.wallRenderer.renderWalls()
   }
 
-  private renderFloor () {
+  private renderFloor() {
     this.floorRenderer = new FloorRenderer(this)
     this.floorRenderer.renderFloor()
   }
@@ -80,7 +91,9 @@ export class RoomEngine {
     this.container.sortableChildren = true
     this.renderWalls(roomModel)
     this.renderFloor()
+
     await Promise.all(this.putUsers(roomModel.roomUserDictionary))
+    
     this.putFurni()
     this.container.sortChildren()
   }

@@ -1,6 +1,5 @@
 import { IsoPoint } from "../../../engine/lib/IsoPoint"
 import { Matrix } from "../../../engine/lib/util/Matrix"
-import { PointLike } from "../../../engine/lib/util/Walk"
 import { PRIORITY } from "../room.constants"
 import { RoomEngine } from "../Room.engine"
 import { Wall } from "./Wall"
@@ -8,6 +7,11 @@ import { Wall } from "./Wall"
 const WALL_HEIGHT = 92
 const WALL_SIZE = 32
 const WALL_THICKNESS = 8
+
+export type PointLike = {
+  x: number,
+  y: number
+}
 
 export class WallRenderer {
   constructor (private roomEngine: RoomEngine) {}
@@ -134,6 +138,7 @@ export class WallRenderer {
         // Encontra os vizinhos de cima e de baixo sucessivamente para encontrar
         // o menor Z ligado ao bloco atual
         let minNeighborZ = z
+        
         Array.from([Matrix.NEIGHBORS.LEFT, Matrix.NEIGHBORS.RIGHT])
           .map(r => {
             const nx = r.x + x
@@ -150,8 +155,8 @@ export class WallRenderer {
               minNeighborZ = Math.min(neigh.z, minNeighborZ)
 
               // Se houver um bloco para tras para a verificação
-              // Se houver um bloco para tras para a verificação
               const backBlock = { x: neigh.x, y: neigh.y - 1 }
+              
               if (
                 this.heightmap.get(backBlock.x, backBlock.y) &&
                 !(backBlock.x == this.door?.x && backBlock.y == this.door?.y)

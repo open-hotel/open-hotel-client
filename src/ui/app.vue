@@ -2,7 +2,7 @@
   <div id="app">
     <px-window-manager>
       <transition name="fade">
-        <keep-alive include="Game">
+        <keep-alive include="GameView">
           <router-view @splash-ready="loaded = true" />
         </keep-alive>
       </transition>

@@ -1,4 +1,4 @@
-import { FigureDataSettypeKey } from './humanImagerTypes'
+import { FigureDataSettypeKey } from '../types'
 
 export type HumanFigure = Record<
   FigureDataSettypeKey,

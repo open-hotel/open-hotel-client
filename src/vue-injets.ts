@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { ModuleRef, Constructor } from 'injets'
-import { GameModule } from './game'
+import { ModuleRef } from 'injets'
+import { GameModule } from './game/game.module'
 
 declare module 'vue/types/vue' {
   interface Vue {
