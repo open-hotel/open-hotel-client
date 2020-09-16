@@ -1,5 +1,7 @@
-import { GameSounds } from "./GameSounds"
+import { GameSounds } from "./sounds"
+import { Provider } from "injets"
 
+@Provider()
 export class SoundManager {
   sounds: Map<string, HTMLAudioElement> = new Map()
 
@@ -11,10 +13,16 @@ export class SoundManager {
       .load(GameSounds.SENT_MSG)
   }
 
+  add(id: string, audio: HTMLAudioElement) {
+    this.sounds.set(id, audio)
+    return this
+  }
+
   register (id: string, url: string) {
     const audio = new Audio(url)
-    audio.load()
     this.sounds.set(id, audio)
+    
+    audio.load()
 
     return audio
   }

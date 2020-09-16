@@ -69,10 +69,10 @@ import WdButton from './part-button'
 import { Loader } from '../../engine/loader'
 import { ApplicationProvider } from '../../game/pixi/application.provider'
 import { Sprite } from 'pixi.js-legacy'
-import { HumanImager } from '../../game/imager/human.imager'
 import { ImagerModule } from '../../game/imager/imager.module'
+import { HumanFigure } from '../../game/imager/avatar/util/figure'
 import OhPicker from './picker.vue'
-import { Figure } from '../../game/imager/human/figure.util'
+import { AvatarImager } from '../../game/imager/avatar'
 
 export default {
   components: {
@@ -85,7 +85,7 @@ export default {
     inject: {
       app: ApplicationProvider,
       loader: Loader,
-      avatarImager: HumanImager,
+      avatarImager: AvatarImager,
     },
   },
   data() {
@@ -98,12 +98,12 @@ export default {
         torso: ['ch', 'cc', 'cp', 'ca'],
         lower: ['lg', 'sh', 'wa'],
       },
-      figure: Figure.decode('hr-100.hd-190-7.ch-210-66.lg-270-82.sh-290-80'),
+      figure: HumanFigure.decode('hr-100.hd-190-7.ch-210-66.lg-270-82.sh-290-80'),
     }
   },
   computed: {
     encodedFigure() {
-      return Figure.encode(this.figure)
+      return HumanFigure.encode(this.figure)
     },
   },
   methods: {},

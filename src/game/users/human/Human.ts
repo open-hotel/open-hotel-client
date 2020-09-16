@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js'
 import { GameObject } from '../../../engine/lib/GameObject'
-import { HumanFigureProps } from '../../imager/human.imager'
 import { Observable, IObservable } from '../../../engine/lib/Observable'
 import { mergeDeep, random } from '../../../engine/lib/util/Util'
+import { HumanFigureProps } from '../../imager/avatar/types'
 
 export interface HumanProps extends Partial<HumanFigureProps> {}
 

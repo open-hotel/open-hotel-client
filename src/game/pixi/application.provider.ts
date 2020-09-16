@@ -1,3 +1,4 @@
+import Tween from '@tweenjs/tween.js'
 import { Provider } from 'injets'
 import { Application, ApplicationOptions } from '../../engine/Application'
 import { Viewport } from 'pixi-viewport'
@@ -13,7 +14,7 @@ export class ApplicationProvider {
     this.app = new Application(options)
 
     // Camera
-    this.camera = new Viewport({ divWheel: this.app.view, disableOnContextMenu: true })
+    this.camera = this.app.camera = new Viewport({ divWheel: this.app.view, disableOnContextMenu: true })
       .drag({ wheelScroll: 0 })
       .wheel({ reverse: false, smooth: 10 })
       .clampZoom({ maxScale: 2, minScale: 0.5 })
@@ -36,8 +37,11 @@ export class ApplicationProvider {
       }
     })
 
-    // Cull whenever the viewport moves
     this.app.ticker.add(() => {
+      // Update tween
+      Tween.update(this.app.ticker.lastTime)
+
+      // Cull whenever the viewport moves
       if (this.camera.dirty) {
         this.culling.cull(this.cullingBox)
         this.camera.dirty = false

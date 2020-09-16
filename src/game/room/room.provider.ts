@@ -5,12 +5,13 @@ import { GameModule } from '../game.module'
 import { RoomEngine } from './Room.engine'
 import { RoomModel } from './types/room.model'
 import { Container } from 'pixi.js-legacy'
+import { RoomModule } from './room.module'
 
 @Provider()
 export class RoomProvider {
   constructor(
     @Inject(CURRENT_MODULE)
-    private readonly gameModule: ModuleRef<GameModule>,
+    private readonly gameModule: ModuleRef<RoomModule>,
     private readonly appProvider: ApplicationProvider,
   ) {}
 
@@ -23,10 +24,10 @@ export class RoomProvider {
     this.appProvider.camera.removeChild(this.currentRoomContainer)
   }
 
-  async create (options: RoomModel) {
+  async create (roomModel: RoomModel) {
     this.removeCurrentRoom()
-    const roomEngine = await this.gameModule.get<RoomEngine>(RoomEngine)
-    roomEngine.init(options)
+    const roomEngine = this.gameModule.get<RoomEngine>(RoomEngine)
+    await roomEngine.init(roomModel)
     this.currentRoomContainer = roomEngine.container
 
     this.appProvider.camera.addChild(roomEngine.container)

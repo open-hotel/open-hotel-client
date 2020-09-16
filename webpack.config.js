@@ -69,6 +69,7 @@ const config = {
   devtool: '#source-map',
   devServer: {
     contentBase: './public',
+    disableHostCheck: true,
   }
 }
 

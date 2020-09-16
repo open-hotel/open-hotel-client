@@ -63,9 +63,23 @@ export default {
   },
   methods: {
     async selectRoom (room) {
-      const engine = await this.$injets.get(RoomProvider)
-      await engine.create({
-        users: {},
+      /**
+       * @type {RoomProvider}
+       */
+      const roomProvider = await this.$injets.get(RoomProvider)
+      await roomProvider.create({
+        roomUserDictionary: {
+          userId1: {
+            nickname: 'testNickname',
+            imagerOptions: {
+              encodedFigure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
+              encodedActions: 'std',
+              direction: 2,
+              head_direction: 2,
+              is_ghost: false,
+            }
+          }
+        },
         heightmap: Matrix.fromLegacyString(room.heightmap)
       })
     }
