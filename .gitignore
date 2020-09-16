@@ -4,3 +4,4 @@ packages/*/coverage
 packages/*/dist
 docker/db
 docker/nginx/log
+dist

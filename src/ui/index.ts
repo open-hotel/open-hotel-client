@@ -1,6 +1,5 @@
 import '@open-hotel/pixel/dist/pixel.css'
 import Vue from 'vue'
-import { createModule } from 'injets'
 import PixelUi from '@open-hotel/pixel'
 
 import './components'

@@ -14,7 +14,9 @@ import { ModuleRef } from 'injets'
 import { GameModule } from '../../game/game.module'
 import { RoomModule } from '../../game/room/room.module'
 
-@Component
+@Component({
+  name: 'GameView'
+})
 export default class GameView extends Vue {
   @Provide() app : ApplicationProvider = gameRef.get(ApplicationProvider)
   @Provide() game = gameRef
