@@ -5,6 +5,7 @@ import { HumanPart, HumanChunkProps, calcFlip } from './AvatarChunk'
 import { HumanDirection } from './util/directions'
 import { AvatarImager } from './human-imager'
 import { ZIndexUtils } from '../../../engine/isometric/ZIndexUtils'
+import { HumanProps } from '../../users/human/Human'
 
 export class AvatarStructure {
   constructor(
@@ -46,7 +47,6 @@ export class AvatarStructure {
         )
 
         const isHeadPart = HumanFigure.isFromPartSet(this.humanImager.partsets, 'head', part.type)
-
         const humanPart = new HumanPart({
           id: part.id,
           tint: part.colorable ? part.setType.colors[part.colorindex - 1] : null,
@@ -65,7 +65,7 @@ export class AvatarStructure {
 
     this.groups = groupRenderTree;
     this.canvas = this.humanImager.geometry.canvas[options.size || 'h'][lastAction.geometrytype]
-    this.applyActions()
+    this.applyActions(options)
 
     return this
   }
@@ -161,12 +161,31 @@ export class AvatarStructure {
     return this.humanImager.partsets.partSets[partType]
   }
 
-  private applyActions() {
+  private applyActions(options: HumanProps) {
+    const itemActions = new Set(['sign', 'cri', 'usei'])
+
     for (const [action, value] of this.actions) {
       const activePartset = this.humanImager.partsets.activePartSets[action.activepartset] || []
 
+      
       for (const partType of activePartset) {
-        this.groups[partType]?.forEach((part: HumanPart) => part.assetpartdefinition = action.assetpartdefinition)
+
+        // Será que existe uma maneira mais automática de fazer isso?
+        if (itemActions.has(action.state)) {
+          this.groups[partType] = (this.groups[partType] ?? []).concat(
+            new HumanPart({
+              lib: 'hh_human_item',
+              type: action.state == 'sign' ? 'li' : 'ri',
+              id: action.state === 'sign' ? value : (action.items ?? action.params)[value],
+              direction: options.direction
+            })
+          )
+        }
+        
+        this.groups[partType]?.forEach((part: HumanPart) => {
+          part.assetpartdefinition = action.assetpartdefinition
+          console.log(part)
+        })
       }
     }
   }

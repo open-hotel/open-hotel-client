@@ -62,18 +62,18 @@ export class AvatarImager {
       )
   }
 
-  private async loadDependencies(setTypes: SetType[], actions: any[], options: HumanFigureProps) {
+  private async loadDependencies(setTypes: SetType[], actions: any[]) {
+    const itemActions = new Set(['usei', 'cri', 'sign'])
     let dependencies = new Set<string>()
     const effectMap = this.loader.resources.effectmap.json
 
     actions.forEach(([action, value]) => {
       let lib: string;
 
-      if(!(action.state in effectMap)) {
-        return;
+      if (itemActions.has(action.state)) {
+        lib = 'hh_human_item'
       }
-
-      if (action.state === 'dance') {
+      else if (action.state === 'dance') {
         lib = effectMap.dance[`dance.${value}`]
       } else if (action.state === 'fx') {
         const id = `${value}`
@@ -89,8 +89,8 @@ export class AvatarImager {
       set.parts.forEach((part) => {
         const lib = HumanFigure.getLib(this.figuremap, part.type, part.id)
 
-        if(lib) dependencies.add(lib)
-        
+        if (lib) dependencies.add(lib)
+
         return dependencies
       })
     })
@@ -124,8 +124,8 @@ export class AvatarImager {
 
     const actions = this.getActions(options)
 
-    await this.loadDependencies(setTypes, actions, options)
-    
+    await this.loadDependencies(setTypes, actions)
+
     const structure = new AvatarStructure(this, actions).build(setTypes, options)
     const container = structure.createContainer(options)
 
@@ -135,9 +135,9 @@ export class AvatarImager {
     }
   }
 
-  private checkPrevents(actionPrevents: string, actions: any[], props: HumanFigureProps){
+  private checkPrevents(actionPrevents: string, actions: any[], props: HumanFigureProps) {
     const prevents = new Set((actionPrevents || '').split(','))
-          
+
     if (prevents.size > 0) {
       actions = actions.filter(([a]) => {
         if (a.state === 'fx') {
@@ -161,7 +161,7 @@ export class AvatarImager {
 
     for (const [action, value] of actions) {
       actions = this.checkPrevents(action.prevents || '', actions, props)
-      
+
       if (action.types && value in action.types) {
         const type = action.types[value]
         actions = this.checkPrevents(type.prevents || '', actions, props)
