@@ -62,16 +62,45 @@ export class AvatarImager {
       )
   }
 
-  private async loadDependencies(setTypes: SetType[]) {
-    const dependencies = setTypes.flatMap<string>(({ set }) => {
-      const setDependecies = set.parts.map(part => {
-        const lib = HumanFigure.getLib(this.figuremap, part.type, part.id)
-        return lib && `${lib}/${lib}.json`
-      })
-      return Array.from(new Set(setDependecies))
-    }).filter(e => e)
+  private async loadDependencies(setTypes: SetType[], actions: any[], options: HumanFigureProps) {
+    let dependencies = new Set<string>()
+    const effectMap = this.loader.resources.effectmap.json
 
-    await this.loader.add(dependencies).wait()
+    actions.forEach(([action, value]) => {
+      let lib: string;
+
+      if(!(action.state in effectMap)) {
+        return;
+      }
+
+      if (action.state === 'dance') {
+        lib = effectMap.dance[`dance.${value}`]
+      } else if (action.state === 'fx') {
+        const id = `${value}`
+        lib = effectMap.fx[id]
+      }
+
+      if (lib) {
+        dependencies.add(lib)
+      }
+    })
+
+    setTypes.forEach(({ set }) => {
+      set.parts.forEach((part) => {
+        const lib = HumanFigure.getLib(this.figuremap, part.type, part.id)
+
+        if(lib) dependencies.add(lib)
+        
+        return dependencies
+      })
+    })
+
+    const resources = Array.from(dependencies).reduce((acc, lib) => {
+      acc[lib] = `${lib}/${lib}.json`
+      return acc
+    }, {})
+
+    await this.loader.add(resources).wait()
   }
 
   async createFigure(options: HumanFigureProps) {
@@ -92,9 +121,11 @@ export class AvatarImager {
         }
       )
 
-    await this.loadDependencies(setTypes)
 
     const actions = this.getActions(options)
+
+    await this.loadDependencies(setTypes, actions, options)
+    
     const structure = new AvatarStructure(this, actions).build(setTypes, options)
     const container = structure.createContainer(options)
 
@@ -104,25 +135,39 @@ export class AvatarImager {
     }
   }
 
-  private getActions(props: HumanFigureProps) {
-    let actions = Object.keys(props.actions)
-      .map(a => this.avatarActions[this.actionTypeToAnimationName[a]])
-      .filter(a => a)
-      .sort((a, b) => b.precedence - a.precedence)
-
-    for (const action of actions) {
-      const prevents = new Set((action.prevents || '').split(','))
-      if (prevents.size > 0) {
-        actions = actions.filter(a => {
-          if (a.state === 'fx') {
-            return !prevents.has([a.state, props.actions.fx].join('.'))
-          }
-          return !prevents.has(a.state)
-        })
-      }
+  private checkPrevents(actionPrevents: string, actions: any[], props: HumanFigureProps){
+    const prevents = new Set((actionPrevents || '').split(','))
+          
+    if (prevents.size > 0) {
+      actions = actions.filter(([a]) => {
+        if (a.state === 'fx') {
+          return !prevents.has(`${a.state}.${props.actions.fx}`)
+        }
+        return !prevents.has(a.state)
+      })
     }
 
     return actions
   }
 
+  private getActions(props: HumanFigureProps) {
+    let actions = Object.entries(props.actions)
+      .map(([name, value]) => [
+        this.avatarActions[this.actionTypeToAnimationName[name]],
+        value
+      ])
+      .filter(a => a[0])
+      .sort((a, b) => b[0].precedence - a[0].precedence)
+
+    for (const [action, value] of actions) {
+      actions = this.checkPrevents(action.prevents || '', actions, props)
+      
+      if (action.types && value in action.types) {
+        const type = action.types[value]
+        actions = this.checkPrevents(type.prevents || '', actions, props)
+      }
+    }
+
+    return actions
+  }
 }

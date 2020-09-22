@@ -29,6 +29,7 @@ export class HumanPart implements HumanChunkProps {
 
   dx = 0
   dy = 0
+  dd = 0
 
   constructor(props: Partial<HumanChunkProps>) {
     Object.assign(this, props)
@@ -36,7 +37,7 @@ export class HumanPart implements HumanChunkProps {
 
   buildPartName(options?: Partial<HumanChunkProps>) {
     options = Object.assign({}, this, options)
-    return [options.size, options.assetpartdefinition, options.type, options.id, options.direction, options.frame].join(
+    return [options.size, options.assetpartdefinition, options.type, options.id, (options.direction + this.dd) % 8, options.frame].join(
       '_',
     )
   }

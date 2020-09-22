@@ -1,5 +1,5 @@
 
-import { Sprite, Ticker } from "pixi.js"
+import { Sprite, Ticker, AccessibilityManager } from "pixi.js"
 import Tween from '@tweenjs/tween.js'
 import { AvatarImager } from "../../imager/avatar/human-imager"
 import { HumanFigure } from "../../imager/avatar/util/figure"
@@ -55,15 +55,38 @@ export class RoomUser {
 
     this.animationManager.animations = []
 
-    for (const action of this.structure.actions) {
-      const animationName = actionTypeToAnimationName[action.state]
-      const animation = this.room.avatarImager.animations[animationName]
+    const { animations, loader } = this.room.avatarImager
 
-      if (!animation) {
+    for (const [action, value] of this.structure.actions) {
+      const animationName = actionTypeToAnimationName[action.state]
+      let animation = animations[animationName]
+
+      if (animation) {
+        this.animationManager.add(animation)
         continue
       }
 
-      this.animationManager.add(animation)
+      if (action.state === "dance" || action.state === 'fx') {
+        const id = action.state === 'fx' ? value : `dance.${value}`
+        const lib = loader.resources.effectmap.json.dance[id]
+        const resource = loader.resources[lib]
+
+        if (resource && resource.json.animations && resource.json.animations[id]) {
+          const animation = resource.json.animations[id]
+          this.animationManager.add(animation)
+        }
+      }
+
+
+      // if (action.animation === "1") {
+      //   const lib = this.humanImager.effectmap.dance[
+      //     action.state === 'dance'
+      //       ? `dance.${value}`
+      //       : value
+      //   ]
+
+      //   console.log(lib)
+      // }
     }
 
     this.animationManager.buildFrames()
@@ -76,15 +99,28 @@ export class RoomUser {
 
     // Update HumanPartOptions
     for (const [setType, partOptions] of Object.entries(frame.bodyparts)) {
-      const humanParts: HumanPart[] = this.structure.groups[setType]
+      const humanParts: HumanPart[] =
+        setType in this.structure.groups
+          ? this.structure.groups[setType]
+          : Object.keys(this.structure.geometry[setType]?.items ?? {})
+            .reduce((acc, p) => {
+              if (p in this.structure.groups) {
+                return acc.concat(this.structure.groups[p])
+              }
+
+              return acc
+            }, [])
 
       if (!humanParts) continue;
 
+      const assetpartdefinition = partOptions.assetpartdefinition ?? this.room.avatarImager.avatarActions[partOptions.action]?.assetpartdefinition
+
       humanParts.forEach((humanPart) => {
-        humanPart.assetpartdefinition = partOptions.assetpartdefinition ?? humanPart.assetpartdefinition;
+        humanPart.assetpartdefinition = assetpartdefinition ?? humanPart.assetpartdefinition;
         humanPart.frame = partOptions.frame ?? humanPart.frame;
         humanPart.dx = Number(partOptions.dx ?? humanPart.dx);
         humanPart.dy = Number(partOptions.dy ?? humanPart.dy);
+        humanPart.dd = Number(partOptions.dd ?? humanPart.dd);
       })
     }
 
@@ -140,10 +176,10 @@ export class RoomUser {
       y: position.y,
       z: position.z,
     }, 400)
-    .onUpdate(({ x, y, z }) => {
-      this.setPosition(this.iso.set(x, y, z))
-    })
-    .start(undefined)
+      .onUpdate(({ x, y, z }) => {
+        this.setPosition(this.iso.set(x, y, z))
+      })
+      .start(undefined)
   }
 }
 

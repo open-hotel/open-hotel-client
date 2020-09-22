@@ -3,10 +3,12 @@ import { HumanDirection } from "../util/directions"
 export interface IAnimationFrameOffset {
   dx?: number;
   dy?: number;
+  dd?: number;
 }
 
 export interface IAnimationFrameBodyPart extends IAnimationFrameOffset {
-  assetpartdefinition: string;
+  action?:string
+  assetpartdefinition?: string;
   frame: number;
   repeats?: number;
 }

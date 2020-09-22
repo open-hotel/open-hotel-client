@@ -10,7 +10,7 @@ export class AvatarStructure {
   constructor(
     private humanImager: AvatarImager,
     public actions: any[]
-  ) {}
+  ) { }
 
   groups: Record<PartType, HumanPart[]>
   canvas: any
@@ -18,7 +18,7 @@ export class AvatarStructure {
 
   build(setTypes: SetType[], options: HumanFigureProps) {
     const { actions } = this
-    const lastAction = actions[actions.length - 1]
+    const lastAction = actions[actions.length - 1][0]
 
     const hiddenLayers = new Set<string>()
 
@@ -72,15 +72,17 @@ export class AvatarStructure {
 
   partTypeToContainer = <Record<PartType, Container>>{}
 
-  createContainer(options: HumanFigureProps): Container {
-    const lastAction = this.actions[this.actions.length - 1]
-    const humanGroupDictionary: Record<HumanGroupName, HumanGroup> = this.humanImager.geometry.type[lastAction.geometrytype]
+  get geometry (): Record<HumanGroupName, HumanGroup> {
+    const [lastAction] = this.actions[this.actions.length - 1]
+    return this.humanImager.geometry.type[lastAction.geometrytype]
+  }
 
+  createContainer(options: HumanFigureProps): Container {
     const mainContainer = new Container()
 
     mainContainer.sortableChildren = true
 
-    for (const [groupName, group] of Object.entries(humanGroupDictionary)) {
+    for (const [groupName, group] of Object.entries(this.geometry)) {
       const groupContainer = new Container()
 
       groupContainer.sortableChildren = true
@@ -123,7 +125,7 @@ export class AvatarStructure {
     return this.container = mainContainer
   }
 
-  calcGroupZIndex (direction: HumanDirection, humanGroup: HumanGroup) {
+  calcGroupZIndex(direction: HumanDirection, humanGroup: HumanGroup) {
     const angle = HumanDirection.DirectionAngles[direction]
     const yRotationMatrix = ZIndexUtils.getYRotationMatrix(angle)
     const vec3: any = ZIndexUtils.multiply4x4Matrix(yRotationMatrix, humanGroup)
@@ -133,7 +135,7 @@ export class AvatarStructure {
     return -distance
   }
 
-  calcPartZIndex (direction: HumanDirection, humanItem: HumanItem): number {
+  calcPartZIndex(direction: HumanDirection, humanItem: HumanItem): number {
     const angle = HumanDirection.DirectionAngles[direction]
     const yRotationMatrix = ZIndexUtils.getYRotationMatrix(angle)
     const vec3 = ZIndexUtils.multiply4x4Matrix(yRotationMatrix, humanItem)
@@ -141,15 +143,15 @@ export class AvatarStructure {
     return ZIndexUtils.getDistance(humanItem, vec3)
   }
 
-  getOffsetOf (humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
-    const { manifest } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
+  getOffsetOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): [number, number] | undefined {
+    const { manifest } = this.humanImager.loader.resources[humanPart.lib]
     const stateName = humanPart.buildPartName(overrides)
     const { offset = null } = manifest.assets[stateName] ?? {}
     return offset?.split(',').map(o => parseInt(o))
   }
 
-  getTextureOf (humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): Texture | undefined {
-    const { spritesheet } = this.humanImager.loader.resources[`${humanPart.lib}/${humanPart.lib}.json`]
+  getTextureOf(humanPart: HumanPart, overrides: Partial<HumanChunkProps> = {}): Texture | undefined {
+    const { spritesheet } = this.humanImager.loader.resources[humanPart.lib]
     return spritesheet.textures[
       humanPart.buildFilenameName(overrides)
     ]
@@ -159,9 +161,10 @@ export class AvatarStructure {
     return this.humanImager.partsets.partSets[partType]
   }
 
-  private applyActions () {
-    for (const action of this.actions) {
-      const activePartset = this.humanImager.partsets.activePartSets[action.activepartset]
+  private applyActions() {
+    for (const [action, value] of this.actions) {
+      const activePartset = this.humanImager.partsets.activePartSets[action.activepartset] || []
+
       for (const partType of activePartset) {
         this.groups[partType]?.forEach((part: HumanPart) => part.assetpartdefinition = action.assetpartdefinition)
       }
@@ -199,7 +202,7 @@ export class AvatarStructure {
       }
 
       if (!texture) {
-        const opts =  { assetpartdefinition: 'std', frame: 0 }
+        const opts = { assetpartdefinition: 'std', frame: 0 }
         offsets = this.getOffsetOf(humanPart, opts)
         texture = this.getTextureOf(humanPart, opts)
       }
@@ -208,7 +211,7 @@ export class AvatarStructure {
     sprite.texture = texture;
 
     if (offsets) {
-      sprite.pivot.x = offsets[0] + Number(humanPart.dx || 0)
+      sprite.pivot.x = offsets[0] - Number(humanPart.dx || 0)
       sprite.pivot.y = offsets[1] + Number(humanPart.dy || 0)
     }
 

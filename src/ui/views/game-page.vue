@@ -44,7 +44,7 @@ export default class GameView extends Vue {
           id: '1',
           name: 'user_1',
           look: 'hd-180-1.hr-110-61.ch-210-66.lg-280-110.sh-305-62',
-          action: 'mv,respect',
+          action: 'dance=4',
           direction: 2,
           head_direction: 2,
           x: 64,

@@ -26,12 +26,11 @@ export class AnimationManager {
     animation = cloneDeep(animation)
 
     const bodyPartsEnds = [...new Set(
-      animation.frames.flatMap((frame) => Object.keys(frame.bodyparts))
+      animation.frames.flatMap((frame) => Object.keys(frame.bodyparts || {}))
     )]
     
     bodyPartsEnds.forEach((setType) => {
-      const endIndex = animation.frames.findIndex(frame => !(setType in frame.bodyparts))
-      
+      const endIndex = animation.frames.findIndex(frame => frame.bodyparts && !(setType in frame.bodyparts))
       
       for (let i = endIndex; i >= 0 && i < animation.frames.length; i++) {
         const frame = animation.frames[i]
@@ -70,7 +69,7 @@ export class AnimationManager {
 
     this.frames = new Array(this.frameCount)
 
-    this.animations.forEach(({ frames, desc }, animationIndex) => {
+    this.animations.forEach(({ frames }, animationIndex) => {
       const animationFrameCount = animationsFrameCount[animationIndex]
 
       for (
@@ -80,9 +79,10 @@ export class AnimationManager {
       ) {
 
         let loadedFrames = 0
-        frames.forEach(({ bodyparts, offsets }) => {
-          let maxRepeat = 0
 
+        frames.forEach(({ bodyparts, offsets }, i) => {
+          let maxRepeat = 0
+          
           for (const [setType, bodyPart] of Object.entries(bodyparts || {})) {
             const repeat = Number(bodyPart.repeats || 1)
             maxRepeat = Math.max(maxRepeat, repeat)
@@ -90,11 +90,15 @@ export class AnimationManager {
             for (let r = 0; r < repeat; r++) {
               const frameRefIndex = frameIndex + loadedFrames + r
               const frameRef = this.getFrameRef(frameRefIndex)
-              frameRef.offsets = offsets || {} as IAnimationFrame['offsets']
-
+              
               frameRef.bodyparts[setType] = cloneDeep(bodyPart)
             }
           }
+
+          const frameRefIndex = frameIndex + i
+          const frameRef = this.getFrameRef(frameRefIndex)
+
+          frameRef.offsets = Object.assign({}, offsets || {}) as IAnimationFrame['offsets']
 
           loadedFrames += maxRepeat
         })
