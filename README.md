@@ -10,25 +10,24 @@ Open Hotel is an open-source project that aims to build a brand new canvas-drawn
 
 Check out the [Demo](https://structure-migration--open-hotel-demo.netlify.com/)
 
-## Walking
+## Rooms
 
-![Open Hotel Client walking screenshot](./packages/client/public/resources/images/rungif.gif)
+Stair Madness
 
-## Stairs
+![Open Hotel Client room screenshot](./.github/images/stair_madness.png)
 
-![Open Hotel Client screenshot](./packages/client/public/resources/images/hclient.gif)
+Run and Jump
 
-## Roadmap
+![Open Hotel Client room screenshot](./.github/images/run_and_jump.png)
 
-- [x] Build floor structure
-- [x] Create a walkable character
-- [x] Build stairs in the rooms
-- [x] Provide live demo
-- [x] Provide a character instead of a cube
-- [x] Build Walls
-- [ ] Create clothing system
-- [ ] Create floor-mobis basic system
-- [ ] Create wall-mobis basic system
+### Stairs
+
+![Open Hotel Stairs Screenshot](./.github/images/pyramid.png)
+
+## Avatar
+
+action: 'mv,respect'
+![character walking](./.github/images/walk.gif)
 
 ## Related repositories
 
@@ -36,7 +35,5 @@ Check out the [Demo](https://structure-migration--open-hotel-demo.netlify.com/)
 - [Docker Kit](https://github.com/open-hotel/docker-kit)
 
 ## Contributors
-
-![Contributors](https://contributors-img.firebaseapp.com/image?repo=open-hotel/open-hotel-client)
 
 Want to become a contributor? Read our [contribution guide](./CONTRIBUTING.md)
