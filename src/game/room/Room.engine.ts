@@ -14,7 +14,7 @@ import { ApplicationProvider } from '../pixi/application.provider'
 
 @Provider()
 export class RoomEngine {
-  public readonly container = new Container()
+  public container: Container
   public heightmap: Matrix<number>
   public floorRenderer: FloorRenderer
   public wallRenderer: WallRenderer
@@ -87,13 +87,14 @@ export class RoomEngine {
   }
 
   async init(roomModel: RoomModel) {
+    this.container = new Container()
     this.heightmap = roomModel.heightmap
     this.container.sortableChildren = true
     this.renderWalls(roomModel)
     this.renderFloor()
 
     await Promise.all(this.putUsers(roomModel.roomUserDictionary))
-    
+
     this.putFurni()
     this.container.sortChildren()
   }

@@ -69,16 +69,17 @@ export default {
       const roomProvider = await this.$injets.get(RoomProvider)
       await roomProvider.create({
         roomUserDictionary: {
-          userId1: {
-            nickname: 'testNickname',
-            imagerOptions: {
-              encodedFigure: 'hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61',
-              encodedActions: 'std',
-              direction: 2,
-              head_direction: 2,
-              is_ghost: false,
-            }
-          }
+          abc: {
+            id: '1',
+            name: 'user_1',
+            look: 'hd-180-1.hr-110-61.ch-210-66.lg-280-110.sh-305-62',
+            action: 'std',
+            direction: 2,
+            head_direction: 2,
+            x: 64,
+            y: 32,
+            z: 8
+          },
         },
         heightmap: Matrix.fromLegacyString(room.heightmap)
       })
